@@ -40,8 +40,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
 import com.example.classschedule.data.ClassSchedule
 import com.example.classschedule.ui.AppViewModelProvider
-import com.example.classschedule.ui.classes.ClassScheduleTopAppBar
 import com.example.classschedule.ui.navigation.NavigationDestination
+import com.example.classschedule.ui.screen.DaysCheckboxes
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 
@@ -78,7 +78,7 @@ fun ScheduleDetailsScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Edit,
-                    contentDescription = stringResource(R.string.edit_item_title)
+                    contentDescription = stringResource(R.string.edit_class_title)
                 )
             }
         }, modifier = modifier
@@ -173,9 +173,9 @@ fun ClassScheduleDetails(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
                 )
             )
-            ClassDetailsRow(
-                labelResID = R.string.day,
-                classScheduleDetail = classSchedule.day,
+            Text("Days", style = MaterialTheme.typography.titleMedium)
+            DaysCheckboxes(
+                classSchedule = classSchedule,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
                 )

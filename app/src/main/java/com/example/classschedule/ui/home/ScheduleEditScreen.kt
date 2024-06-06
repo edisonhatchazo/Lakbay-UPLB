@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 
 object ScheduleEditDestination: NavigationDestination {
     override val route = "schedule_edit"
-    override val titleRes = R.string.edit_item_title
+    override val titleRes = R.string.edit_class_title
     const val SCHEDULEIDARG = "scheduleId"
     val routeWithArgs = "$route/{$SCHEDULEIDARG}"
 }
@@ -46,6 +46,8 @@ fun ScheduleEditScreen(
     ) { innerPadding ->
         ScheduleEntryBody(
             scheduleUiState = viewModel.scheduleUiState,
+            selectedDays = viewModel.selectedDays.value, // Access the list from State<List<String>>
+            onDaysChange = viewModel::updateDays,
             onScheduleValueChange = viewModel::updateUiState,
             onTimeChange = viewModel::updateTime,
             onTimeEndChange = viewModel::updateTimeEnd,

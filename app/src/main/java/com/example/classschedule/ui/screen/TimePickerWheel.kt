@@ -1,4 +1,4 @@
-package com.example.classschedule.ui.classes
+package com.example.classschedule.ui.screen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -28,37 +28,40 @@ fun TimePickerWheel(
     val minutes = listOf(0, 30)
     val periods = listOf("AM", "PM")
 
-    var selectedHour by remember { mutableStateOf(initialTime.hour % 12) }
+    val initialHour = if (initialTime.hour % 12 == 0) 12 else initialTime.hour % 12
+    val initialPeriod = if (initialTime.hour < 12) "AM" else "PM"
+    val initialMinute = initialTime.minute
+    var selectedHour by remember { mutableStateOf(initialHour) }
     var selectedMinute by remember { mutableStateOf(initialTime.minute) }
-    var selectedPeriod by remember { mutableStateOf(if (initialTime.hour < 12) "AM" else "PM") }
+    var selectedPeriod by remember { mutableStateOf(initialPeriod) }
 
     Row(verticalAlignment = Alignment.CenterVertically) {
         DropDownMenu(
             items = hours,
-            selectedItem = selectedHour,
+            selectedItem = initialHour,
             onItemSelected = {
                 selectedHour = it
-                updateTime(selectedHour, selectedMinute, selectedPeriod, onTimeChanged)
+                updateTime(initialHour, initialMinute, initialPeriod, onTimeChanged)
             },
             enabled = enabled
         )
         Spacer(modifier = Modifier.width(8.dp))
         DropDownMenu(
             items = minutes,
-            selectedItem = selectedMinute,
+            selectedItem = initialMinute,
             onItemSelected = {
                 selectedMinute = it
-                updateTime(selectedHour, selectedMinute, selectedPeriod, onTimeChanged)
+                updateTime(initialHour, initialMinute, initialPeriod, onTimeChanged)
             },
             enabled = enabled
         )
         Spacer(modifier = Modifier.width(8.dp))
         DropDownMenu(
             items = periods,
-            selectedItem = selectedPeriod,
+            selectedItem = initialPeriod,
             onItemSelected = {
                 selectedPeriod = it
-                updateTime(selectedHour, selectedMinute, selectedPeriod, onTimeChanged)
+                updateTime(initialHour, initialMinute, initialPeriod, onTimeChanged)
             },
             enabled = enabled
         )
@@ -84,7 +87,7 @@ fun <T> DropDownMenu(
         ) {
             items.forEach { item ->
                 DropdownMenuItem(
-                    text = {Text(text = item.toString())},
+                    text = { Text(text = item.toString()) },
                     onClick = {
                         onItemSelected(item)
                         expanded = false

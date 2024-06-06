@@ -13,9 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -40,6 +40,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
 import com.example.classschedule.ui.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
+import com.example.classschedule.ui.theme.getColorEntry
 import java.time.LocalTime
 
 object ScheduleHomeDestination: NavigationDestination {
@@ -93,11 +94,11 @@ fun ScheduleScreenBody(
 ) {
     val classHomeUiState by scheduleViewModel.classHomeUiState.collectAsState()
 
-
     Column(
-        modifier = Modifier.fillMaxSize()
-        .fillMaxSize()
-            .padding(contentPadding)) {
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(contentPadding)
+    ) {
         // Headers
         Row(modifier = Modifier.fillMaxWidth()) {
             Text(
@@ -106,7 +107,7 @@ fun ScheduleScreenBody(
                 textAlign = TextAlign.Center,
                 fontSize = 14.sp
             )
-            listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat").forEach { day ->
+            listOf("M", "T", "W", "TH", "F", "S").forEach { day ->
                 Text(
                     text = day,
                     modifier = Modifier.weight(1f),
@@ -123,57 +124,48 @@ fun ScheduleScreenBody(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .border(0.5.dp, Color.Gray, RectangleShape)
                 ) {
                     Text(
                         text = timeLabel,
-                        modifier = Modifier.width(40.dp).padding(end = 4.dp),
+                        modifier = Modifier
+                            .width(40.dp)
+                            .padding(end = 4.dp),
                         textAlign = TextAlign.Center,
                         fontSize = 12.sp
                     )
-                    for (day in listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")) {
+                    for (day in listOf("M", "T", "W", "TH", "F", "S")) {
                         val timeSlotStart = LocalTime.of(hour, half * 30)
                         val timeSlotEnd = timeSlotStart.plusMinutes(30)
                         val classForThisTime = classHomeUiState.classScheduleList.firstOrNull {
-                            it.day == day &&
+                            it.days.split(", ").contains(day) && // Check if the day is in the days list
                                     (it.time.isBefore(timeSlotEnd) && it.timeEnd.isAfter(timeSlotStart))
                         }
+                        val borderColor = classForThisTime?.let { getColorEntry(it.colorName).backgroundColor } ?: Color.Black
                         Box(
                             modifier = Modifier
                                 .weight(1f)
                                 .height(20.dp)
-                                .background(color = classForThisTime?.let { getClassColor(it.title) } ?: Color.Transparent)
-                                .padding(4.dp)
+                                .border(0.5.dp, borderColor, RectangleShape) // Set border color dynamically
+                                .background(color = classForThisTime?.let { getColorEntry(it.colorName).backgroundColor } ?: Color.Transparent)
+                                .padding(2.dp)
                                 .clickable {
-                                    classForThisTime?.let { navigateToScheduleUpdate(it.id)}
+                                    classForThisTime?.let { navigateToScheduleUpdate(it.id) }
                                 },
                             contentAlignment = Alignment.Center // Centering the content
                         ) {
                             if (classForThisTime != null && classForThisTime.time == timeSlotStart) {
                                 Text(
                                     text = classForThisTime.title,
-                                    color = Color.White,
+                                    color = getColorEntry(classForThisTime.colorName).fontColor,
                                     fontSize = 12.sp,
-                                    textAlign = TextAlign.Center
+                                    textAlign = TextAlign.Center,
+
                                 )
                             }
                         }
                     }
                 }
             }
-            if (hour != 18) { // Avoid drawing an extra line after the last hour
-                Divider(color = Color.Black, thickness = 1.dp) // Draw a divider after each hour
-            }
         }
-    }
-}
-
-private fun getClassColor(title: String): Color {
-    return when (title) {
-        "Math 11" -> Color.Blue
-        "CMSC 11" -> Color.Yellow
-        "NASC 11" -> Color.Red
-        "NASC 3" -> Color(0xFFFFA500) // Orange
-        else -> Color.Gray
     }
 }

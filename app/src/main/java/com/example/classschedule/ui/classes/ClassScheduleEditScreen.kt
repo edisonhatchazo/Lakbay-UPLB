@@ -12,18 +12,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.classschedule.ui.classes.ClassScheduleTopAppBar
 import com.example.classschedule.R
 import com.example.classschedule.ui.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
-import com.example.classschedule.ui.theme.ClassScheduleTheme
 import kotlinx.coroutines.launch
 
 object ClassScheduleEditDestination: NavigationDestination {
     override val route = "class_schedule_edit"
-    override val titleRes = R.string.edit_item_title
+    override val titleRes = R.string.edit_class_title
     const val CLASSSCHEDULEIDARG = "classScheduleId"
     val routeWithArgs = "$route/{$CLASSSCHEDULEIDARG}"
 }
@@ -48,6 +45,8 @@ fun ClassScheduleEditScreen(
     ) { innerPadding ->
         ClassScheduleEntryBody(
             classScheduleUiState = viewModel.classScheduleUiState,
+            selectedDays = viewModel.selectedDays.value, // Access the list from State<List<String>>
+            onDaysChange = viewModel::updateDays,
             onClassScheduleValueChange = viewModel::updateUiState,
             onTimeChange = viewModel::updateTime,
             onTimeEndChange = viewModel::updateTimeEnd,
@@ -65,14 +64,5 @@ fun ClassScheduleEditScreen(
                 )
                 .verticalScroll(rememberScrollState())
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ClassScheduleEditScreenPreview(){
-    ClassScheduleTheme {
-        ClassScheduleEditScreen(
-            navigateBack = { /*Do Nothing*/ }, onNavigateUp = { /*Do Nothing*/ })
     }
 }

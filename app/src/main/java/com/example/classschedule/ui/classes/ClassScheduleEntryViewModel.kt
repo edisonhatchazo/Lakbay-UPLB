@@ -7,14 +7,15 @@ import androidx.lifecycle.ViewModel
 import com.example.classschedule.data.ClassSchedule
 import com.example.classschedule.data.ClassScheduleRepository
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
+import androidx.compose.runtime.State
+import com.example.classschedule.ui.theme.ColorPalette
 
 class ClassScheduleEntryViewModel(private val classScheduleRepository: ClassScheduleRepository) : ViewModel() {
     var classScheduleUiState by mutableStateOf(ClassScheduleUiState())
         private set
 
-    private val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a")
-
+    private val _selectedDays = mutableStateOf<List<String>>(listOf())
+    val selectedDays: State<List<String>> = _selectedDays
     fun updateUiState(classScheduleDetails: ClassScheduleDetails) {
         classScheduleUiState = ClassScheduleUiState(
             classScheduleDetails = classScheduleDetails,
@@ -34,9 +35,27 @@ class ClassScheduleEntryViewModel(private val classScheduleRepository: ClassSche
         updateUiState(updatedDetails)
     }
 
+    fun updateDays(day: String, isSelected: Boolean) {
+        val currentDays = _selectedDays.value.toMutableList()
+        if (isSelected && currentDays.size < 2) {
+            if (!currentDays.contains(day)) {
+                currentDays.add(day)
+            }
+        } else if (!isSelected) {
+            currentDays.remove(day)
+        }
+        _selectedDays.value = currentDays
+        val updatedDetails = classScheduleUiState.classScheduleDetails.copy(days = _selectedDays.value)
+        updateUiState(updatedDetails)
+    }
+
+    fun getRandomColorName(): String {
+        return ColorPalette.colors.keys.random()
+    }
+
     private fun validateInput(uiState: ClassScheduleDetails = classScheduleUiState.classScheduleDetails): Boolean {
         return with(uiState) {
-            title.isNotBlank() && location.isNotBlank() && day.isNotBlank() && time != LocalTime.MIDNIGHT && timeEnd != LocalTime.MIDNIGHT
+            title.isNotBlank() && location.isNotBlank() && days.isNotEmpty() && time != LocalTime.MIDNIGHT && timeEnd != LocalTime.MIDNIGHT
         }
     }
 
@@ -46,13 +65,6 @@ class ClassScheduleEntryViewModel(private val classScheduleRepository: ClassSche
         }
     }
 
-    fun formatTime(time: LocalTime): String {
-        return time.format(timeFormatter)
-    }
-
-    fun parseTime(timeString: String): LocalTime {
-        return LocalTime.parse(timeString, timeFormatter)
-    }
 }
 
 data class ClassScheduleUiState(
@@ -64,30 +76,33 @@ data class ClassScheduleDetails(
     val id: Int = 0,
     val title: String = "",
     val location: String = "",
-    val day: String = "",
+    val days: List<String> = listOf(), // Changed from 'day' to 'days'
     val time: LocalTime = LocalTime.of(0, 0),
     val timeEnd: LocalTime = LocalTime.of(0, 0),
+    val colorName: String = ""
 )
 
 fun ClassScheduleDetails.toClass(): ClassSchedule = ClassSchedule(
     id = id,
     title = title,
     location = location,
-    day = day,
+    days = days.joinToString(", "),  // Convert list of days to a comma-separated string
     time = time,
-    timeEnd = timeEnd
-)
-
-fun ClassSchedule.toClassScheduleUiState(isEntryValid: Boolean = false): ClassScheduleUiState = ClassScheduleUiState(
-    classScheduleDetails = this.toClassScheduleDetails(),
-    isEntryValid = isEntryValid
+    timeEnd = timeEnd,
+    colorName = colorName
 )
 
 fun ClassSchedule.toClassScheduleDetails(): ClassScheduleDetails = ClassScheduleDetails(
     id = id,
     title = title,
     location = location,
-    day = day,
+    days = days.split(", ").filterNot { it.isEmpty() },  // Convert the string back to a list
     time = time,
-    timeEnd = timeEnd
+    timeEnd = timeEnd,
+    colorName = colorName
+)
+
+fun ClassSchedule.toClassScheduleUiState(isEntryValid: Boolean = false): ClassScheduleUiState = ClassScheduleUiState(
+    classScheduleDetails = this.toClassScheduleDetails(),
+    isEntryValid = isEntryValid
 )

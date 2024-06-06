@@ -12,7 +12,7 @@
     <string name="delete">Delete</string>
     <string name="delete_question">Are you sure you want to delete?</string>
     <string name="no_class_description">Oops!\nNo Scheduled Classes.\nTap + to add.</string>
-    <string name="edit_item_title">Edit Item</string>
+    <string name="edit_class_title">Edit Class Schedule</string>
     <string name="item">Item</string>
     <string name="class_detail_title">Class Schedule Details</string>
     <string name="class_entry_title">Add Class</string>

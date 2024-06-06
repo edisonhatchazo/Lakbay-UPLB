@@ -1,5 +1,6 @@
 package com.example.classschedule.ui.classes
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -11,16 +12,15 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
 class ClassScheduleEditViewModel(
     savedStateHandle: SavedStateHandle,
     private val classScheduleRepository: ClassScheduleRepository
 ) : ViewModel() {
 
-    private val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a")
     private val classScheduleId: Int = checkNotNull(savedStateHandle[ClassScheduleEditDestination.CLASSSCHEDULEIDARG])
-
+    private val _selectedDays = mutableStateOf<List<String>>(listOf())
+    val selectedDays: State<List<String>> = _selectedDays
     var classScheduleUiState by mutableStateOf(
         savedStateHandle.get<ClassScheduleUiState>("classScheduleUiState") ?: ClassScheduleUiState()
     )
@@ -28,11 +28,21 @@ class ClassScheduleEditViewModel(
 
     init {
         viewModelScope.launch{
-            classScheduleUiState = classScheduleRepository.getClassScheduleStream(classScheduleId)
+            val schedule = classScheduleRepository.getClassScheduleStream(classScheduleId)
                 .filterNotNull()
                 .first()
-                .toClassScheduleUiState(true)
+            _selectedDays.value = schedule.days.split(", ").map { it.trim() }
+            classScheduleUiState = schedule.toClassScheduleUiState(true)
         }
+    }
+
+    fun updateDays(day: String, isSelected: Boolean) {
+        if (isSelected && _selectedDays.value.size < 2) {
+            _selectedDays.value += day
+        } else if (!isSelected) {
+            _selectedDays.value -= day
+        }
+        updateUiState(classScheduleUiState.classScheduleDetails.copy(days = _selectedDays.value))
     }
 
     fun updateUiState(classScheduleDetails: ClassScheduleDetails) {
@@ -48,13 +58,13 @@ class ClassScheduleEditViewModel(
     }
 
     fun updateTimeEnd(timeEnd: LocalTime) {
-        val newTimeEnd = runCatching {timeEnd }.getOrElse { classScheduleUiState.classScheduleDetails.timeEnd }
+        val newTimeEnd = runCatching { timeEnd }.getOrElse { classScheduleUiState.classScheduleDetails.timeEnd }
         updateUiState(classScheduleUiState.classScheduleDetails.copy(timeEnd = newTimeEnd))
     }
 
     private fun validateInput(uiState: ClassScheduleDetails = classScheduleUiState.classScheduleDetails): Boolean {
         return with(uiState) {
-            title.isNotBlank() && location.isNotBlank() && day.isNotBlank() && time != LocalTime.MIDNIGHT && timeEnd != LocalTime.MIDNIGHT
+            title.isNotBlank() && location.isNotBlank() && days.isNotEmpty() && time != LocalTime.MIDNIGHT && timeEnd != LocalTime.MIDNIGHT
         }
     }
 
@@ -64,11 +74,5 @@ class ClassScheduleEditViewModel(
         }
     }
 
-    fun formatTime(time: LocalTime): String {
-        return time.format(timeFormatter)
-    }
 
-    fun parseTime(timeString: String): LocalTime {
-        return LocalTime.parse(timeString, timeFormatter)
-    }
 }

@@ -1,5 +1,6 @@
 package com.example.classschedule.ui.home
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -18,19 +19,30 @@ class ScheduleEditViewModel(
 ) : ViewModel() {
 
     private val scheduleId: Int = checkNotNull(savedStateHandle[ScheduleEditDestination.SCHEDULEIDARG])
-
+    private val _selectedDays = mutableStateOf<List<String>>(listOf())
+    val selectedDays: State<List<String>> = _selectedDays
     var scheduleUiState by mutableStateOf(
         savedStateHandle.get<ScheduleUiState>("scheduleUiState") ?: ScheduleUiState()
     )
         private set
 
     init {
-        viewModelScope.launch{
-            scheduleUiState = classScheduleRepository.getClassScheduleStream(scheduleId)
+        viewModelScope.launch {
+            val schedule = classScheduleRepository.getClassScheduleStream(scheduleId)
                 .filterNotNull()
                 .first()
-                .toScheduleUiState(true)
+            _selectedDays.value = schedule.days.split(", ").map { it.trim() }
+            scheduleUiState = schedule.toScheduleUiState(true)
         }
+    }
+
+    fun updateDays(day: String, isSelected: Boolean) {
+        if (isSelected && _selectedDays.value.size < 2) {
+            _selectedDays.value += day
+        } else if (!isSelected) {
+            _selectedDays.value -= day
+        }
+        updateUiState(scheduleUiState.scheduleDetails.copy(days = _selectedDays.value))
     }
 
     fun updateUiState(scheduleDetails: ScheduleDetails) {
@@ -46,13 +58,13 @@ class ScheduleEditViewModel(
     }
 
     fun updateTimeEnd(timeEnd: LocalTime) {
-        val newTimeEnd = runCatching {timeEnd }.getOrElse { scheduleUiState.scheduleDetails.timeEnd }
+        val newTimeEnd = runCatching { timeEnd }.getOrElse { scheduleUiState.scheduleDetails.timeEnd }
         updateUiState(scheduleUiState.scheduleDetails.copy(timeEnd = newTimeEnd))
     }
 
     private fun validateInput(uiState: ScheduleDetails = scheduleUiState.scheduleDetails): Boolean {
         return with(uiState) {
-            title.isNotBlank() && location.isNotBlank() && day.isNotBlank() && time != LocalTime.MIDNIGHT && timeEnd != LocalTime.MIDNIGHT
+            title.isNotBlank() && location.isNotBlank() && days.isNotEmpty() && time != LocalTime.MIDNIGHT && timeEnd != LocalTime.MIDNIGHT
         }
     }
 

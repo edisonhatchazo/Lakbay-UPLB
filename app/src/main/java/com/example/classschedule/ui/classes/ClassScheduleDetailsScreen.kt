@@ -42,6 +42,7 @@ import com.example.classschedule.R
 import com.example.classschedule.data.ClassSchedule
 import com.example.classschedule.ui.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
+import com.example.classschedule.ui.screen.DaysCheckboxes
 import com.example.classschedule.ui.theme.ClassScheduleTheme
 import kotlinx.coroutines.launch
 import java.time.LocalTime
@@ -80,7 +81,7 @@ fun ClassScheduleDetailsScreen (
             ) {
                 Icon(
                     imageVector = Icons.Default.Edit,
-                    contentDescription = stringResource(R.string.edit_item_title)
+                    contentDescription = stringResource(R.string.edit_class_title)
                 )
             }
         }, modifier = modifier
@@ -175,9 +176,9 @@ fun ClassScheduleDetails(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
                 )
             )
-            ClassDetailsRow(
-                labelResID = R.string.day,
-                classScheduleDetail = classSchedule.day,
+            Text("Days", style = MaterialTheme.typography.titleMedium)
+            DaysCheckboxes(
+                classSchedule = classSchedule,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
                 )
@@ -246,7 +247,7 @@ private fun ClassScheduleDetailsScreenPreview() {
                     location = "Math Building",
                     time = LocalTime.of(7, 0),
                     timeEnd = LocalTime.of(9, 0),
-                    day = "Wednesday"
+                    days = listOf("W","F")
                 )
             ),
             onDelete = {}

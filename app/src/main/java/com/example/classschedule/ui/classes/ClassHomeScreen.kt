@@ -30,16 +30,13 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
 import com.example.classschedule.data.ClassSchedule
-import com.example.classschedule.ui.classes.ClassScheduleApp
 import com.example.classschedule.ui.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
-import com.example.classschedule.ui.theme.ClassScheduleTheme
-import java.time.LocalTime
+import com.example.classschedule.ui.theme.getColorEntry
 
 object ClassHomeDestination: NavigationDestination {
     override val route = "class_home"
@@ -130,8 +127,9 @@ private fun ClassList(
         contentPadding = contentPadding
     ) {
         items(items = classScheduleList, key = {it.id}) { item ->
-            ClassDetails(classSchedule = item,
-            modifier = Modifier
+            ClassDetails(
+                classSchedule = item,
+                modifier = Modifier
                 .padding(dimensionResource(id = R.dimen.padding_small))
                 .clickable { onClassScheduleClick(item) })
         }
@@ -140,12 +138,15 @@ private fun ClassList(
 
 @Composable
 private fun ClassDetails(
-    classSchedule: ClassSchedule, modifier: Modifier = Modifier
+    classSchedule: ClassSchedule,
+    modifier: Modifier = Modifier
 ){
+    val colorEntry = getColorEntry(classSchedule.colorName)
     Card(
         modifier = modifier,
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ){
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = colorEntry.backgroundColor)
+    ) {
         Column(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large)),
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_small))
@@ -155,29 +156,10 @@ private fun ClassDetails(
             ){
                 Text(
                     text = classSchedule.title,
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
+                    color = colorEntry.fontColor
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeBodyPreview(){
-    ClassScheduleTheme {
-        HomeBody(
-            classScheduleList = listOf(),
-            onClassScheduleClick = {})
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ClassSchedulePreview(){
-    ClassScheduleTheme {
-        ClassDetails(
-            ClassSchedule(1,"Math","Math Building", LocalTime.of(7, 0) ,LocalTime.of(9,0), "Wednesday")
-        )
     }
 }
