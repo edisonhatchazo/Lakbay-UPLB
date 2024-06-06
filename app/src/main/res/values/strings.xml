@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Class Schedule</string>
+    <string name="classes">Classes</string>
+    <string name="home">Home</string>
+    <string name="time_start">Time Start</string>
+    <string name="time_end">Time End</string>
+    <string name="location">Location</string>
+    <string name="day">Day</string>
+    <string name="map">Map</string>
+    <string name="attention">Attention</string>
+    <string name="back_button">Back</string>
+    <string name="delete">Delete</string>
+    <string name="delete_question">Are you sure you want to delete?</string>
+    <string name="no_class_description">Oops!\nNo Scheduled Classes.\nTap + to add.</string>
+    <string name="edit_item_title">Edit Item</string>
+    <string name="item">Item</string>
+    <string name="class_detail_title">Class Schedule Details</string>
+    <string name="class_entry_title">Add Class</string>
+    <string name="class_name_req">Class Title*</string>
+    <string name="no">No</string>
+    <string name="save_action">Save</string>
+    <string name="yes">Yes</string>
+    <string name="required_fields">*required fields</string>
+</resources>
