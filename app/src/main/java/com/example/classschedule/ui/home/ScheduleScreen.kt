@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,7 +40,6 @@ import com.example.classschedule.R
 import com.example.classschedule.ui.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.theme.ColorPalette.getColorEntry
-
 import java.time.LocalTime
 
 object ScheduleHomeDestination: NavigationDestination {
@@ -49,6 +47,7 @@ object ScheduleHomeDestination: NavigationDestination {
     override val titleRes = R.string.app_name
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleScreen(
     scheduleViewModel: ScheduleViewModel = viewModel(factory = AppViewModelProvider.Factory),
