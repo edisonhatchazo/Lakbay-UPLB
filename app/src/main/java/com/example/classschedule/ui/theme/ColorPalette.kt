@@ -1,8 +1,12 @@
 package com.example.classschedule.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import com.example.classschedule.ui.theme.ColorPalette.colors
 
-data class ColorEntry(val backgroundColor: Color, val fontColor: Color)
+data class ColorEntry(
+    val backgroundColor: Color,
+    val fontColor: Color
+)
 
 object ColorPalette {
     val colors = mapOf(
@@ -32,8 +36,9 @@ object ColorPalette {
         "Emerald" to ColorEntry(Color(0xFF50C878), Color.Black), // Emerald
         "Chocolate" to ColorEntry(Color(0xFF7B3F00), Color.White) // Chocolate
     )
+    fun getColorEntry(colorName: String): ColorEntry {
+        return colors[colorName] ?: ColorEntry(Color.Transparent, Color.Black)
+    }
 }
 
-fun getColorEntry(colorName: String): ColorEntry {
-    return ColorPalette.colors[colorName] ?: ColorEntry(Color.Transparent, Color.Black)
-}
+

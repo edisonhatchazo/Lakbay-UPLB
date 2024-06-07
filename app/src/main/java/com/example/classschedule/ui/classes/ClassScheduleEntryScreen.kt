@@ -18,6 +18,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,10 +33,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
 import com.example.classschedule.ui.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
-import com.example.classschedule.ui.screen.ColorPickerDialog
-import com.example.classschedule.ui.screen.DaysSelectionCheckboxes
-import com.example.classschedule.ui.screen.TimePickerWheel
-import com.example.classschedule.ui.theme.getColorEntry
+import com.example.classschedule.algorithm.ColorPickerDialog
+import com.example.classschedule.algorithm.DaysSelectionCheckboxes
+import com.example.classschedule.algorithm.TimePickerWheel
+import com.example.classschedule.data.ClassSchedule
+import com.example.classschedule.ui.theme.ColorPalette.getColorEntry
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 
@@ -53,6 +55,7 @@ fun ClassScheduleEntryScreen(
     viewModel: ClassScheduleEntryViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val existingSchedules by viewModel.existingSchedules.collectAsState()
     Scaffold(
         topBar = {
             ClassScheduleTopAppBar(
@@ -74,6 +77,7 @@ fun ClassScheduleEntryScreen(
             },
             onTimeChange = viewModel::updateTime,
             onTimeEndChange = viewModel::updateTimeEnd,
+            existingSchedules = existingSchedules,
             modifier = Modifier
                 .padding(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
@@ -95,6 +99,7 @@ fun ClassScheduleEntryBody(
     onSaveClick: () -> Unit,
     onTimeChange: (LocalTime) -> Unit,
     onTimeEndChange: (LocalTime) -> Unit,
+    existingSchedules: List<ClassSchedule>,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -107,6 +112,7 @@ fun ClassScheduleEntryBody(
             onDaysChange = onDaysChange,
             onValueChange = onClassScheduleValueChange,
             onTimeChange = onTimeChange,
+            existingSchedules = existingSchedules,
             onTimeEndChange = onTimeEndChange,
             modifier = Modifier.fillMaxWidth()
         )
@@ -129,6 +135,7 @@ fun ClassInputForm(
     onTimeEndChange: (LocalTime) -> Unit,
     selectedDays: List<String>,
     onDaysChange: (String, Boolean) -> Unit,
+    existingSchedules: List<ClassSchedule>,
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
@@ -147,6 +154,14 @@ fun ClassInputForm(
             singleLine = true
         )
         OutlinedTextField(
+            value = classScheduleDetails.teacher,
+            onValueChange = { onValueChange(classScheduleDetails.copy(teacher = it)) },
+            label = { Text(stringResource(R.string.teacher)) },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = enabled,
+            singleLine = true
+        )
+        OutlinedTextField(
             value = classScheduleDetails.location,
             onValueChange = { onValueChange(classScheduleDetails.copy(location = it)) },
             label = { Text(stringResource(R.string.location)) },
@@ -154,22 +169,26 @@ fun ClassInputForm(
             enabled = enabled,
             singleLine = true
         )
-        Text("Select Days")
+        Text(text = stringResource(R.string.day_select))
         DaysSelectionCheckboxes(
             selectedDays = selectedDays,
             onDaySelected = onDaysChange,
             modifier = Modifier.fillMaxWidth()
         )
-        Text("Start Time")
+        Text(text = stringResource(R.string.time_start))
         TimePickerWheel(
             initialTime = classScheduleDetails.time,
             onTimeChanged = onTimeChange,
+            existingSchedules = existingSchedules, // Pass existing schedules
+            selectedDays = selectedDays, // Pass selected days
             enabled = enabled
         )
-        Text("End Time")
+        Text(text = stringResource(R.string.time_end))
         TimePickerWheel(
             initialTime = classScheduleDetails.timeEnd,
             onTimeChanged = onTimeEndChange,
+            existingSchedules = existingSchedules, // Pass existing schedules
+            selectedDays = selectedDays, // Pass selected days
             enabled = enabled
         )
         OutlinedButton(

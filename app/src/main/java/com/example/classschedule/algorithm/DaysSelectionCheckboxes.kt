@@ -1,4 +1,4 @@
-package com.example.classschedule.ui.screen
+package com.example.classschedule.algorithm
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -8,22 +8,33 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.example.classschedule.data.ClassSchedule
 
 @Composable
-fun DaysCheckboxes(classSchedule: ClassSchedule, modifier: Modifier = Modifier) {
+fun DaysSelectionCheckboxes(
+    selectedDays: List<String>,
+    onDaySelected: (String, Boolean) -> Unit, // Callback to handle changes
+    modifier: Modifier = Modifier
+) {
     val daysOfWeek = listOf("M", "T", "W", "TH", "F", "S") // Days of the week abbreviations
-    val selectedDays = classSchedule.days.split(", ").map { it.trim() } // Parse and trim the days string
-
     Row(modifier = modifier, horizontalArrangement = Arrangement.SpaceBetween) {
         daysOfWeek.forEach { day ->
             val isChecked = selectedDays.contains(day)
+            // Disable checkbox if already two are selected and this one isn't checked
+            val isEnabled = selectedDays.size < 2 || isChecked
+            Text(text = day)
             Checkbox(
                 checked = isChecked,
-                onCheckedChange = null, // Null makes it disabled (read-only)
+                onCheckedChange = { shouldCheck ->
+                    if (shouldCheck && selectedDays.size < 2) {
+                        onDaySelected(day, true)
+                    } else if (!shouldCheck) {
+                        onDaySelected(day, false)
+                    }
+                },
+                enabled = isEnabled,
                 colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
             )
-            Text(text = day)
+
         }
     }
 }

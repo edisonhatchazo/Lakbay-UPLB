@@ -5,8 +5,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.classschedule.data.ClassSchedule
 import com.example.classschedule.data.ClassScheduleRepository
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import java.time.LocalTime
 
 class ScheduleEntryViewModel(private val classScheduleRepository: ClassScheduleRepository) : ViewModel() {
@@ -15,6 +19,8 @@ class ScheduleEntryViewModel(private val classScheduleRepository: ClassScheduleR
 
     private val _selectedDays = mutableStateOf<List<String>>(listOf())
     val selectedDays: State<List<String>> = _selectedDays
+    val existingSchedules: StateFlow<List<ClassSchedule>> = classScheduleRepository.getAllClassScheduleStream()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     fun updateUiState(scheduleDetails: ScheduleDetails) {
         scheduleUiState = ScheduleUiState(
             scheduleDetails = scheduleDetails,
@@ -23,13 +29,11 @@ class ScheduleEntryViewModel(private val classScheduleRepository: ClassScheduleR
     }
 
     fun updateTime(time: LocalTime) {
-        val newTime = runCatching { time }.getOrElse { scheduleUiState.scheduleDetails.time }
-        updateUiState(scheduleUiState.scheduleDetails.copy(time = newTime))
+        updateUiState(scheduleUiState.scheduleDetails.copy(time = time))
     }
 
     fun updateTimeEnd(timeEnd: LocalTime) {
-        val newTimeEnd = runCatching { timeEnd }.getOrElse { scheduleUiState.scheduleDetails.timeEnd }
-        updateUiState(scheduleUiState.scheduleDetails.copy(timeEnd = newTimeEnd))
+        updateUiState(scheduleUiState.scheduleDetails.copy(timeEnd = timeEnd))
     }
 
     fun updateDays(day: String, isSelected: Boolean) {
@@ -67,6 +71,7 @@ data class ScheduleUiState(
 data class ScheduleDetails(
     val id: Int = 0,
     val title: String = "",
+    val teacher: String = "",
     val location: String = "",
     val days: List<String> = listOf(), // Changed from 'day' to 'days'
     val time: LocalTime = LocalTime.of(0, 0),
@@ -77,6 +82,7 @@ data class ScheduleDetails(
 fun ScheduleDetails.toClass(): ClassSchedule = ClassSchedule(
     id = id,
     title = title,
+    teacher = teacher,
     location = location,
     days = days.joinToString(", "),  // Convert list of days to a comma-separated string
     time = time,
@@ -92,6 +98,7 @@ fun ClassSchedule.toScheduleUiState(isEntryValid: Boolean = false): ScheduleUiSt
 fun ClassSchedule.toScheduleDetails(): ScheduleDetails = ScheduleDetails(
     id = id,
     title = title,
+    teacher = teacher,
     location = location,
     days = days.split(", ").filterNot { it.isEmpty() },  // Convert the string back to a list
     time = time,

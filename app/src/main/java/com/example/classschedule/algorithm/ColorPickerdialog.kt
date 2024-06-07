@@ -1,4 +1,4 @@
-package com.example.classschedule.ui.screen
+package com.example.classschedule.algorithm
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

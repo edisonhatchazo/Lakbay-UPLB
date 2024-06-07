@@ -9,6 +9,7 @@ data class ClassSchedule (
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val title: String,
+    val teacher: String,
     val location: String,
     val time: LocalTime,
     val timeEnd: LocalTime,

@@ -36,7 +36,7 @@ import com.example.classschedule.R
 import com.example.classschedule.data.ClassSchedule
 import com.example.classschedule.ui.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
-import com.example.classschedule.ui.theme.getColorEntry
+import com.example.classschedule.ui.theme.ColorPalette.getColorEntry
 
 object ClassHomeDestination: NavigationDestination {
     override val route = "class_home"

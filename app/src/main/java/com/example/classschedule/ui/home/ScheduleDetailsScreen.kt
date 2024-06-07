@@ -41,7 +41,7 @@ import com.example.classschedule.R
 import com.example.classschedule.data.ClassSchedule
 import com.example.classschedule.ui.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
-import com.example.classschedule.ui.screen.DaysCheckboxes
+import com.example.classschedule.ui.theme.ColorPalette
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 
@@ -143,12 +143,12 @@ fun ClassScheduleDetails(
     classSchedule: ClassSchedule, modifier: Modifier = Modifier
 ) {
     val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-
+    val colorEntry = ColorPalette.getColorEntry(classSchedule.colorName)
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            containerColor = colorEntry.backgroundColor,
+            contentColor = colorEntry.fontColor
         )
     ) {
         Column(
@@ -167,15 +167,22 @@ fun ClassScheduleDetails(
                 )
             )
             ClassDetailsRow(
+                labelResID = R.string.teacher,
+                classScheduleDetail = classSchedule.teacher,
+                modifier = Modifier.padding(
+                    horizontal = dimensionResource(id = R.dimen.padding_medium)
+                )
+            )
+            ClassDetailsRow(
                 labelResID = R.string.location,
                 classScheduleDetail = classSchedule.location,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
                 )
             )
-            Text("Days", style = MaterialTheme.typography.titleMedium)
-            DaysCheckboxes(
-                classSchedule = classSchedule,
+            ClassDetailsRow(
+                labelResID = R.string.day,
+                classScheduleDetail = classSchedule.days,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
                 )

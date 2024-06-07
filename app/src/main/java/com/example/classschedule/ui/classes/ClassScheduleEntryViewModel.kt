@@ -8,7 +8,11 @@ import com.example.classschedule.data.ClassSchedule
 import com.example.classschedule.data.ClassScheduleRepository
 import java.time.LocalTime
 import androidx.compose.runtime.State
+import androidx.lifecycle.viewModelScope
 import com.example.classschedule.ui.theme.ColorPalette
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 
 class ClassScheduleEntryViewModel(private val classScheduleRepository: ClassScheduleRepository) : ViewModel() {
     var classScheduleUiState by mutableStateOf(ClassScheduleUiState())
@@ -16,6 +20,8 @@ class ClassScheduleEntryViewModel(private val classScheduleRepository: ClassSche
 
     private val _selectedDays = mutableStateOf<List<String>>(listOf())
     val selectedDays: State<List<String>> = _selectedDays
+    val existingSchedules: StateFlow<List<ClassSchedule>> = classScheduleRepository.getAllClassScheduleStream()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     fun updateUiState(classScheduleDetails: ClassScheduleDetails) {
         classScheduleUiState = ClassScheduleUiState(
             classScheduleDetails = classScheduleDetails,
@@ -24,14 +30,12 @@ class ClassScheduleEntryViewModel(private val classScheduleRepository: ClassSche
     }
 
     fun updateTime(time: LocalTime) {
-        val newTime = runCatching { time }.getOrElse { classScheduleUiState.classScheduleDetails.time }
-        val updatedDetails = classScheduleUiState.classScheduleDetails.copy(time = newTime)
+        val updatedDetails = classScheduleUiState.classScheduleDetails.copy(time = time)
         updateUiState(updatedDetails)
     }
 
     fun updateTimeEnd(timeEnd: LocalTime) {
-        val newTimeEnd = runCatching { timeEnd }.getOrElse { classScheduleUiState.classScheduleDetails.timeEnd }
-        val updatedDetails = classScheduleUiState.classScheduleDetails.copy(timeEnd = newTimeEnd)
+        val updatedDetails = classScheduleUiState.classScheduleDetails.copy(timeEnd = timeEnd)
         updateUiState(updatedDetails)
     }
 
@@ -75,6 +79,7 @@ data class ClassScheduleUiState(
 data class ClassScheduleDetails(
     val id: Int = 0,
     val title: String = "",
+    val teacher: String = "",
     val location: String = "",
     val days: List<String> = listOf(), // Changed from 'day' to 'days'
     val time: LocalTime = LocalTime.of(0, 0),
@@ -85,6 +90,7 @@ data class ClassScheduleDetails(
 fun ClassScheduleDetails.toClass(): ClassSchedule = ClassSchedule(
     id = id,
     title = title,
+    teacher = teacher,
     location = location,
     days = days.joinToString(", "),  // Convert list of days to a comma-separated string
     time = time,
@@ -95,6 +101,7 @@ fun ClassScheduleDetails.toClass(): ClassSchedule = ClassSchedule(
 fun ClassSchedule.toClassScheduleDetails(): ClassScheduleDetails = ClassScheduleDetails(
     id = id,
     title = title,
+    teacher = teacher,
     location = location,
     days = days.split(", ").filterNot { it.isEmpty() },  // Convert the string back to a list
     time = time,

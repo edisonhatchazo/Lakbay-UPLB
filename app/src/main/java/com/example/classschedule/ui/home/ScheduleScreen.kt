@@ -40,7 +40,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
 import com.example.classschedule.ui.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
-import com.example.classschedule.ui.theme.getColorEntry
+import com.example.classschedule.ui.theme.ColorPalette.getColorEntry
+
 import java.time.LocalTime
 
 object ScheduleHomeDestination: NavigationDestination {
