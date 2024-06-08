@@ -25,11 +25,7 @@ fun DaysSelectionCheckboxes(
             Checkbox(
                 checked = isChecked,
                 onCheckedChange = { shouldCheck ->
-                    if (shouldCheck && selectedDays.size < 2) {
-                        onDaySelected(day, true)
-                    } else if (!shouldCheck) {
-                        onDaySelected(day, false)
-                    }
+                    onDaySelected(day, shouldCheck)
                 },
                 enabled = isEnabled,
                 colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)

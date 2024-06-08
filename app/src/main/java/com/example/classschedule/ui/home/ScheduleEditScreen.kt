@@ -16,6 +16,8 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
+import com.example.classschedule.algorithm.calculateAvailableEndTimes
+import com.example.classschedule.algorithm.calculateAvailableStartTimes
 import com.example.classschedule.ui.AppViewModelProvider
 import com.example.classschedule.ui.classes.ClassScheduleTopAppBar
 import com.example.classschedule.ui.navigation.NavigationDestination
@@ -37,6 +39,10 @@ fun ScheduleEditScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val existingSchedules by viewModel.existingSchedules.collectAsState()
+    val selectedDays = viewModel.selectedDays.value
+    val scheduleUiState = viewModel.scheduleUiState
+    val availableStartTimes = calculateAvailableStartTimes(existingSchedules, selectedDays)
+    val availableEndTimes = calculateAvailableEndTimes(existingSchedules, selectedDays, scheduleUiState.scheduleDetails.time)
 
     Scaffold(
         topBar = {
@@ -53,9 +59,8 @@ fun ScheduleEditScreen(
             selectedDays = viewModel.selectedDays.value, // Access the list from State<List<String>>
             onDaysChange = viewModel::updateDays,
             onScheduleValueChange = viewModel::updateUiState,
-            onTimeChange = viewModel::updateTime,
-            onTimeEndChange = viewModel::updateTimeEnd,
-            existingSchedules = existingSchedules,
+            availableStartTimes = availableStartTimes,
+            availableEndTimes = availableEndTimes,
             onSaveClick = {
                 coroutineScope.launch {
                     viewModel.updateSchedule()

@@ -23,55 +23,36 @@ import java.time.LocalTime
 fun TimePickerWheel(
     initialTime: LocalTime,
     onTimeChanged: (LocalTime) -> Unit,
-    existingSchedules: List<ClassSchedule>,
-    selectedDays: List<String>,
+    availableTimes: List<LocalTime>,  // List of available LocalTime
     enabled: Boolean = true
 ) {
-    val allHours = (7..12) + (1..6)
-    val allMinutes = listOf(0, 30)
-    val periods = listOf("AM", "PM")
+    val hours = availableTimes.map { it.hour }.distinct().sorted()
+    val minutes = availableTimes.filter { it.hour == initialTime.hour }.map { it.minute }.distinct().sorted()
 
-    // Filter hours and minutes based on existing schedules
-    val hours = filterHours(allHours, existingSchedules, selectedDays)
-    val minutes = filterMinutes(allMinutes, existingSchedules, selectedDays)
-
-    val initialHour = if (initialTime.hour % 12 == 0) 12 else initialTime.hour % 12
-    val initialPeriod = if (initialTime.hour < 12) "AM" else "PM"
-    val initialMinute = initialTime.minute
-
-    var selectedHour by remember { mutableStateOf(initialHour) }
-    var selectedMinute by remember { mutableStateOf(initialMinute) }
-    var selectedPeriod by remember { mutableStateOf(initialPeriod) }
+    var selectedHour by remember { mutableStateOf(initialTime.hour) }
+    var selectedMinute by remember { mutableStateOf(initialTime.minute) }
 
     Row(verticalAlignment = Alignment.CenterVertically) {
         DropDownMenu(
             items = hours,
-            selectedItem = initialHour,
-            onItemSelected = {
-                selectedHour = it
-                updateTime(selectedHour, selectedMinute, selectedPeriod, onTimeChanged)
+            selectedItem = selectedHour,
+            onItemSelected = { hour ->
+                selectedHour = hour
+                // Adjust minutes based on selected hour
+                selectedMinute = availableTimes.firstOrNull { it.hour == hour }?.minute ?: minutes.firstOrNull() ?: 0
+                onTimeChanged(LocalTime.of(selectedHour, selectedMinute))
             },
             enabled = enabled
         )
         Spacer(modifier = Modifier.width(8.dp))
         DropDownMenu(
             items = minutes,
-            selectedItem = initialMinute,
-            onItemSelected = {
-                selectedMinute = it
-                updateTime(selectedHour, selectedMinute, selectedPeriod, onTimeChanged)
+            selectedItem = selectedMinute,
+            onItemSelected = { minute ->
+                selectedMinute = minute
+                onTimeChanged(LocalTime.of(selectedHour, selectedMinute))
             },
-            enabled = enabled
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        DropDownMenu(
-            items = periods,
-            selectedItem = initialPeriod,
-            onItemSelected = {
-                selectedPeriod = it
-                updateTime(selectedHour, selectedMinute, selectedPeriod, onTimeChanged)
-            },
-            enabled = enabled
+            enabled = enabled and minutes.isNotEmpty()
         )
     }
 }
@@ -106,19 +87,21 @@ fun <T> DropDownMenu(
         }
     }
 }
-
 private fun updateTime(hour: Int, minute: Int, period: String, onTimeChange: (LocalTime) -> Unit) {
     val adjustedHour = if (period == "PM" && hour != 12) hour + 12 else if (period == "AM" && hour == 12) 0 else hour
     val newTime = LocalTime.of(adjustedHour, minute)
     onTimeChange(newTime)
 }
 
-// Filter functions
-private fun filterHours(hours: List<Int>, schedules: List<ClassSchedule>, selectedDays: List<String>): List<Int> {
+fun filterStartHours(hours: List<Int>, schedules: List<ClassSchedule>, selectedDays: List<String>, currentSchedule: ClassSchedule?): List<Int> {
     val takenHours = schedules.flatMap { schedule ->
-        val startHour = schedule.time.hour
-        val endHour = schedule.timeEnd.hour
-        (startHour until endHour).toList()
+        if (schedule != currentSchedule && schedule.days.split(", ").any { it in selectedDays }) {
+            val startHour = schedule.time.hour
+            val endHour = schedule.timeEnd.hour
+            (startHour until endHour).toList()
+        } else {
+            emptyList()
+        }
     }.distinct()
 
     return hours.filter { hour ->
@@ -127,12 +110,81 @@ private fun filterHours(hours: List<Int>, schedules: List<ClassSchedule>, select
     }
 }
 
-private fun filterMinutes(minutes: List<Int>, schedules: List<ClassSchedule>, selectedDays: List<String>): List<Int> {
+fun filterStartMinutes(minutes: List<Int>, schedules: List<ClassSchedule>, selectedDays: List<String>, currentSchedule: ClassSchedule?, startHour: Int): List<Int> {
     val takenMinutes = schedules.flatMap { schedule ->
-        val startMinute = schedule.time.minute
-        val endMinute = schedule.timeEnd.minute
-        if (startMinute == 0 && endMinute == 30) listOf(0) else if (startMinute == 30 && endMinute == 0) listOf(30) else emptyList()
+        if (schedule != currentSchedule && schedule.days.split(", ").any { it in selectedDays }) {
+            if (schedule.time.hour == startHour) {
+                listOf(schedule.time.minute)
+            } else {
+                emptyList()
+            }
+        } else {
+            emptyList()
+        }
     }.distinct()
 
     return minutes.filter { minute -> !takenMinutes.contains(minute) }
+}
+
+fun filterEndHours(hours: List<Int>, schedules: List<ClassSchedule>, selectedDays: List<String>, startTime: LocalTime, currentSchedule: ClassSchedule?): List<Int> {
+    val takenHours = schedules.flatMap { schedule ->
+        if (schedule != currentSchedule && schedule.days.split(", ").any { it in selectedDays }) {
+            val startHour = schedule.time.hour
+            val endHour = schedule.timeEnd.hour
+            (startHour until endHour).toList()
+        } else {
+            emptyList()
+        }
+    }.distinct()
+
+    return hours.filter { hour ->
+        val adjustedHour = if (hour == 12) 0 else hour
+        !takenHours.contains(adjustedHour) || adjustedHour > startTime.hour
+    }
+}
+
+fun filterEndMinutes(minutes: List<Int>, schedules: List<ClassSchedule>, selectedDays: List<String>, startTime: LocalTime, currentSchedule: ClassSchedule?): List<Int> {
+    val takenMinutes = schedules.flatMap { schedule ->
+        if (schedule != currentSchedule && schedule.days.split(", ").any { it in selectedDays }) {
+            val startMinute = schedule.time.minute
+            val endMinute = schedule.timeEnd.minute
+            if (schedule.time.hour == startTime.hour && startMinute == 0 && endMinute == 30) listOf(0) else if (startMinute == 30 && endMinute == 0) listOf(30) else emptyList()
+        } else {
+            emptyList()
+        }
+    }.distinct()
+
+    return minutes.filter { minute -> !takenMinutes.contains(minute) || (minute > startTime.minute && startTime.hour == startTime.hour) }
+}
+
+fun calculateAvailableStartTimes(existingSchedules: List<ClassSchedule>, selectedDays: List<String>): List<LocalTime> {
+    val allStartTimes = (7..18).flatMap { hour ->
+        listOf(LocalTime.of(hour, 0), LocalTime.of(hour, 30))
+    }
+
+    val occupiedTimes = existingSchedules.filter { schedule ->
+        selectedDays.any { it in schedule.days.split(", ") }
+    }.flatMap { schedule ->
+        generateSequence(schedule.time) { it.plusMinutes(30) }
+            .takeWhile { it.isBefore(schedule.timeEnd) }
+            .toList()
+    }
+
+    return allStartTimes.filterNot { it in occupiedTimes }
+}
+
+fun calculateAvailableEndTimes(existingSchedules: List<ClassSchedule>, selectedDays: List<String>, startTime: LocalTime): List<LocalTime> {
+    val allEndTimes = generateSequence(startTime.plusMinutes(30)) { it.plusMinutes(30) }
+        .takeWhile { it.isBefore(LocalTime.of(19, 0)) }
+        .toList()
+
+    val occupiedTimes = existingSchedules.filter { schedule ->
+        selectedDays.any { it in schedule.days.split(", ") }
+    }.flatMap { schedule ->
+        generateSequence(schedule.time) { it.plusMinutes(30) }
+            .takeWhile { it.isBefore(schedule.timeEnd) }
+            .toList()
+    }
+
+    return allEndTimes.filterNot { it in occupiedTimes }
 }

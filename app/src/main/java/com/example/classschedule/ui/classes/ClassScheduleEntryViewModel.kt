@@ -30,13 +30,11 @@ class ClassScheduleEntryViewModel(private val classScheduleRepository: ClassSche
     }
 
     fun updateTime(time: LocalTime) {
-        val updatedDetails = classScheduleUiState.classScheduleDetails.copy(time = time)
-        updateUiState(updatedDetails)
+        updateUiState(classScheduleUiState.classScheduleDetails.copy(time = time))
     }
 
     fun updateTimeEnd(timeEnd: LocalTime) {
-        val updatedDetails = classScheduleUiState.classScheduleDetails.copy(timeEnd = timeEnd)
-        updateUiState(updatedDetails)
+        updateUiState(classScheduleUiState.classScheduleDetails.copy(timeEnd = timeEnd))
     }
 
     fun updateDays(day: String, isSelected: Boolean) {
@@ -51,10 +49,6 @@ class ClassScheduleEntryViewModel(private val classScheduleRepository: ClassSche
         _selectedDays.value = currentDays
         val updatedDetails = classScheduleUiState.classScheduleDetails.copy(days = _selectedDays.value)
         updateUiState(updatedDetails)
-    }
-
-    fun getRandomColorName(): String {
-        return ColorPalette.colors.keys.random()
     }
 
     private fun validateInput(uiState: ClassScheduleDetails = classScheduleUiState.classScheduleDetails): Boolean {
