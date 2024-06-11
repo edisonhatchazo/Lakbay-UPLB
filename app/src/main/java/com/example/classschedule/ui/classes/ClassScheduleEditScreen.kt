@@ -61,7 +61,6 @@ fun ClassScheduleEditScreen(
             onClassScheduleValueChange = viewModel::updateUiState,
             availableStartTimes = availableStartTimes,
             availableEndTimes = availableEndTimes,
-            existingSchedules = existingSchedules,
             onSaveClick = {
                 coroutineScope.launch {
                     viewModel.updateClassSchedule()
