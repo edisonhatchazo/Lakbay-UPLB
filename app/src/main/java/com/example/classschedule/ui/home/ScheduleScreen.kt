@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -50,9 +51,9 @@ object ScheduleHomeDestination: NavigationDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleScreen(
+    modifier: Modifier = Modifier,
     scheduleViewModel: ScheduleViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navigateToScheduleEntry: () -> Unit,
-    modifier: Modifier = Modifier,
     navigateToScheduleUpdate: (Int) -> Unit
 ){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -103,7 +104,7 @@ fun ScheduleScreenBody(
         Row(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = "",
-                modifier = Modifier.width(40.dp),
+                modifier = Modifier.width(50.dp),
                 textAlign = TextAlign.Center,
                 fontSize = 14.sp
             )
@@ -128,8 +129,9 @@ fun ScheduleScreenBody(
                     Text(
                         text = timeLabel,
                         modifier = Modifier
-                            .width(40.dp)
-                            .padding(end = 4.dp),
+                            .width(50.dp)
+                            .padding(end = 4.dp)
+                            .offset(y = -8.dp),
                         textAlign = TextAlign.Center,
                         fontSize = 12.sp
                     )
@@ -152,6 +154,7 @@ fun ScheduleScreenBody(
                                     classForThisTime?.let { navigateToScheduleUpdate(it.id) }
                                 },
                             contentAlignment = Alignment.Center // Centering the content
+
                         ) {
                             if (classForThisTime != null && classForThisTime.time == timeSlotStart) {
                                 Text(
@@ -159,13 +162,27 @@ fun ScheduleScreenBody(
                                     color = getColorEntry(classForThisTime.colorName).fontColor,
                                     fontSize = 12.sp,
                                     textAlign = TextAlign.Center,
-
                                 )
                             }
                         }
                     }
                 }
             }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp)  // Ensure the row is tall enough for the text
+        ) {
+            Text(
+                text = "19:00",
+                modifier = Modifier
+                    .width(50.dp)
+                    .padding(end = 4.dp)
+                    .offset(y = -8.dp),
+                textAlign = TextAlign.Center,
+                fontSize = 12.sp
+            )
         }
     }
 }

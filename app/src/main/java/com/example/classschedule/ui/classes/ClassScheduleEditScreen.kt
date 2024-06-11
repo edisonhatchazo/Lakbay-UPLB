@@ -40,8 +40,9 @@ fun ClassScheduleEditScreen(
     val existingSchedules by viewModel.existingSchedules.collectAsState()
     val selectedDays = viewModel.selectedDays.value
     val classScheduleUiState = viewModel.classScheduleUiState
-    val availableStartTimes = calculateAvailableStartTimes(existingSchedules, selectedDays)
-    val availableEndTimes = calculateAvailableEndTimes(existingSchedules, selectedDays, classScheduleUiState.classScheduleDetails.time)
+    val editingClassSchedule = classScheduleUiState.classScheduleDetails.toClass()  // Ensure you convert the UI state to ClassSchedule model here if necessary
+    val availableStartTimes = calculateAvailableStartTimes(existingSchedules, selectedDays,editingClassSchedule)
+    val availableEndTimes = calculateAvailableEndTimes(existingSchedules, selectedDays, classScheduleUiState.classScheduleDetails.time,editingClassSchedule)
 
     Scaffold(
         topBar = {
@@ -60,6 +61,7 @@ fun ClassScheduleEditScreen(
             onClassScheduleValueChange = viewModel::updateUiState,
             availableStartTimes = availableStartTimes,
             availableEndTimes = availableEndTimes,
+            existingSchedules = existingSchedules,
             onSaveClick = {
                 coroutineScope.launch {
                     viewModel.updateClassSchedule()

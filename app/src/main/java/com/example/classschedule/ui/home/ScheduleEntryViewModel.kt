@@ -28,14 +28,6 @@ class ScheduleEntryViewModel(private val classScheduleRepository: ClassScheduleR
         )
     }
 
-    fun updateTime(time: LocalTime) {
-        updateUiState(scheduleUiState.scheduleDetails.copy(time = time))
-    }
-
-    fun updateTimeEnd(timeEnd: LocalTime) {
-        updateUiState(scheduleUiState.scheduleDetails.copy(timeEnd = timeEnd))
-    }
-
     fun updateDays(day: String, isSelected: Boolean) {
         val currentDays = _selectedDays.value.toMutableList()
         if (isSelected && currentDays.size < 2) {

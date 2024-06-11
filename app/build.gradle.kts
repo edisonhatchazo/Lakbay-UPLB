@@ -51,7 +51,6 @@ android {
 }
 
 dependencies {
-    implementation("androidx.navigation:navigation-compose:$2.7.6")
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.core.ktx)
@@ -65,6 +64,7 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.places)
+    implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.runtime.livedata)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

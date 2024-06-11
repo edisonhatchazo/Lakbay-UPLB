@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -36,6 +38,7 @@ import com.example.classschedule.algorithm.DaysSelectionCheckboxes
 import com.example.classschedule.algorithm.TimePickerWheel
 import com.example.classschedule.algorithm.calculateAvailableEndTimes
 import com.example.classschedule.algorithm.calculateAvailableStartTimes
+import com.example.classschedule.data.ClassSchedule
 import com.example.classschedule.ui.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.theme.ColorPalette.getColorEntry
@@ -71,19 +74,7 @@ fun ClassScheduleEntryScreen(
                 navigateUp = onNavigateUp)
         }
     ) { innerPadding ->
-        ClassScheduleEntryBody(
-            classScheduleUiState = viewModel.classScheduleUiState,
-            onClassScheduleValueChange = viewModel::updateUiState,
-            selectedDays = viewModel.selectedDays.value, // Make sure this is handled in ViewModel
-            onDaysChange = viewModel::updateDays,
-            onSaveClick = {
-                coroutineScope.launch {
-                    viewModel.saveClassSchedule()
-                    navigateBack()
-                }
-            },
-            availableStartTimes = availableStartTimes,
-            availableEndTimes = availableEndTimes,
+        Column(
             modifier = Modifier
                 .padding(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
@@ -92,7 +83,24 @@ fun ClassScheduleEntryScreen(
                 )
                 .verticalScroll(rememberScrollState())
                 .fillMaxWidth()
-        )
+        ) {
+            ClassScheduleEntryBody(
+                classScheduleUiState = classScheduleUiState,
+                onClassScheduleValueChange = viewModel::updateUiState,
+                selectedDays = selectedDays, // Make sure this is handled in ViewModel
+                onDaysChange = viewModel::updateDays,
+                onSaveClick = {
+                    coroutineScope.launch {
+                        viewModel.saveClassSchedule()
+                        navigateBack()
+                    }
+                },
+                availableStartTimes = availableStartTimes,
+                availableEndTimes = availableEndTimes,
+                existingSchedules = existingSchedules,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 
@@ -104,6 +112,7 @@ fun ClassScheduleEntryBody(
     onClassScheduleValueChange: (ClassScheduleDetails) -> Unit,
     onSaveClick: () -> Unit,
     availableStartTimes: List<LocalTime>,
+    existingSchedules: List<ClassSchedule>,
     availableEndTimes: List<LocalTime>,
     modifier: Modifier = Modifier
 ) {
@@ -118,6 +127,7 @@ fun ClassScheduleEntryBody(
             onValueChange = onClassScheduleValueChange,
             availableStartTimes = availableStartTimes,
             availableEndTimes = availableEndTimes,
+            existingSchedules = existingSchedules,
             modifier = Modifier.fillMaxWidth()
         )
         Button(
@@ -139,6 +149,7 @@ fun ClassInputForm(
     availableEndTimes: List<LocalTime>,
     selectedDays: List<String>,
     onDaysChange: (String, Boolean) -> Unit,
+    existingSchedules: List<ClassSchedule>,
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
@@ -178,6 +189,7 @@ fun ClassInputForm(
             onDaySelected = onDaysChange,
             modifier = Modifier.fillMaxWidth()
         )
+
         Text(text = stringResource(R.string.time_start))
         TimePickerWheel(
             initialTime = classScheduleDetails.time,

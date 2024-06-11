@@ -20,6 +20,7 @@ import com.example.classschedule.algorithm.calculateAvailableEndTimes
 import com.example.classschedule.algorithm.calculateAvailableStartTimes
 import com.example.classschedule.ui.AppViewModelProvider
 import com.example.classschedule.ui.classes.ClassScheduleTopAppBar
+import com.example.classschedule.ui.classes.toClass
 import com.example.classschedule.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
 
@@ -41,8 +42,9 @@ fun ScheduleEditScreen(
     val existingSchedules by viewModel.existingSchedules.collectAsState()
     val selectedDays = viewModel.selectedDays.value
     val scheduleUiState = viewModel.scheduleUiState
-    val availableStartTimes = calculateAvailableStartTimes(existingSchedules, selectedDays)
-    val availableEndTimes = calculateAvailableEndTimes(existingSchedules, selectedDays, scheduleUiState.scheduleDetails.time)
+    val editingClassSchedule = scheduleUiState.scheduleDetails.toClass()  // Ensure you convert the UI state to ClassSchedule model here if necessary
+    val availableStartTimes = calculateAvailableStartTimes(existingSchedules, selectedDays,editingClassSchedule)
+    val availableEndTimes = calculateAvailableEndTimes(existingSchedules, selectedDays, scheduleUiState.scheduleDetails.time,editingClassSchedule)
 
     Scaffold(
         topBar = {
