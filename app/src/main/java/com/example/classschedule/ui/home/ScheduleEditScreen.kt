@@ -20,7 +20,6 @@ import com.example.classschedule.algorithm.calculateAvailableEndTimes
 import com.example.classschedule.algorithm.calculateAvailableStartTimes
 import com.example.classschedule.ui.AppViewModelProvider
 import com.example.classschedule.ui.classes.ClassScheduleTopAppBar
-import com.example.classschedule.ui.classes.toClass
 import com.example.classschedule.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
 

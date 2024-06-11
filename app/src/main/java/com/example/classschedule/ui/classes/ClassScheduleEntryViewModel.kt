@@ -9,7 +9,6 @@ import com.example.classschedule.data.ClassScheduleRepository
 import java.time.LocalTime
 import androidx.compose.runtime.State
 import androidx.lifecycle.viewModelScope
-import com.example.classschedule.ui.theme.ColorPalette
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
