@@ -95,7 +95,6 @@ fun ClassScheduleEntryScreen(
                 },
                 availableStartTimes = availableStartTimes,
                 availableEndTimes = availableEndTimes,
-                existingSchedules = existingSchedules,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -110,7 +109,6 @@ fun ClassScheduleEntryBody(
     onClassScheduleValueChange: (ClassScheduleDetails) -> Unit,
     onSaveClick: () -> Unit,
     availableStartTimes: List<LocalTime>,
-    existingSchedules: List<ClassSchedule>,
     availableEndTimes: List<LocalTime>,
     modifier: Modifier = Modifier
 ) {
@@ -125,7 +123,6 @@ fun ClassScheduleEntryBody(
             onValueChange = onClassScheduleValueChange,
             availableStartTimes = availableStartTimes,
             availableEndTimes = availableEndTimes,
-            existingSchedules = existingSchedules,
             modifier = Modifier.fillMaxWidth()
         )
         Button(
@@ -147,7 +144,6 @@ fun ClassInputForm(
     availableEndTimes: List<LocalTime>,
     selectedDays: List<String>,
     onDaysChange: (String, Boolean) -> Unit,
-    existingSchedules: List<ClassSchedule>,
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
