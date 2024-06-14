@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.stateIn
 
 class ClassHomeViewModel(classScheduleRepository: ClassScheduleRepository) : ViewModel() {
     val classHomeUiState: StateFlow<ClassHomeUiState> =
-        classScheduleRepository.getAllClassScheduleStream().map{ClassHomeUiState(it)}
+        classScheduleRepository.getAllClassSchedules().map{ClassHomeUiState(it)}
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),

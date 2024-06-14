@@ -28,3 +28,22 @@ interface ClassScheduleDao {
     @Query("SELECT * from classes ORDER BY title ASC")
     fun getAllClassSchedule(): Flow<List<ClassSchedule>>
 }
+
+@Dao
+interface ExamScheduleDao{
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(examSchedule: ExamSchedule)
+
+    @Update
+    suspend fun update(examSchedule: ExamSchedule)
+
+    @Delete
+    suspend fun delete(examSchedule: ExamSchedule)
+
+    @Query("SELECT * from exams WHERE id = :id")
+    fun getExamSchedule(id: Int): Flow<ExamSchedule>
+
+
+    @Query("SELECT * from exams ORDER BY title ASC")
+    fun getAllExamSchedule(): Flow<List<ExamSchedule>>
+}

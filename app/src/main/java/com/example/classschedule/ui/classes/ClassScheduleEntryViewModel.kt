@@ -14,12 +14,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 
 class ClassScheduleEntryViewModel(private val classScheduleRepository: ClassScheduleRepository) : ViewModel() {
-    var classScheduleUiState by mutableStateOf(ClassScheduleUiState())
+    var classScheduleUiState by mutableStateOf(
+        ClassScheduleUiState(
+            classScheduleDetails = ClassScheduleDetails(type = "Class"),
+            isEntryValid = false
+        )
+    )
         private set
 
     private val _selectedDays = mutableStateOf<List<String>>(listOf())
     val selectedDays: State<List<String>> = _selectedDays
-    val existingSchedules: StateFlow<List<ClassSchedule>> = classScheduleRepository.getAllClassScheduleStream()
+    val existingSchedules: StateFlow<List<ClassSchedule>> = classScheduleRepository.getAllClassSchedules()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     fun updateUiState(classScheduleDetails: ClassScheduleDetails) {
         classScheduleUiState = ClassScheduleUiState(
@@ -69,7 +74,9 @@ data class ClassScheduleDetails(
     val days: List<String> = listOf(), // Changed from 'day' to 'days'
     val time: LocalTime = LocalTime.of(0, 0),
     val timeEnd: LocalTime = LocalTime.of(0, 0),
-    val colorName: String = ""
+    val colorName: String = "",
+    val type: String = "",
+    //val date: String? = ""
 )
 
 fun ClassScheduleDetails.toClass(): ClassSchedule = ClassSchedule(
@@ -91,7 +98,7 @@ fun ClassSchedule.toClassScheduleDetails(): ClassScheduleDetails = ClassSchedule
     days = days.split(", ").filterNot { it.isEmpty() },  // Convert the string back to a list
     time = time,
     timeEnd = timeEnd,
-    colorName = colorName
+    colorName = colorName,
 )
 
 fun ClassSchedule.toClassScheduleUiState(isEntryValid: Boolean = false): ClassScheduleUiState = ClassScheduleUiState(

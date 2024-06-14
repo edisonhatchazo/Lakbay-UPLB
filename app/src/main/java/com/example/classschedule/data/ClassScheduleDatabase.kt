@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.example.classschedule.algorithm.LocalTimeConverter
 
 @Database(entities = [ClassSchedule::class], version = 1, exportSchema = false)
 @TypeConverters(LocalTimeConverter::class)

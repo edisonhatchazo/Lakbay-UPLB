@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -36,9 +35,9 @@ import com.example.classschedule.algorithm.DaysSelectionCheckboxes
 import com.example.classschedule.algorithm.TimePickerWheel
 import com.example.classschedule.algorithm.calculateAvailableEndTimes
 import com.example.classschedule.algorithm.calculateAvailableStartTimes
-import com.example.classschedule.data.ClassSchedule
 import com.example.classschedule.ui.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
+import com.example.classschedule.ui.screen.ScheduleEntryScreenTopAppBar
 import com.example.classschedule.ui.theme.ColorPalette.getColorEntry
 import kotlinx.coroutines.launch
 import java.time.LocalTime
@@ -48,7 +47,6 @@ object ClassScheduleEntryDestination: NavigationDestination {
     override val titleRes = R.string.class_entry_title
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ClassScheduleEntryScreen(
     navigateBack: () -> Unit,
@@ -66,10 +64,11 @@ fun ClassScheduleEntryScreen(
 
     Scaffold(
         topBar = {
-            ClassScheduleTopAppBar(
+            ScheduleEntryScreenTopAppBar(
                 title = stringResource(ClassScheduleEntryDestination.titleRes),
                 canNavigateBack = canNavigateBack,
-                navigateUp = onNavigateUp)
+                navigateUp = onNavigateUp
+            )
         }
     ) { innerPadding ->
         Column(
@@ -231,4 +230,3 @@ fun ClassInputForm(
         )
     }
 }
-

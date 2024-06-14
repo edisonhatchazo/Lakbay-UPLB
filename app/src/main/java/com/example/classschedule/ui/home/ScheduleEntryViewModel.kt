@@ -14,12 +14,17 @@ import kotlinx.coroutines.flow.stateIn
 import java.time.LocalTime
 
 class ScheduleEntryViewModel(private val classScheduleRepository: ClassScheduleRepository) : ViewModel() {
-    var scheduleUiState by mutableStateOf(ScheduleUiState())
+    var scheduleUiState by mutableStateOf(
+        ScheduleUiState(
+            scheduleDetails = ScheduleDetails(type = "Class"),
+            isEntryValid = false
+        )
+    )
         private set
 
     private val _selectedDays = mutableStateOf<List<String>>(listOf())
     val selectedDays: State<List<String>> = _selectedDays
-    val existingSchedules: StateFlow<List<ClassSchedule>> = classScheduleRepository.getAllClassScheduleStream()
+    val existingSchedules: StateFlow<List<ClassSchedule>> = classScheduleRepository.getAllClassSchedules()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     fun updateUiState(scheduleDetails: ScheduleDetails) {
         scheduleUiState = ScheduleUiState(
@@ -43,7 +48,7 @@ class ScheduleEntryViewModel(private val classScheduleRepository: ClassScheduleR
     }
     private fun validateInput(uiState: ScheduleDetails = scheduleUiState.scheduleDetails): Boolean {
         return with(uiState) {
-            title.isNotBlank() && location.isNotBlank() && days.isNotEmpty() && time != LocalTime.MIDNIGHT && timeEnd != LocalTime.MIDNIGHT
+            title.isNotBlank() && location.isNotBlank() && (days.isNotEmpty() || type == "exam") && time != LocalTime.MIDNIGHT && timeEnd != LocalTime.MIDNIGHT
         }
     }
 
@@ -68,7 +73,9 @@ data class ScheduleDetails(
     val days: List<String> = listOf(), // Changed from 'day' to 'days'
     val time: LocalTime = LocalTime.of(0, 0),
     val timeEnd: LocalTime = LocalTime.of(0, 0),
-    val colorName: String = ""
+    val colorName: String = "",
+    val type: String = "",
+    //val date: String? = ""
 )
 
 fun ScheduleDetails.toClass(): ClassSchedule = ClassSchedule(
@@ -79,7 +86,7 @@ fun ScheduleDetails.toClass(): ClassSchedule = ClassSchedule(
     days = days.joinToString(", "),  // Convert list of days to a comma-separated string
     time = time,
     timeEnd = timeEnd,
-    colorName = colorName
+    colorName = colorName,
 )
 
 fun ClassSchedule.toScheduleUiState(isEntryValid: Boolean = false): ScheduleUiState = ScheduleUiState(
@@ -95,5 +102,5 @@ fun ClassSchedule.toScheduleDetails(): ScheduleDetails = ScheduleDetails(
     days = days.split(", ").filterNot { it.isEmpty() },  // Convert the string back to a list
     time = time,
     timeEnd = timeEnd,
-    colorName = colorName
+    colorName = colorName,
 )

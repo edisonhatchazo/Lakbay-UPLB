@@ -16,7 +16,7 @@ class ClassScheduleDetailsViewModel(
 ) : ViewModel() {
     private val classScheduleId: Int = checkNotNull(savedStateHandle[ClassScheduleDetailsDestination.CLASSSCHEDULEIDARG])
     val uiState: StateFlow<ClassScheduleDetailsUiState> =
-        classScheduleRepository.getClassScheduleStream(classScheduleId)
+        classScheduleRepository.getClassSchedule(classScheduleId)
             .filterNotNull()
             .map {
                 ClassScheduleDetailsUiState(classScheduleDetails = it.toClassScheduleDetails())

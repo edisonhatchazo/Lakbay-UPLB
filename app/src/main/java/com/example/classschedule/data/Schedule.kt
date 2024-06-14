@@ -22,3 +22,16 @@ data class ClassSchedule (
         return "ClassSchedule(id=$id, title='$title', location='$location', time=$formattedTime, timeEnd=$formattedTimeEnd, days='$days')"
     }
 }
+@Entity(tableName = "exams")
+data class ExamSchedule (
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val title: String,
+    val teacher: String,
+    val location: String,
+    val date: String,  // Store date as a string or LocalDate
+    val time: LocalTime,
+    val timeEnd: LocalTime,
+    val colorName: String,
+    val day: String
+)

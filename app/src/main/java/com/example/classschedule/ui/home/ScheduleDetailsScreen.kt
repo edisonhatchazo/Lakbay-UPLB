@@ -41,6 +41,7 @@ import com.example.classschedule.R
 import com.example.classschedule.data.ClassSchedule
 import com.example.classschedule.ui.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
+import com.example.classschedule.ui.screen.DetailsScreenTopAppBar
 import com.example.classschedule.ui.theme.ColorPalette
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
@@ -53,7 +54,6 @@ object ScheduleDetailsDestination : NavigationDestination {
     val routeWithArgs = "$route/{$SCHEDULEIDARG}"
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleDetailsScreen(
     navigateToEditSchedule: (Int) -> Unit,
@@ -65,7 +65,7 @@ fun ScheduleDetailsScreen(
     val coroutineScope = rememberCoroutineScope()
     Scaffold(
         topBar = {
-            ScheduleTopAppBar(
+            DetailsScreenTopAppBar(
                 title = stringResource(ScheduleDetailsDestination.titleRes),
                 canNavigateBack = true,
                 navigateUp = navigateBack

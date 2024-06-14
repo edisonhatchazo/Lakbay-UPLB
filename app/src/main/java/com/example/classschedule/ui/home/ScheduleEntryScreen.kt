@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -31,14 +30,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
-import com.example.classschedule.ui.AppViewModelProvider
-import com.example.classschedule.ui.classes.ClassScheduleTopAppBar
-import com.example.classschedule.algorithm.TimePickerWheel
-import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.algorithm.ColorPickerDialog
 import com.example.classschedule.algorithm.DaysSelectionCheckboxes
+import com.example.classschedule.algorithm.TimePickerWheel
 import com.example.classschedule.algorithm.calculateAvailableEndTimes
 import com.example.classschedule.algorithm.calculateAvailableStartTimes
+import com.example.classschedule.ui.AppViewModelProvider
+import com.example.classschedule.ui.navigation.NavigationDestination
+import com.example.classschedule.ui.screen.ScheduleEntryScreenTopAppBar
 import com.example.classschedule.ui.theme.ColorPalette.getColorEntry
 import kotlinx.coroutines.launch
 import java.time.LocalTime
@@ -48,7 +47,6 @@ object ScheduleEntryDestination: NavigationDestination {
     override val route = "schedule_entry"
     override val titleRes = R.string.class_entry_title
 }
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleEntryScreen(
     navigateBack: () -> Unit,
@@ -60,12 +58,11 @@ fun ScheduleEntryScreen(
     val existingSchedules by viewModel.existingSchedules.collectAsState()
     val selectedDays = viewModel.selectedDays.value
     val scheduleUiState = viewModel.scheduleUiState
-
     val availableStartTimes = calculateAvailableStartTimes(existingSchedules, selectedDays)
     val availableEndTimes = calculateAvailableEndTimes(existingSchedules, selectedDays, scheduleUiState.scheduleDetails.time)
     Scaffold(
         topBar = {
-            ClassScheduleTopAppBar(
+            ScheduleEntryScreenTopAppBar(
                 title = stringResource(ScheduleEntryDestination.titleRes),
                 canNavigateBack = canNavigateBack,
                 navigateUp = onNavigateUp)
@@ -108,7 +105,7 @@ fun ScheduleEntryBody(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_large))
     ) {
         ClassInputForm(

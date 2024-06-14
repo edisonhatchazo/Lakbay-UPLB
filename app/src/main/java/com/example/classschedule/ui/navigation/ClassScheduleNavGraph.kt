@@ -15,7 +15,14 @@ import com.example.classschedule.ui.classes.ClassScheduleEntryDestination
 import com.example.classschedule.ui.classes.ClassScheduleEntryScreen
 import com.example.classschedule.ui.classes.ClassHomeDestination
 import com.example.classschedule.ui.classes.ClassHomeScreen
-import com.example.classschedule.ui.home.ScheduleHomeDestination
+import com.example.classschedule.ui.exam.ExamDetailsDestination
+import com.example.classschedule.ui.exam.ExamDetailsScreen
+import com.example.classschedule.ui.exam.ExamEditDestination
+import com.example.classschedule.ui.exam.ExamEditScreen
+import com.example.classschedule.ui.exam.ExamEntryDestination
+import com.example.classschedule.ui.exam.ExamEntryScreen
+import com.example.classschedule.ui.exam.ExamHomeDestination
+import com.example.classschedule.ui.exam.ExamHomeScreen
 
 @Composable
 fun ClassScheduleNavHost(
@@ -32,7 +39,8 @@ fun ClassScheduleNavHost(
                 navigateToClassScheduleEntry = { navController.navigate(ClassScheduleEntryDestination.route)},
                 navigateToClassScheduleUpdate = {
                     navController.navigate("${ClassScheduleDetailsDestination.route}/${it}")
-                }
+                },
+                navigateToExamHomeDestination = { navController.navigate(ExamHomeDestination.route)}
             )
         }
         composable(route = ClassScheduleEntryDestination.route){
@@ -59,6 +67,43 @@ fun ClassScheduleNavHost(
             })
         ){
             ClassScheduleEditScreen(
+                navigateBack = { navController.popBackStack() },
+                onNavigateUp = { navController.navigateUp() })
+        }
+
+        composable(route = ExamHomeDestination.route){
+            ExamHomeScreen(
+                navigateToExamScheduleEntry = { navController.navigate(ExamEntryDestination.route)},
+                navigateToExamScheduleUpdate = {
+                    navController.navigate("${ExamDetailsDestination.route}/${it}")
+                },
+                navigateToClassHomeDestination = { navController.navigate(ClassHomeDestination.route)}
+            )
+        }
+
+        composable(route = ExamEntryDestination.route){
+            ExamEntryScreen(
+                navigateBack = { navController.popBackStack()},
+                onNavigateUp = { navController.navigateUp()})
+        }
+
+        composable(
+            route = ExamDetailsDestination.routeWithArgs,
+            arguments = listOf(navArgument(ExamDetailsDestination.SCHEDULEIDARG){
+                type = NavType.IntType
+            })
+        ){
+            ExamDetailsScreen(
+                navigateToEditExam = {navController.navigate("${ExamEditDestination.route}/$it")},
+                navigateBack = {navController.navigateUp()})
+        }
+        composable(
+            route = ExamEditDestination.routeWithArgs,
+            arguments = listOf(navArgument(ExamEditDestination.SCHEDULEIDARG){
+                type = NavType.IntType
+            })
+        ){
+            ExamEditScreen(
                 navigateBack = { navController.popBackStack() },
                 onNavigateUp = { navController.navigateUp() })
         }

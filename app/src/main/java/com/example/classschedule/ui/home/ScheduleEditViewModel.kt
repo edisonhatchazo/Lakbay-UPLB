@@ -25,7 +25,7 @@ class ScheduleEditViewModel(
     private val scheduleId: Int = checkNotNull(savedStateHandle[ScheduleEditDestination.SCHEDULEIDARG])
     private val _selectedDays = mutableStateOf<List<String>>(listOf())
     val selectedDays: State<List<String>> = _selectedDays
-    val existingSchedules: StateFlow<List<ClassSchedule>> = classScheduleRepository.getAllClassScheduleStream()
+    val existingSchedules: StateFlow<List<ClassSchedule>> = classScheduleRepository.getAllClassSchedules()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     var scheduleUiState by mutableStateOf(
         savedStateHandle.get<ScheduleUiState>("scheduleUiState") ?: ScheduleUiState()
@@ -34,7 +34,7 @@ class ScheduleEditViewModel(
 
     init {
         viewModelScope.launch {
-            val schedule = classScheduleRepository.getClassScheduleStream(scheduleId)
+            val schedule = classScheduleRepository.getClassSchedule(scheduleId)
                 .filterNotNull()
                 .first()
             _selectedDays.value = schedule.days.split(", ").map { it.trim() }
@@ -56,16 +56,6 @@ class ScheduleEditViewModel(
             scheduleDetails = scheduleDetails,
             isEntryValid = validateInput(scheduleDetails)
         )
-    }
-
-    fun updateTime(time: LocalTime) {
-        val newTime = runCatching { time }.getOrElse { scheduleUiState.scheduleDetails.time }
-        updateUiState(scheduleUiState.scheduleDetails.copy(time = newTime))
-    }
-
-    fun updateTimeEnd(timeEnd: LocalTime) {
-        val newTimeEnd = runCatching { timeEnd }.getOrElse { scheduleUiState.scheduleDetails.timeEnd }
-        updateUiState(scheduleUiState.scheduleDetails.copy(timeEnd = newTimeEnd))
     }
 
     private fun validateInput(uiState: ScheduleDetails = scheduleUiState.scheduleDetails): Boolean {

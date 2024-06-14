@@ -25,7 +25,7 @@ class ClassScheduleEditViewModel(
     private val classScheduleId: Int = checkNotNull(savedStateHandle[ClassScheduleEditDestination.CLASSSCHEDULEIDARG])
     private val _selectedDays = mutableStateOf<List<String>>(listOf())
     val selectedDays: State<List<String>> = _selectedDays
-    val existingSchedules: StateFlow<List<ClassSchedule>> = classScheduleRepository.getAllClassScheduleStream()
+    val existingSchedules: StateFlow<List<ClassSchedule>> = classScheduleRepository.getAllClassSchedules()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     var classScheduleUiState by mutableStateOf(
         savedStateHandle.get<ClassScheduleUiState>("classScheduleUiState") ?: ClassScheduleUiState()
@@ -34,7 +34,7 @@ class ClassScheduleEditViewModel(
 
     init {
         viewModelScope.launch{
-            val schedule = classScheduleRepository.getClassScheduleStream(classScheduleId)
+            val schedule = classScheduleRepository.getClassSchedule(classScheduleId)
                 .filterNotNull()
                 .first()
             _selectedDays.value = schedule.days.split(", ").map { it.trim() }
@@ -57,17 +57,6 @@ class ClassScheduleEditViewModel(
             isEntryValid = validateInput(classScheduleDetails)
         )
     }
-
-    fun updateTime(time: LocalTime) {
-        val newTime = runCatching { time }.getOrElse { classScheduleUiState.classScheduleDetails.time }
-        updateUiState(classScheduleUiState.classScheduleDetails.copy(time = newTime))
-    }
-
-    fun updateTimeEnd(timeEnd: LocalTime) {
-        val newTimeEnd = runCatching { timeEnd }.getOrElse { classScheduleUiState.classScheduleDetails.timeEnd }
-        updateUiState(classScheduleUiState.classScheduleDetails.copy(timeEnd = newTimeEnd))
-    }
-
     private fun validateInput(uiState: ClassScheduleDetails = classScheduleUiState.classScheduleDetails): Boolean {
         return with(uiState) {
             title.isNotBlank() && location.isNotBlank() && days.isNotEmpty() && time != LocalTime.MIDNIGHT && timeEnd != LocalTime.MIDNIGHT

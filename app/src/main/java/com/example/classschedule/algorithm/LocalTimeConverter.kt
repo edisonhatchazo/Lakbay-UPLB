@@ -1,4 +1,4 @@
-package com.example.classschedule.data
+package com.example.classschedule.algorithm
 
 import androidx.room.TypeConverter
 import java.time.LocalTime

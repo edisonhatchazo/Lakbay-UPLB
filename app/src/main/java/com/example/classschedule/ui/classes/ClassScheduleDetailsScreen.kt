@@ -41,6 +41,7 @@ import com.example.classschedule.R
 import com.example.classschedule.data.ClassSchedule
 import com.example.classschedule.ui.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
+import com.example.classschedule.ui.screen.DetailsScreenTopAppBar
 import com.example.classschedule.ui.theme.ColorPalette
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
@@ -65,7 +66,7 @@ fun ClassScheduleDetailsScreen (
     val coroutineScope = rememberCoroutineScope()
     Scaffold(
         topBar = {
-            ClassScheduleTopAppBar(
+            DetailsScreenTopAppBar(
                 title = stringResource(ClassScheduleDetailsDestination.titleRes),
                 canNavigateBack = true,
                 navigateUp = navigateBack
@@ -167,10 +168,10 @@ fun ClassScheduleDetails(
                 )
             )
             ClassDetailsRow(
-            labelResID = R.string.teacher,
-            classScheduleDetail = classSchedule.teacher,
-            modifier = Modifier.padding(
-                horizontal = dimensionResource(id = R.dimen.padding_medium)
+                labelResID = R.string.teacher,
+                classScheduleDetail = classSchedule.teacher,
+                modifier = Modifier.padding(
+                    horizontal = dimensionResource(id = R.dimen.padding_medium)
                 )
             )
             ClassDetailsRow(

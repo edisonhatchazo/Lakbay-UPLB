@@ -10,13 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -36,6 +32,7 @@ import com.example.classschedule.R
 import com.example.classschedule.data.ClassSchedule
 import com.example.classschedule.ui.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
+import com.example.classschedule.ui.screen.ScheduleScreenTopAppBar
 import com.example.classschedule.ui.theme.ColorPalette.getColorEntry
 
 object ClassHomeDestination: NavigationDestination {
@@ -48,9 +45,9 @@ object ClassHomeDestination: NavigationDestination {
 fun ClassHomeScreen(
     navigateToClassScheduleEntry: () -> Unit,
     navigateToClassScheduleUpdate: (Int) -> Unit,
+    navigateToExamHomeDestination: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ClassHomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
-
 ) {
     val homeUiState by viewModel.classHomeUiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -58,24 +55,14 @@ fun ClassHomeScreen(
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-                 ClassScheduleTopAppBar(
-                     title = stringResource(R.string.classes),
-                     canNavigateBack = false,
-                     scrollBehavior = scrollBehavior
-                 )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = navigateToClassScheduleEntry,
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription =  stringResource(R.string.class_entry_title)
-                )
-            }
-        },
+            ScheduleScreenTopAppBar(
+                title = stringResource(R.string.classes),
+                canNavigateBack = false,
+                navigateToScheduleEntry = navigateToClassScheduleEntry,
+                navigateToClassHome = {},
+                navigateToExamHome = navigateToExamHomeDestination
+            )
+        }
     ){ innerPadding ->
         HomeBody(
             classScheduleList = homeUiState.classScheduleList,
@@ -130,8 +117,8 @@ private fun ClassList(
             ClassDetails(
                 classSchedule = item,
                 modifier = Modifier
-                .padding(dimensionResource(id = R.dimen.padding_small))
-                .clickable { onClassScheduleClick(item) })
+                    .padding(dimensionResource(id = R.dimen.padding_small))
+                    .clickable { onClassScheduleClick(item) })
         }
     }
 }

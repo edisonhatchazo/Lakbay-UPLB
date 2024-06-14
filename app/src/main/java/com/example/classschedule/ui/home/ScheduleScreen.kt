@@ -14,12 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -31,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -40,6 +34,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
 import com.example.classschedule.ui.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
+import com.example.classschedule.ui.screen.ScheduleScreenTopAppBar
 import com.example.classschedule.ui.theme.ColorPalette.getColorEntry
 import java.time.LocalTime
 
@@ -54,30 +49,21 @@ fun ScheduleScreen(
     modifier: Modifier = Modifier,
     scheduleViewModel: ScheduleViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navigateToScheduleEntry: () -> Unit,
-    navigateToScheduleUpdate: (Int) -> Unit
+    navigateToScheduleUpdate: (Int) -> Unit,
+    navigateToExamHomeDestination: () -> Unit
 ){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            ScheduleTopAppBar(
+            ScheduleScreenTopAppBar(
                 title = stringResource(R.string.app_name),
                 canNavigateBack = false,
-                scrollBehavior = scrollBehavior
+                navigateToScheduleEntry = navigateToScheduleEntry,
+                navigateToClassHome = {},
+                navigateToExamHome = navigateToExamHomeDestination
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = navigateToScheduleEntry,
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription =  stringResource(R.string.class_entry_title)
-                )
-            }
-        },
+        }
     ){ innerPadding ->
         ScheduleScreenBody(
             navigateToScheduleUpdate = navigateToScheduleUpdate,
@@ -131,7 +117,7 @@ fun ScheduleScreenBody(
                         modifier = Modifier
                             .width(50.dp)
                             .padding(end = 4.dp)
-                            .offset(y = -8.dp),
+                            .offset(y = (-8).dp),
                         textAlign = TextAlign.Center,
                         fontSize = 12.sp
                     )
@@ -179,7 +165,7 @@ fun ScheduleScreenBody(
                 modifier = Modifier
                     .width(50.dp)
                     .padding(end = 4.dp)
-                    .offset(y = -8.dp),
+                    .offset(y = (-8).dp),
                 textAlign = TextAlign.Center,
                 fontSize = 12.sp
             )

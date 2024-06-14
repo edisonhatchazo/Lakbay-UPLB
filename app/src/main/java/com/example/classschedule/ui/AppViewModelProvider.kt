@@ -10,6 +10,10 @@ import com.example.classschedule.ui.classes.ClassScheduleDetailsViewModel
 import com.example.classschedule.ui.classes.ClassScheduleEditViewModel
 import com.example.classschedule.ui.classes.ClassScheduleEntryViewModel
 import com.example.classschedule.ui.classes.ClassHomeViewModel
+import com.example.classschedule.ui.exam.ExamDetailsViewModel
+import com.example.classschedule.ui.exam.ExamEditViewModel
+import com.example.classschedule.ui.exam.ExamEntryViewModel
+import com.example.classschedule.ui.exam.ExamHomeViewModel
 import com.example.classschedule.ui.home.ScheduleDetailsViewModel
 import com.example.classschedule.ui.home.ScheduleEditViewModel
 import com.example.classschedule.ui.home.ScheduleEntryViewModel
@@ -54,6 +58,35 @@ object AppViewModelProvider {
         initializer{
             ScheduleEntryViewModel(classScheduleApplication().container.classScheduleRepository)
         }
+
+
+        initializer{
+            ExamHomeViewModel(classScheduleApplication().container.examScheduleRepository)
+        }
+
+
+        initializer{
+            ExamEditViewModel(
+                this.createSavedStateHandle(),
+                classScheduleApplication().container.examScheduleRepository
+            )
+        }
+
+        initializer{
+            ExamDetailsViewModel(
+                this.createSavedStateHandle(),
+                classScheduleApplication().container.examScheduleRepository
+            )
+        }
+
+        initializer{
+            ExamEntryViewModel(classScheduleApplication().container.examScheduleRepository)
+        }
+
+
+
+
+
     }
 }
 
