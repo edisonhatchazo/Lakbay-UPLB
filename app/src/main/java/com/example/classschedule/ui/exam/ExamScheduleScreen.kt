@@ -13,12 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -27,12 +22,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -41,7 +36,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
 import com.example.classschedule.ui.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
-import com.example.classschedule.ui.screen.ScheduleScreenTopAppBar
+import com.example.classschedule.ui.screen.ExamScheduleScreenTopAppBar
 import com.example.classschedule.ui.theme.ColorPalette
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -63,56 +58,43 @@ fun ExamScheduleScreen(
     navigateToScheduleHomeDestination: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    val examDates = examScheduleViewModel.examHomeUiState.collectAsState().value.examScheduleList.map {
+        LocalDate.parse(it.date, DateTimeFormatter.ofPattern("MMM dd, yyyy"))
+    }
     Scaffold(
-        modifier = modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            ScheduleScreenTopAppBar(
+            ExamScheduleScreenTopAppBar(
                 title = stringResource(R.string.exam_schedule),
                 canNavigateBack = false,
                 navigateToScheduleEntry = navigateToScheduleEntry,
                 navigateToExamHome = {},
-                navigateToClassHome = navigateToScheduleHomeDestination
+                navigateToClassHome = navigateToScheduleHomeDestination,
+                examDates = examDates,
+                selectedDate = selectedDate,
+                onDateSelected = { date -> selectedDate = date }
             )
-        }, floatingActionButton = {
-            FloatingActionButton(
-                onClick = { /* TO DO*/ },
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
-            ) {
-                Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = stringResource(R.string.edit_exam_title)
-                )
-            }
         }
-    ){ innerPadding ->
+    ) { innerPadding ->
         ExamScheduleScreenBody(
             navigateToScheduleUpdate = navigateToScheduleUpdate,
             examScheduleViewModel = examScheduleViewModel,
             contentPadding = innerPadding,
+            selectedDate = selectedDate
         )
     }
 }
-
-
-
 
 @Composable
 fun ExamScheduleScreenBody(
     navigateToScheduleUpdate: (Int) -> Unit,
     examScheduleViewModel: ExamHomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    contentPadding: PaddingValues = PaddingValues(0.dp)
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    selectedDate: LocalDate
 ) {
     val examHomeUiState by examScheduleViewModel.examHomeUiState.collectAsState()
-    val selectedDate by remember { mutableStateOf(LocalDate.now()) }
     val startOfWeek = selectedDate.with(DayOfWeek.MONDAY)
-
-    // Filter exams to only include those within the current week
-    val examsThisWeek = examHomeUiState.examScheduleList.filter {
-        val examDate = LocalDate.parse(it.date, DateTimeFormatter.ofPattern("MMM dd, yyyy"))
-        examDate >= startOfWeek && examDate <= startOfWeek.plusDays(5)
-    }
 
     Column(
         modifier = Modifier
@@ -169,8 +151,9 @@ fun ExamScheduleScreenBody(
                         val currentDay = startOfWeek.plusDays(dayOffset.toLong())
                         val timeSlotStart = LocalTime.of(hour, half * 30)
                         val timeSlotEnd = timeSlotStart.plusMinutes(30)
-                        val examForThisTime = examsThisWeek.firstOrNull {
-                            it.day == currentDay.dayOfWeek.name.take(2) && // Check if the day matches
+                        val examForThisTime = examHomeUiState.examScheduleList.firstOrNull {
+                            it.day == currentDay.dayOfWeek.name.take(3) && // Check if the day matches
+                                    LocalDate.parse(it.date, DateTimeFormatter.ofPattern("MMM dd, yyyy")) == currentDay && // Check if the date matches
                                     (it.time.isBefore(timeSlotEnd) && it.timeEnd.isAfter(timeSlotStart))
                         }
                         val borderColor = examForThisTime?.let { ColorPalette.getColorEntry(it.colorName).backgroundColor } ?: Color.Black

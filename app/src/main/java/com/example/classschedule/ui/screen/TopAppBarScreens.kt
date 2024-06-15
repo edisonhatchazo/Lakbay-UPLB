@@ -1,11 +1,10 @@
 package com.example.classschedule.ui.screen
 
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -23,8 +22,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.example.classschedule.R
+import com.example.classschedule.algorithm.CustomDatePickerDialog
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -136,8 +136,6 @@ fun ScheduleScreenTopAppBar(
                 )
             }
 
-
-
             IconButton(
                 onClick = { /*TODO*/ }
             ) {
@@ -145,6 +143,103 @@ fun ScheduleScreenTopAppBar(
                     imageVector = Icons.Filled.Info,
                     contentDescription = stringResource(R.string.about),
                     tint = Color.White
+                )
+            }
+        },
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ExamScheduleScreenTopAppBar(
+    title:String,
+    canNavigateBack: Boolean,
+    modifier: Modifier = Modifier,
+    navigateToScheduleEntry: () -> Unit,
+    navigateToClassHome: () -> Unit,
+    navigateToExamHome: () -> Unit,
+    navigateUp: () -> Unit = {},
+    examDates: List<LocalDate>,
+    selectedDate: LocalDate,
+    onDateSelected: (LocalDate) -> Unit
+){
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    var showMenu  by remember { mutableStateOf(false) }
+    var showDatePicker by remember { mutableStateOf(false) }
+    TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
+        title = { Text( title,color = Color.White)},
+        modifier = modifier,
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            if(canNavigateBack){
+                IconButton(onClick = navigateUp) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription  = stringResource(R.string.back_button),
+                        tint = Color.White
+                    )
+                }
+            }
+        },
+        actions = {
+            IconButton(
+                onClick = { showMenu = !showMenu}
+            ){
+                Icon(
+                    imageVector = Icons.Filled.ArrowDropDown,
+                    contentDescription = "Menu",
+                    tint = Color.White
+                )
+            }
+            DropdownMenu(
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false }
+            ) {
+                DropdownMenuItem(
+                    onClick = {
+                        navigateToClassHome()
+                        showMenu = false
+                    },
+                    text = {Text("Class")}
+                )
+                DropdownMenuItem(
+                    onClick = {
+                        navigateToExamHome()
+                        showMenu = false
+                    },
+                    text = {Text("Exam")}
+                )
+            }
+
+            IconButton(
+                onClick = navigateToScheduleEntry
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription =  stringResource(R.string.class_entry_title),
+                    tint = Color.Yellow
+                )
+            }
+
+            IconButton(
+                onClick = { showDatePicker = true }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.DateRange,
+                    contentDescription = stringResource(R.string.date_select),
+                    tint = Color.White
+                )
+            }
+            if (showDatePicker) {
+                CustomDatePickerDialog(
+                    initialDate = selectedDate,
+                    onDateSelected = { date ->
+                        onDateSelected(date)
+                        showDatePicker = false
+                    },
+                    onDismiss = { showDatePicker = false },
+                    examDates = examDates
                 )
             }
         },
@@ -179,7 +274,7 @@ fun DetailsScreenTopAppBar(
         actions = {
 
             IconButton(
-                onClick = { /*TODO*/ }
+                onClick = {/* To Do Later*/}
             ) {
                 Icon(
                     imageVector = Icons.Filled.Info,
