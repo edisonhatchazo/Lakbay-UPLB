@@ -1,9 +1,9 @@
 package com.example.classschedule.ui.screen
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
+import com.example.classschedule.ui.building.BuildingApp
 
 @Composable
-fun BuildingScreen(navController: NavController){
-    ScreenContent(title = "Building")
+fun BuildingScreen() {
+    BuildingApp()
 }

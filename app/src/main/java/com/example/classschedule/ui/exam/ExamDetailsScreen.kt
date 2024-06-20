@@ -38,7 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
 import com.example.classschedule.data.ExamSchedule
-import com.example.classschedule.ui.AppViewModelProvider
+import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.DetailsScreenTopAppBar
 import com.example.classschedule.ui.theme.ColorPalette

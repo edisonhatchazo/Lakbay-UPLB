@@ -67,6 +67,12 @@ dependencies {
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.material)
+    implementation(libs.maps.compose)
+    implementation(libs.play.services.maps)
+    implementation(libs.maps.ktx)
+    implementation(libs.ui)
+    implementation(libs.accompanist.permissions)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

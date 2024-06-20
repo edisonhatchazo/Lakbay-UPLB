@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
 import com.example.classschedule.data.ExamSchedule
-import com.example.classschedule.ui.AppViewModelProvider
+import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.ScheduleScreenTopAppBar
 import com.example.classschedule.ui.theme.ColorPalette

@@ -37,7 +37,7 @@ import com.example.classschedule.algorithm.DatePickers
 import com.example.classschedule.algorithm.TimePickerWheel
 import com.example.classschedule.algorithm.calculateExamAvailableEndTimes
 import com.example.classschedule.algorithm.calculateExamAvailableStartTimes
-import com.example.classschedule.ui.AppViewModelProvider
+import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.ScheduleEntryScreenTopAppBar
 import com.example.classschedule.ui.theme.ColorPalette

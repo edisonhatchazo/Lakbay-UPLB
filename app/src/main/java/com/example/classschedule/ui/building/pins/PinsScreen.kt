@@ -1,4 +1,4 @@
-package com.example.classschedule.ui.classes
+package com.example.classschedule.ui.building.pins
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,44 +29,41 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
-import com.example.classschedule.data.ClassSchedule
+import com.example.classschedule.data.Pins
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
-import com.example.classschedule.ui.screen.ScheduleScreenTopAppBar
-import com.example.classschedule.ui.theme.ColorPalette.getColorEntry
+import com.example.classschedule.ui.screen.PinsScreenTopAppBar
 
-object ClassHomeDestination: NavigationDestination {
-    override val route = "class_home"
-    override val titleRes = R.string.app_name
+object PinsHomeDestination: NavigationDestination {
+    override val route = "pins_home"
+    override val titleRes = R.string.my_pins
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ClassHomeScreen(
-    navigateToClassScheduleEntry: () -> Unit,
-    navigateToClassScheduleUpdate: (Int) -> Unit,
-    navigateToExamHomeDestination: () -> Unit,
+fun PinsScreen(
+    navigateToPinsEntry: () -> Unit,
+    navigateToPinsUpdate: (Int) -> Unit,
+    navigateToBuildingHomeDestination: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ClassHomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: PinsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    val homeUiState by viewModel.classHomeUiState.collectAsState()
+    val homeUiState by viewModel.pinsHomeUiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            ScheduleScreenTopAppBar(
-                title = stringResource(R.string.classes),
+            PinsScreenTopAppBar(
+                title = stringResource(R.string.my_pins),
                 canNavigateBack = false,
-                navigateToScheduleEntry = navigateToClassScheduleEntry,
-                navigateToClassHome = {},
-                navigateToExamHome = navigateToExamHomeDestination
+                navigateToPinEntry = navigateToPinsEntry,
+                navigateToBuildingHome = navigateToBuildingHomeDestination
             )
         }
     ){ innerPadding ->
-        HomeBody(
-            classScheduleList = homeUiState.classScheduleList,
-            onClassScheduleClick = navigateToClassScheduleUpdate,
+        PinsHomeBody(
+            pinsList = homeUiState.pinsList,
+            onPinsClick = navigateToPinsUpdate,
             modifier = modifier.fillMaxSize(),
             contentPadding = innerPadding,
         )
@@ -74,9 +71,9 @@ fun ClassHomeScreen(
 }
 
 @Composable
-private fun HomeBody(
-    classScheduleList: List<ClassSchedule>,
-    onClassScheduleClick: (Int) -> Unit,
+private fun PinsHomeBody(
+    pinsList: List<Pins>,
+    onPinsClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ){
@@ -84,17 +81,17 @@ private fun HomeBody(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ){
-        if(classScheduleList.isEmpty()){
+        if(pinsList.isEmpty()){
             Text(
-                text = stringResource(R.string.no_class_description),
+                text = stringResource(R.string.no_pins_description),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(contentPadding)
             )
         }else{
-            ClassList(
-                classScheduleList = classScheduleList,
-                onClassScheduleClick = {onClassScheduleClick(it.id)},
+            PinsList(
+                pinsList = pinsList,
+                onPinsClick = {onPinsClick(it.id)},
                 contentPadding = contentPadding,
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
             )
@@ -103,9 +100,9 @@ private fun HomeBody(
 }
 
 @Composable
-private fun ClassList(
-    classScheduleList: List<ClassSchedule>,
-    onClassScheduleClick: (ClassSchedule) -> Unit,
+private fun PinsList(
+    pinsList: List<Pins>,
+    onPinsClick: (Pins) -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier
 ){
@@ -113,26 +110,24 @@ private fun ClassList(
         modifier = modifier,
         contentPadding = contentPadding
     ) {
-        items(items = classScheduleList, key = {it.id}) { item ->
-            ClassDetails(
-                classSchedule = item,
+        items(items = pinsList, key = {it.id}) { item ->
+            PinsDetails(
+                pin = item,
                 modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.padding_small))
-                    .clickable { onClassScheduleClick(item) })
+                    .clickable { onPinsClick(item) })
         }
     }
 }
 
 @Composable
-private fun ClassDetails(
-    classSchedule: ClassSchedule,
+private fun PinsDetails(
+    pin: Pins,
     modifier: Modifier = Modifier
 ){
-    val colorEntry = getColorEntry(classSchedule.colorName)
     Card(
         modifier = modifier,
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = colorEntry.backgroundColor)
     ) {
         Column(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large)),
@@ -142,9 +137,8 @@ private fun ClassDetails(
                 modifier = Modifier.fillMaxWidth()
             ){
                 Text(
-                    text = classSchedule.title,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = colorEntry.fontColor
+                    text = pin.title,
+                    style = MaterialTheme.typography.titleLarge
                 )
             }
         }

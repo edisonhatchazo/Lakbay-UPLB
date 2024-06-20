@@ -1,4 +1,4 @@
-package com.example.classschedule.ui
+package com.example.classschedule.ui.navigation
 
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
@@ -6,10 +6,14 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.classschedule.ClassScheduleApplication
+import com.example.classschedule.ui.building.pins.PinsDetailsViewModel
+import com.example.classschedule.ui.building.pins.PinsEditViewModel
+import com.example.classschedule.ui.building.pins.PinsEntryViewModel
+import com.example.classschedule.ui.building.pins.PinsViewModel
+import com.example.classschedule.ui.classes.ClassHomeViewModel
 import com.example.classschedule.ui.classes.ClassScheduleDetailsViewModel
 import com.example.classschedule.ui.classes.ClassScheduleEditViewModel
 import com.example.classschedule.ui.classes.ClassScheduleEntryViewModel
-import com.example.classschedule.ui.classes.ClassHomeViewModel
 import com.example.classschedule.ui.exam.ExamDetailsViewModel
 import com.example.classschedule.ui.exam.ExamEditViewModel
 import com.example.classschedule.ui.exam.ExamEntryViewModel
@@ -21,6 +25,7 @@ import com.example.classschedule.ui.home.ScheduleViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory{
+        //Initializers for the Class View Models
         initializer{
             ClassHomeViewModel(classScheduleApplication().container.classScheduleRepository)
         }
@@ -40,6 +45,8 @@ object AppViewModelProvider {
         initializer{
             ClassScheduleEntryViewModel(classScheduleApplication().container.classScheduleRepository)
         }
+
+        //Initializers for Schedule View Models
         initializer {
             ScheduleViewModel(classScheduleApplication().container.classScheduleRepository)
         }
@@ -59,7 +66,7 @@ object AppViewModelProvider {
             ScheduleEntryViewModel(classScheduleApplication().container.classScheduleRepository)
         }
 
-
+        //Initializers for Exam View Models
         initializer{
             ExamHomeViewModel(classScheduleApplication().container.examScheduleRepository)
         }
@@ -83,7 +90,28 @@ object AppViewModelProvider {
             ExamEntryViewModel(classScheduleApplication().container.examScheduleRepository)
         }
 
+        //Initializers for Pins View Models
+        initializer{
+            PinsViewModel(classScheduleApplication().container.pinsRepository)
+        }
 
+        initializer{
+            PinsEditViewModel(
+                this.createSavedStateHandle(),
+                classScheduleApplication().container.pinsRepository
+            )
+        }
+
+        initializer{
+            PinsDetailsViewModel(
+                this.createSavedStateHandle(),
+                classScheduleApplication().container.pinsRepository
+            )
+        }
+
+        initializer {
+            PinsEntryViewModel(classScheduleApplication().container.pinsRepository)
+        }
 
 
 

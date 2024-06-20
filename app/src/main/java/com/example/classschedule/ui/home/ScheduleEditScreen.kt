@@ -18,7 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
 import com.example.classschedule.algorithm.calculateAvailableEndTimes
 import com.example.classschedule.algorithm.calculateAvailableStartTimes
-import com.example.classschedule.ui.AppViewModelProvider
+import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.ScheduleEntryScreenTopAppBar
 import kotlinx.coroutines.launch

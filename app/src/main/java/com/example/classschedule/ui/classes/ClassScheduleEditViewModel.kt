@@ -68,6 +68,4 @@ class ClassScheduleEditViewModel(
             classScheduleRepository.updateClassSchedule(classScheduleUiState.classScheduleDetails.toClass())
         }
     }
-
-
 }

@@ -5,6 +5,7 @@ import android.content.Context
 interface AppContainer {
     val classScheduleRepository: ClassScheduleRepository
     val examScheduleRepository: ExamScheduleRepository
+    val pinsRepository:PinsRepository
 }
 
 class AppDataContainer(private val context: Context): AppContainer{
@@ -17,5 +18,8 @@ class AppDataContainer(private val context: Context): AppContainer{
         OfflineExamScheduleRepository(ExamScheduleDatabase.getDatabase(context).ExamScheduleDao())
     }
 
+    override val pinsRepository: PinsRepository by lazy{
+        OfflinePinsRepository(PinsDatabase.getDatabase(context).PinsDao())
+    }
 
 }
