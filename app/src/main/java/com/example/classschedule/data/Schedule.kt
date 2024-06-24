@@ -36,12 +36,3 @@ data class ExamSchedule (
     val day: String
 )
 
-@Entity(tableName = "pins")
-data class Pins(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    val title: String,
-    val floor: String,
-    val latitude: Double,
-    val longitude: Double
-)

@@ -1,4 +1,4 @@
-package com.example.classschedule.ui.building.pins
+package com.example.classschedule.ui.buildingScreens.pins
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

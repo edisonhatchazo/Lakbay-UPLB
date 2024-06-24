@@ -48,20 +48,3 @@ interface ExamScheduleDao{
     fun getAllExamSchedule(): Flow<List<ExamSchedule>>
 }
 
-@Dao
-interface PinsDao{
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(pins: Pins)
-
-    @Update
-    suspend fun update(pins: Pins)
-
-    @Delete
-    suspend fun delete(pins: Pins)
-
-    @Query("SELECT * from pins where id = :id")
-    fun getPin(id: Int): Flow<Pins>
-
-    @Query("SELECT * from pins ORDER BY title ASC")
-    fun getAllPins(): Flow<List<Pins>>
-}

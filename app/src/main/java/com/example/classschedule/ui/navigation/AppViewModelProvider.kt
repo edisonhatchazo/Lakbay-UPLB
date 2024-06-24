@@ -6,10 +6,13 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.classschedule.ClassScheduleApplication
-import com.example.classschedule.ui.building.pins.PinsDetailsViewModel
-import com.example.classschedule.ui.building.pins.PinsEditViewModel
-import com.example.classschedule.ui.building.pins.PinsEntryViewModel
-import com.example.classschedule.ui.building.pins.PinsViewModel
+import com.example.classschedule.ui.buildingScreens.pins.PinsDetailsViewModel
+import com.example.classschedule.ui.buildingScreens.pins.PinsEditViewModel
+import com.example.classschedule.ui.buildingScreens.pins.PinsEntryViewModel
+import com.example.classschedule.ui.buildingScreens.pins.PinsViewModel
+import com.example.classschedule.ui.buildingScreens.uplb.BuildingDetailsViewModel
+import com.example.classschedule.ui.buildingScreens.uplb.BuildingHomeViewModel
+import com.example.classschedule.ui.buildingScreens.uplb.RoomDetailsViewModel
 import com.example.classschedule.ui.classes.ClassHomeViewModel
 import com.example.classschedule.ui.classes.ClassScheduleDetailsViewModel
 import com.example.classschedule.ui.classes.ClassScheduleEditViewModel
@@ -113,6 +116,22 @@ object AppViewModelProvider {
             PinsEntryViewModel(classScheduleApplication().container.pinsRepository)
         }
 
+        initializer{
+            BuildingHomeViewModel(classScheduleApplication().container.buildingRepository)
+        }
+
+        initializer {
+            BuildingDetailsViewModel(
+                this.createSavedStateHandle(),
+                classScheduleApplication().container.buildingRepository
+            )
+        }
+        initializer{
+            RoomDetailsViewModel(
+                this.createSavedStateHandle(),
+                classScheduleApplication().container.buildingRepository
+            )
+        }
 
 
     }

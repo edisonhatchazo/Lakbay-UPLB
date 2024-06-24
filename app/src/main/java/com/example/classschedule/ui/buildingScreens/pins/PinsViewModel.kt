@@ -1,4 +1,4 @@
-package com.example.classschedule.ui.building.pins
+package com.example.classschedule.ui.buildingScreens.pins
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

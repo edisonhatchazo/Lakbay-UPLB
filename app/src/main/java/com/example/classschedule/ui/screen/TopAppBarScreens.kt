@@ -1,5 +1,6 @@
 package com.example.classschedule.ui.screen
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -23,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.example.classschedule.R
 import com.example.classschedule.algorithm.CustomDatePickerDialog
 import com.google.maps.android.compose.MapType
@@ -40,7 +42,7 @@ fun ScheduleEntryScreenTopAppBar(
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
         title = { Text( title,color = Color.White)},
-        modifier = modifier,
+        modifier = modifier.height(60.dp),
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if(canNavigateBack){
@@ -85,7 +87,7 @@ fun ScheduleScreenTopAppBar(
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
         title = { Text( title,color = Color.White)},
-        modifier = modifier,
+        modifier = modifier.height(60.dp),
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if(canNavigateBack){
@@ -171,7 +173,7 @@ fun ExamScheduleScreenTopAppBar(
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
         title = { Text( title,color = Color.White)},
-        modifier = modifier,
+        modifier = modifier.height(55.dp),
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if(canNavigateBack){
@@ -260,7 +262,7 @@ fun DetailsScreenTopAppBar(
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
         title = { Text( title,color = Color.White)},
-        modifier = modifier,
+        modifier = modifier.height(60.dp),
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if(canNavigateBack){
@@ -303,7 +305,7 @@ fun BuildingsScreenTopAppBar(
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
         title = { Text( title,color = Color.White)},
-        modifier = modifier,
+        modifier = modifier.height(60.dp),
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if(canNavigateBack){
@@ -373,7 +375,7 @@ fun PinsScreenTopAppBar(
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
         title = { Text( title,color = Color.White)},
-        modifier = modifier,
+        modifier = modifier.height(60.dp),
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if(canNavigateBack){
@@ -453,7 +455,7 @@ fun CoordinateEntryScreenTopAppBar(
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
         title = { Text(title, color = Color.White) },
-        modifier = modifier,
+        modifier = modifier.height(60.dp),
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if (canNavigateBack) {
@@ -501,3 +503,4 @@ fun CoordinateEntryScreenTopAppBar(
         },
     )
 }
+

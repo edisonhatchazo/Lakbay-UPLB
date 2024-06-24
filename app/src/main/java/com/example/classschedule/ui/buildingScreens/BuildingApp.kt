@@ -1,4 +1,4 @@
-package com.example.classschedule.ui.building
+package com.example.classschedule.ui.buildingScreens
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController

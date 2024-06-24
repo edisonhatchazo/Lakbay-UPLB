@@ -7,16 +7,20 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.classschedule.ui.building.pins.PinsDetailsDestination
-import com.example.classschedule.ui.building.pins.PinsDetailsScreen
-import com.example.classschedule.ui.building.pins.PinsEditDestination
-import com.example.classschedule.ui.building.pins.PinsEditScreen
-import com.example.classschedule.ui.building.pins.PinsEntryDestination
-import com.example.classschedule.ui.building.pins.PinsEntryScreen
-import com.example.classschedule.ui.building.pins.PinsHomeDestination
-import com.example.classschedule.ui.building.pins.PinsScreen
-import com.example.classschedule.ui.building.uplb.BuildingHomeDestination
-import com.example.classschedule.ui.building.uplb.BuildingHomeScreen
+import com.example.classschedule.ui.buildingScreens.pins.PinsDetailsDestination
+import com.example.classschedule.ui.buildingScreens.pins.PinsDetailsScreen
+import com.example.classschedule.ui.buildingScreens.pins.PinsEditDestination
+import com.example.classschedule.ui.buildingScreens.pins.PinsEditScreen
+import com.example.classschedule.ui.buildingScreens.pins.PinsEntryDestination
+import com.example.classschedule.ui.buildingScreens.pins.PinsEntryScreen
+import com.example.classschedule.ui.buildingScreens.pins.PinsHomeDestination
+import com.example.classschedule.ui.buildingScreens.pins.PinsScreen
+import com.example.classschedule.ui.buildingScreens.uplb.BuildingDetailsDestination
+import com.example.classschedule.ui.buildingScreens.uplb.BuildingDetailsScreen
+import com.example.classschedule.ui.buildingScreens.uplb.BuildingHomeDestination
+import com.example.classschedule.ui.buildingScreens.uplb.BuildingHomeScreen
+import com.example.classschedule.ui.buildingScreens.uplb.RoomDetailsDestination
+import com.example.classschedule.ui.buildingScreens.uplb.RoomDetailsScreen
 
 @Composable
 fun BuildingNavHost(
@@ -30,12 +34,30 @@ fun BuildingNavHost(
     ) {
         composable(route = BuildingHomeDestination.route) {
             BuildingHomeScreen(
-                navigateToPinsHomeDestination = { navController.navigate(PinsHomeDestination.route) }
+                navigateToBuildingDetails = { navController.navigate("${BuildingDetailsDestination.route}/${it}") },
+                navigateToPinsHomeDestination = {navController.navigate(PinsHomeDestination.route) }
             )
         }
 
+        composable(
+            route = BuildingDetailsDestination.routeWithArgs,
+            arguments = listOf(navArgument(BuildingDetailsDestination.BUILDINGIDARG){
+                type = NavType.IntType
+            })
+        ){
+            BuildingDetailsScreen(
+                navigateToRoomDetails = {navController.navigate("${RoomDetailsDestination.route}/${it}") },
+                navigateBack = { navController.navigateUp() })
+        }
 
-
+        composable(
+            route = RoomDetailsDestination.routeWithArgs,
+            arguments = listOf(navArgument(RoomDetailsDestination.ROOMIDARG){
+                type = NavType.IntType
+            })
+        ){
+            RoomDetailsScreen(navigateBack = {navController.navigateUp()})
+        }
 
 
         composable(route = PinsHomeDestination.route){

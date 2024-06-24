@@ -10,9 +10,12 @@
     <string name="date_select">Select Date</string>
     <string name="location">Location</string>
     <string name="teacher">Teacher</string>
-    <string name="building_title">Buildings</string>
+    <string name="buildings_title">Buildings</string>
+    <string name="building_title">Building</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
+    <string name="name">Name</string>
+    <string name="abbreviation">Abbreviation</string>
     <string name="my_pins">My Coordinate Pins</string>
     <string name="floor">Floor</string>
     <string name="title">Title</string>
@@ -33,6 +36,8 @@
     <string name="class_detail_title">Class Schedule Details</string>
     <string name="exam_detail_title">Exams Schedule Details</string>
     <string name="pin_detail_title">Coordinate Pin Details</string>
+    <string name="building_detail_title">Building Details</string>
+    <string name="room_detail_title">Room Details</string>
     <string name="class_entry_title">Add Class</string>
     <string name="exam_entry_title">Add Exam</string>
     <string name="pin_entry_title">Add a Coordinate</string>

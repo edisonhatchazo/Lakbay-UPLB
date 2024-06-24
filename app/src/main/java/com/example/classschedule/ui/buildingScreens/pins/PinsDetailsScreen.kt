@@ -1,4 +1,4 @@
-package com.example.classschedule.ui.building.pins
+package com.example.classschedule.ui.buildingScreens.pins
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
@@ -210,8 +210,6 @@ fun PinDetails(
 
         }
     }
-    Text(pin.latitude.toString())
-    Text(pin.longitude.toString())
     Box(
         modifier = Modifier.height(300.dp).fillMaxWidth()
     ) {

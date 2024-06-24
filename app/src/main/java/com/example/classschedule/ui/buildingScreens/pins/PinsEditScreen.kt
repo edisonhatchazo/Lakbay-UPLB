@@ -1,4 +1,4 @@
-package com.example.classschedule.ui.building.pins
+package com.example.classschedule.ui.buildingScreens.pins
 
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding

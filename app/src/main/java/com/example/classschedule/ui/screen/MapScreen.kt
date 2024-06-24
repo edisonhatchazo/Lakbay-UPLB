@@ -10,7 +10,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import com.example.classschedule.ui.theme.ClassScheduleTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -32,7 +31,6 @@ enum class CustomMapType(val displayName: String, val mapType: MapType) {
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun MapScreen() {
-    val context = LocalContext.current
     val permissionsState = rememberMultiplePermissionsState(
         listOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
