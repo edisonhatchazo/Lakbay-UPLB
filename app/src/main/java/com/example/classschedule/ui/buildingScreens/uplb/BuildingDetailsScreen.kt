@@ -93,6 +93,7 @@ private fun BuildingDetailsBody(
           building = buildingDetailsUiState.buildingDetails.toBuilding(),
           modifier = Modifier.fillMaxWidth()
       )
+      Text(text = stringResource(R.string.rooms), fontWeight = FontWeight.Bold)
       LazyVerticalGrid(
           columns = GridCells.Fixed(2),
           modifier = Modifier.fillMaxWidth()
