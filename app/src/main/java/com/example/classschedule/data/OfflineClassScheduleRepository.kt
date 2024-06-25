@@ -7,6 +7,8 @@ class OfflineClassScheduleRepository(private val classScheduleDao: ClassSchedule
 
     override fun getClassSchedule(id: Int): Flow<ClassSchedule?> = classScheduleDao.getClassSchedule(id)
 
+    override fun getLocation(id: Int): Flow<ClassSchedule?> = classScheduleDao.getLocation(id)
+
     override suspend fun insertClassSchedule(classSchedule: ClassSchedule) = classScheduleDao.insert(classSchedule)
 
     override suspend fun updateClassSchedule(classSchedule: ClassSchedule) = classScheduleDao.update(classSchedule)

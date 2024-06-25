@@ -1,17 +1,17 @@
 package com.example.classschedule.ui.classes
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.classschedule.data.ClassSchedule
 import com.example.classschedule.data.ClassScheduleRepository
-import java.time.LocalTime
-import androidx.compose.runtime.State
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import java.time.LocalTime
 
 class ClassScheduleEntryViewModel(private val classScheduleRepository: ClassScheduleRepository) : ViewModel() {
     var classScheduleUiState by mutableStateOf(
@@ -49,7 +49,7 @@ class ClassScheduleEntryViewModel(private val classScheduleRepository: ClassSche
 
     private fun validateInput(uiState: ClassScheduleDetails = classScheduleUiState.classScheduleDetails): Boolean {
         return with(uiState) {
-            title.isNotBlank() && location.isNotBlank() && days.isNotEmpty() && time != LocalTime.MIDNIGHT && timeEnd != LocalTime.MIDNIGHT
+            title.isNotBlank() && roomId != 0 && location.isNotBlank() && days.isNotEmpty() && time != LocalTime.MIDNIGHT && timeEnd != LocalTime.MIDNIGHT
         }
     }
 
@@ -76,7 +76,7 @@ data class ClassScheduleDetails(
     val timeEnd: LocalTime = LocalTime.of(0, 0),
     val colorName: String = "",
     val type: String = "",
-    //val date: String? = ""
+    val roomId: Int = 0
 )
 
 fun ClassScheduleDetails.toClass(): ClassSchedule = ClassSchedule(
@@ -87,7 +87,8 @@ fun ClassScheduleDetails.toClass(): ClassSchedule = ClassSchedule(
     days = days.joinToString(", "),  // Convert list of days to a comma-separated string
     time = time,
     timeEnd = timeEnd,
-    colorName = colorName
+    colorName = colorName,
+    roomId = roomId
 )
 
 fun ClassSchedule.toClassScheduleDetails(): ClassScheduleDetails = ClassScheduleDetails(
@@ -99,6 +100,7 @@ fun ClassSchedule.toClassScheduleDetails(): ClassScheduleDetails = ClassSchedule
     time = time,
     timeEnd = timeEnd,
     colorName = colorName,
+    roomId = roomId
 )
 
 fun ClassSchedule.toClassScheduleUiState(isEntryValid: Boolean = false): ClassScheduleUiState = ClassScheduleUiState(

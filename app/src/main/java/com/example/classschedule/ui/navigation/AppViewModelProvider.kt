@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.classschedule.ClassScheduleApplication
+import com.example.classschedule.algorithm.SearchViewModel
 import com.example.classschedule.ui.buildingScreens.pins.PinsDetailsViewModel
 import com.example.classschedule.ui.buildingScreens.pins.PinsEditViewModel
 import com.example.classschedule.ui.buildingScreens.pins.PinsEntryViewModel
@@ -133,6 +134,11 @@ object AppViewModelProvider {
             )
         }
 
+        initializer {
+            SearchViewModel(
+                classScheduleApplication().container.buildingRepository
+            )
+        }
 
     }
 }

@@ -25,6 +25,10 @@ interface ClassScheduleDao {
     @Query("SELECT * from classes WHERE days LIKE '%' || :day || '%' ORDER BY title ASC")
     fun getClassScheduleByDay(day: String): Flow<List<ClassSchedule>>
 
+    @Query("SELECT * FROM classes where roomId = :roomId")
+    fun getLocation(roomId: Int): Flow<ClassSchedule>
+
+
     @Query("SELECT * from classes ORDER BY title ASC")
     fun getAllClassSchedule(): Flow<List<ClassSchedule>>
 }
@@ -43,6 +47,8 @@ interface ExamScheduleDao{
     @Query("SELECT * from exams WHERE id = :id")
     fun getExamSchedule(id: Int): Flow<ExamSchedule>
 
+    @Query("SELECT * FROM exams where roomId = :roomId")
+    fun getLocation(roomId: Int): Flow<ExamSchedule>
 
     @Query("SELECT * from exams ORDER BY title ASC")
     fun getAllExamSchedule(): Flow<List<ExamSchedule>>

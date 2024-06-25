@@ -48,7 +48,7 @@ class ScheduleEntryViewModel(private val classScheduleRepository: ClassScheduleR
     }
     private fun validateInput(uiState: ScheduleDetails = scheduleUiState.scheduleDetails): Boolean {
         return with(uiState) {
-            title.isNotBlank() && location.isNotBlank() && (days.isNotEmpty() || type == "exam") && time != LocalTime.MIDNIGHT && timeEnd != LocalTime.MIDNIGHT
+            title.isNotBlank() && roomId != 0 && location.isNotBlank() && (days.isNotEmpty() || type == "exam") && time != LocalTime.MIDNIGHT && timeEnd != LocalTime.MIDNIGHT
         }
     }
 
@@ -75,7 +75,7 @@ data class ScheduleDetails(
     val timeEnd: LocalTime = LocalTime.of(0, 0),
     val colorName: String = "",
     val type: String = "",
-    //val date: String? = ""
+    val roomId: Int = 0
 )
 
 fun ScheduleDetails.toClass(): ClassSchedule = ClassSchedule(
@@ -87,6 +87,7 @@ fun ScheduleDetails.toClass(): ClassSchedule = ClassSchedule(
     time = time,
     timeEnd = timeEnd,
     colorName = colorName,
+    roomId = roomId
 )
 
 fun ClassSchedule.toScheduleUiState(isEntryValid: Boolean = false): ScheduleUiState = ScheduleUiState(
@@ -103,4 +104,5 @@ fun ClassSchedule.toScheduleDetails(): ScheduleDetails = ScheduleDetails(
     time = time,
     timeEnd = timeEnd,
     colorName = colorName,
+    roomId = roomId
 )

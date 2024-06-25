@@ -12,4 +12,6 @@ interface ClassScheduleRepository {
     suspend fun deleteClassSchedule(classSchedule: ClassSchedule)
 
     suspend fun updateClassSchedule(classSchedule: ClassSchedule)
+
+    fun getLocation(id: Int): Flow<ClassSchedule?>
 }

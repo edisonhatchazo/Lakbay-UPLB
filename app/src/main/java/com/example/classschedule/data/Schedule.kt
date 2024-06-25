@@ -10,6 +10,7 @@ data class ClassSchedule (
     val id: Int = 0,
     val title: String,
     val teacher: String,
+    val roomId: Int,
     val location: String,
     val time: LocalTime,
     val timeEnd: LocalTime,
@@ -28,6 +29,7 @@ data class ExamSchedule (
     val id: Int = 0,
     val title: String,
     val teacher: String,
+    val roomId: Int,
     val location: String,
     val date: String,  // Store date as a string or LocalDate
     val time: LocalTime,

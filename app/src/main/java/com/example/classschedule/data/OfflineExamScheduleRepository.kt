@@ -7,6 +7,8 @@ class OfflineExamScheduleRepository(private val examScheduleDao: ExamScheduleDao
 
     override fun getExamSchedule(id: Int): Flow<ExamSchedule?> = examScheduleDao.getExamSchedule(id)
 
+    override fun getLocation(id: Int): Flow<ExamSchedule?> = examScheduleDao.getLocation(id)
+
     override suspend fun insertExamSchedule(examSchedule: ExamSchedule) = examScheduleDao.insert(examSchedule)
 
     override suspend fun updateExamSchedule(examSchedule: ExamSchedule) = examScheduleDao.update(examSchedule)

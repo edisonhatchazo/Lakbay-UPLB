@@ -27,7 +27,7 @@ class ExamEntryViewModel(private val examScheduleRepository: ExamScheduleReposit
 
     private fun validateInput(uiState: ExamScheduleDetails = examScheduleUiState.examScheduleDetails): Boolean {
         return with(uiState) {
-            title.isNotBlank() && location.isNotBlank() && day.isNotBlank() && time != LocalTime.MIDNIGHT && timeEnd != LocalTime.MIDNIGHT
+            title.isNotBlank() && roomId != 0 && location.isNotBlank() && day.isNotBlank() && time != LocalTime.MIDNIGHT && timeEnd != LocalTime.MIDNIGHT
         }
     }
 
@@ -54,6 +54,7 @@ data class ExamScheduleDetails(
     val timeEnd: LocalTime = LocalTime.of(0, 0),
     val colorName: String = "",
     val date: String = "",
+    val roomId: Int = 0
 
 )
 
@@ -66,7 +67,8 @@ fun ExamScheduleDetails.toExam(): ExamSchedule = ExamSchedule(
     time = time,
     timeEnd = timeEnd,
     colorName = colorName,
-    day = day
+    day = day,
+    roomId = roomId
 )
 
 fun ExamSchedule.toExamScheduleDetails(): ExamScheduleDetails = ExamScheduleDetails(
@@ -78,7 +80,8 @@ fun ExamSchedule.toExamScheduleDetails(): ExamScheduleDetails = ExamScheduleDeta
     time = time,
     timeEnd = timeEnd,
     colorName = colorName,
-    day = day
+    day = day,
+    roomId = roomId
 )
 
 fun ExamSchedule.toExamScheduleUiState(isEntryValid: Boolean = false): ExamScheduleUiState = ExamScheduleUiState(

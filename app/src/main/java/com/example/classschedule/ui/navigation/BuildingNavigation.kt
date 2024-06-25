@@ -35,7 +35,8 @@ fun BuildingNavHost(
         composable(route = BuildingHomeDestination.route) {
             BuildingHomeScreen(
                 navigateToBuildingDetails = { navController.navigate("${BuildingDetailsDestination.route}/${it}") },
-                navigateToPinsHomeDestination = {navController.navigate(PinsHomeDestination.route) }
+                navigateToPinsHomeDestination = {navController.navigate(PinsHomeDestination.route) },
+                navigateToRoomDetails = {navController.navigate("${RoomDetailsDestination.route}/${it}") },
             )
         }
 

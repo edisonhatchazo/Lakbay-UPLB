@@ -1,22 +1,34 @@
 package com.example.classschedule.ui.screen
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,8 +37,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
 import com.example.classschedule.algorithm.CustomDatePickerDialog
+import com.example.classschedule.algorithm.SearchViewModel
+import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.google.maps.android.compose.MapType
 import java.time.LocalDate
 
@@ -293,71 +308,152 @@ fun DetailsScreenTopAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BuildingsScreenTopAppBar(
-    title:String,
+    title: String,
     canNavigateBack: Boolean,
     modifier: Modifier = Modifier,
     navigateToPinsHome: () -> Unit,
+    navigateToRoomDetails: (Int) -> Unit,
+    navigateToBuildingDetails: (Int) -> Unit,
     navigateUp: () -> Unit = {},
-
-    ){
+    searchViewModel: SearchViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    var showMenu  by remember { mutableStateOf(false) }
-    TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
-        title = { Text( title,color = Color.White)},
-        modifier = modifier.height(60.dp),
-        scrollBehavior = scrollBehavior,
-        navigationIcon = {
-            if(canNavigateBack){
-                IconButton(onClick = navigateUp) {
+    var showMenu by remember { mutableStateOf(false) }
+    var showSearchBar by remember { mutableStateOf(false) }
+    val buildingSuggestions by searchViewModel.buildingSuggestions.collectAsState()
+    val roomSuggestions by searchViewModel.roomSuggestions.collectAsState()
+
+    Column {
+        TopAppBar(
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
+            title = {
+                if (showSearchBar) {
+                    TextField(
+                        value = searchViewModel.searchQuery,
+                        onValueChange = { query -> searchViewModel.updateSearchQuery(query) },
+                        placeholder = { Text("Search...") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                } else {
+                    Text(title, color = Color.White)
+                }
+            },
+            modifier = modifier,
+            scrollBehavior = scrollBehavior,
+            navigationIcon = {
+                if (canNavigateBack) {
+                    IconButton(onClick = navigateUp) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back_button),
+                            tint = Color.White
+                        )
+                    }
+                }
+            },
+            actions = {
+                if (showSearchBar) {
+                    IconButton(onClick = { showSearchBar = false }) {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = stringResource(R.string.close_search),
+                            tint = Color.White
+                        )
+                    }
+                } else {
+                    IconButton(onClick = { showSearchBar = true }) {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = stringResource(R.string.search),
+                            tint = Color.White
+                        )
+                    }
+                }
+                IconButton(
+                    onClick = { showMenu = !showMenu }
+                ) {
                     Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription  = stringResource(R.string.back_button),
+                        imageVector = Icons.Filled.ArrowDropDown,
+                        contentDescription = "Menu",
                         tint = Color.White
                     )
                 }
-            }
-        },
-        actions = {
-            IconButton(
-                onClick = { showMenu = !showMenu}
-            ){
-                Icon(
-                    imageVector = Icons.Filled.ArrowDropDown,
-                    contentDescription = "Menu",
-                    tint = Color.White
-                )
-            }
-            DropdownMenu(
-                expanded = showMenu,
-                onDismissRequest = { showMenu = false }
-            ) {
-                DropdownMenuItem(
-                    onClick = {
-                        showMenu = false
-                    },
-                    text = {Text("UPLB Buildings")}
-                )
-                DropdownMenuItem(
-                    onClick = {
-                        navigateToPinsHome()
-                        showMenu = false
-                    },
-                    text = {Text("My Pins")}
-                )
-            }
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        onClick = {
+                            showMenu = false
+                        },
+                        text = { Text("UPLB Buildings") }
+                    )
+                    DropdownMenuItem(
+                        onClick = {
+                            navigateToPinsHome()
+                            showMenu = false
+                        },
+                        text = { Text("My Pins") }
+                    )
+                }
+                IconButton(
+                    onClick = { /*TODO*/ }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Info,
+                        contentDescription = stringResource(R.string.about),
+                        tint = Color.White
+                    )
+                }
+            },
+        )
 
-            IconButton(
-                onClick = { /*TODO*/ }
+        if (showSearchBar && (buildingSuggestions.isNotEmpty() || roomSuggestions.isNotEmpty())) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .heightIn(max = 400.dp) // Adjust height as needed
             ) {
-                Icon(
-                    imageVector = Icons.Filled.Info,
-                    contentDescription = stringResource(R.string.about),
-                    tint = Color.White
-                )
+                LazyColumn {
+                    if (buildingSuggestions.isNotEmpty()) {
+                        item {
+                            Text(
+                                text = "Buildings",
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            )
+                        }
+                        items(buildingSuggestions) { building ->
+                            DropdownMenuItem(
+                                onClick = {
+                                    navigateToBuildingDetails(building.buildingId)
+                                    showSearchBar = false
+                                },
+                                text = { Text(building.title) }
+                            )
+                        }
+                    }
+                    if (roomSuggestions.isNotEmpty()) {
+                        item {
+                            Text(
+                                text = "Rooms",
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                            )
+                        }
+                        items(roomSuggestions) { room ->
+                            DropdownMenuItem(
+                                onClick = {
+                                    navigateToRoomDetails(room.roomId)
+                                    showSearchBar = false
+                                },
+                                text = { Text(room.title) }
+                            )
+                        }
+                    }
+                }
             }
-        },
-    )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

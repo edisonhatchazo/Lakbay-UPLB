@@ -25,6 +25,8 @@
     <string name="map">Map</string>
     <string name="map_type">Map Type</string>
     <string name="attention">Attention</string>
+    <string name="search">Search</string>
+    <string name="close_search">Close Search</string>
     <string name="back_button">Back</string>
     <string name="delete">Delete</string>
     <string name="delete_question">Are you sure you want to delete?</string>

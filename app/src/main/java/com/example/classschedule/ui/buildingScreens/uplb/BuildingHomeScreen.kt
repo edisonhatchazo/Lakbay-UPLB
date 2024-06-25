@@ -37,6 +37,7 @@ object BuildingHomeDestination: NavigationDestination {
 fun BuildingHomeScreen(
     modifier: Modifier = Modifier,
     navigateToPinsHomeDestination: () -> Unit,
+    navigateToRoomDetails: (Int) -> Unit,
     navigateToBuildingDetails: (Int) -> Unit,
     viewModel: BuildingHomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -48,6 +49,8 @@ fun BuildingHomeScreen(
                 title = stringResource(BuildingHomeDestination.titleRes),
                 canNavigateBack = false,
                 navigateToPinsHome = navigateToPinsHomeDestination,
+                navigateToRoomDetails = navigateToRoomDetails,
+                navigateToBuildingDetails = navigateToBuildingDetails
             )
         }
     ){innerPadding->

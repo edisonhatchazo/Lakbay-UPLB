@@ -16,6 +16,7 @@ class BuildingDetailsViewModel(
     private val buildingRepository: BuildingRepository
 ): ViewModel() {
     private val buildingId: Int = checkNotNull(savedStateHandle[BuildingDetailsDestination.BUILDINGIDARG])
+
     val uiState: StateFlow<BuildingDetailsUiState> =
         buildingRepository.getBuilding(buildingId)
             .filterNotNull()

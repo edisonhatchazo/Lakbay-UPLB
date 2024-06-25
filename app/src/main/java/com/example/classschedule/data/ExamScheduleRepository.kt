@@ -7,6 +7,7 @@ interface ExamScheduleRepository {
 
     fun getExamSchedule(id: Int): Flow<ExamSchedule?>
 
+    fun getLocation(id: Int): Flow<ExamSchedule?>
     suspend fun insertExamSchedule(examSchedule: ExamSchedule)
 
     suspend fun deleteExamSchedule(examSchedule: ExamSchedule)
