@@ -27,6 +27,7 @@ import com.example.classschedule.data.Building
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.BuildingsScreenTopAppBar
+import com.example.classschedule.ui.theme.CollegeColorPalette
 
 object BuildingHomeDestination: NavigationDestination {
     override val route = "building_home"
@@ -104,9 +105,11 @@ private fun BuildingDetails(
     building: Building,
     modifier: Modifier = Modifier
 ){
+    val colorEntry = CollegeColorPalette.getColorEntry(building.college)
     Card(
         modifier = modifier,
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = colorEntry.backgroundColor)
     ){
         Column(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large)),
@@ -116,11 +119,11 @@ private fun BuildingDetails(
                 modifier = Modifier.fillMaxWidth()
             ){
                 Text(
-                    text = building.title,
-                    style = MaterialTheme.typography.titleLarge
+                    text = building.name,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = colorEntry.fontColor
                 )
             }
         }
     }
-
 }

@@ -10,6 +10,7 @@
     <string name="date_select">Select Date</string>
     <string name="location">Location</string>
     <string name="teacher">Teacher</string>
+    <string name="college">College</string>
     <string name="buildings_title">Buildings</string>
     <string name="building_title">Building</string>
     <string name="latitude">Latitude</string>

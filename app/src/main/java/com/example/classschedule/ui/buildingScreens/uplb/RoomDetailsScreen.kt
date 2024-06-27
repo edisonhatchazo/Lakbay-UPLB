@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +36,8 @@ import com.example.classschedule.R
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.CoordinateEntryScreenTopAppBar
+import com.example.classschedule.ui.theme.CollegeColorPalette
+import com.example.classschedule.ui.theme.ColorEntry
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -55,11 +58,14 @@ object RoomDetailsDestination : NavigationDestination {
 fun RoomDetailsScreen(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: RoomDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: RoomDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
+
     val roomUiState by viewModel.classroomUiState.collectAsState()
     val room = roomUiState.classroomDetails
+    val buildingCollege = roomUiState.buildingCollege
     var mapType by remember { mutableStateOf(MapType.NORMAL) }
+
     Scaffold(
         topBar = {
             CoordinateEntryScreenTopAppBar(
@@ -73,6 +79,7 @@ fun RoomDetailsScreen(
         ClassroomDetailsBody(
             mapType = mapType,
             classroomDetails = room,
+            buildingCollege = buildingCollege,
             modifier = Modifier
                 .padding(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
@@ -87,18 +94,21 @@ fun RoomDetailsScreen(
 @Composable
 private fun ClassroomDetailsBody(
     classroomDetails: ClassroomDetails,
+    buildingCollege: String,
     mapType: MapType,
     modifier: Modifier = Modifier
 ){
+
+    val colorEntry = CollegeColorPalette.getColorEntry(buildingCollege)
     Column(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
     ) {
-
         ClassroomDetailed(
+            colorEntry = colorEntry,
             classroom = classroomDetails,
             modifier = Modifier.fillMaxWidth(),
-            mapType = mapType
+            mapType = mapType,
         )
 
     }
@@ -108,7 +118,8 @@ private fun ClassroomDetailsBody(
 fun ClassroomDetailed(
     classroom: ClassroomDetails,
     modifier: Modifier = Modifier,
-    mapType: MapType
+    mapType: MapType,
+    colorEntry: ColorEntry
 ){
     val selectedLocation = remember(classroom.latitude,classroom.longitude){ LatLng(classroom.latitude, classroom.longitude) }
     val markerState = rememberMarkerState(position = selectedLocation)
@@ -135,6 +146,7 @@ fun ClassroomDetailed(
 
     Card(
         modifier = modifier,
+        colors = CardDefaults.cardColors(containerColor = colorEntry.backgroundColor)
     ) {
         Column(
             modifier = Modifier
@@ -146,6 +158,7 @@ fun ClassroomDetailed(
         ) {
             ClassroomDetailsRow(
                 labelResID = R.string.title,
+                colorEntry = colorEntry,
                 classroomDetail = classroom.title,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
@@ -153,16 +166,18 @@ fun ClassroomDetailed(
             )
             ClassroomDetailsRow(
                 labelResID = R.string.floor,
+                colorEntry = colorEntry,
                 classroomDetail = classroom.floor,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
                 )
             )
-
         }
     }
     Box(
-        modifier = Modifier.height(300.dp).fillMaxWidth()
+        modifier = Modifier
+            .height(300.dp)
+            .fillMaxWidth()
     ) {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
@@ -181,12 +196,15 @@ fun ClassroomDetailed(
 
 @Composable
 private fun ClassroomDetailsRow(
-    @StringRes labelResID: Int, classroomDetail: String, modifier: Modifier = Modifier
+    @StringRes labelResID: Int,
+    classroomDetail: String,
+    colorEntry: ColorEntry,
+    modifier: Modifier = Modifier,
 ){
     Row(modifier = modifier) {
-        Text(stringResource(labelResID))
+        Text(text = stringResource(labelResID), color = colorEntry.fontColor)
         Spacer(modifier = Modifier.weight(1f))
-        Text(text = classroomDetail, fontWeight = FontWeight.Bold)
+        Text(text = classroomDetail, fontWeight = FontWeight.Bold, color = colorEntry.fontColor)
     }
 }
 

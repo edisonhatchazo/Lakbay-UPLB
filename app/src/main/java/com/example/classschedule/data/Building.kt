@@ -18,9 +18,10 @@ data class Pins(
 data class Building(
     @PrimaryKey
     @ColumnInfo(name = "building_id") val buildingId: Int,
-    val title: String,
-    val abbreviation: String,
     val name: String,
+    @ColumnInfo(name = "other_name") val otherName: String?,
+    val abbreviation: String,
+    val college: String,
     val latitude: Double,
     val longitude: Double
 )
@@ -32,6 +33,7 @@ data class Classroom(
     val title: String,
     val abbreviation: String,
     val floor: String,
+    val type: String,
     val latitude: Double,
     val longitude: Double,
     @ColumnInfo(name = "building_id")

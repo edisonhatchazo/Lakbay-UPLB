@@ -34,6 +34,8 @@ import com.example.classschedule.data.Classroom
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.DetailsScreenTopAppBar
+import com.example.classschedule.ui.theme.CollegeColorPalette
+import com.example.classschedule.ui.theme.ColorEntry
 
 object BuildingDetailsDestination : NavigationDestination {
     override val route = "building_details"
@@ -57,7 +59,7 @@ fun BuildingDetailsScreen (
     Scaffold(
         topBar = {
             DetailsScreenTopAppBar(
-                title = build.title,
+                title = build.name,
                 canNavigateBack = true,
                 navigateUp = navigateBack
             )
@@ -85,42 +87,46 @@ private fun BuildingDetailsBody(
     classRoomList: List<Classroom>,
     modifier: Modifier = Modifier
 ){
-  Column(
-      modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
-      verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
-  ){
-      BuildingDetail(
-          building = buildingDetailsUiState.buildingDetails.toBuilding(),
-          modifier = Modifier.fillMaxWidth()
-      )
-      Text(text = stringResource(R.string.rooms), fontWeight = FontWeight.Bold)
-      LazyVerticalGrid(
-          columns = GridCells.Fixed(2),
-          modifier = Modifier.fillMaxWidth()
-      ) {
-          items(classRoomList){classroom ->
-              RoomDetails(
-                  classroom = classroom,
-                  modifier = Modifier
-                      .padding(dimensionResource(id =R.dimen.padding_small ))
-                      .clickable{navigateToRoomDetails(classroom.roomId)}
+    val building = buildingDetailsUiState.buildingDetails.toBuilding()
+    val colorEntry = CollegeColorPalette.getColorEntry(building.college)
 
-              )
-
-          }
-      }
-
-  }
+    Column(
+        modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
+    ){
+        BuildingDetail(
+            building = building,
+            modifier = Modifier.fillMaxWidth(),
+            colorEntry = colorEntry
+        )
+        Text(text = stringResource(R.string.rooms), fontWeight = FontWeight.Bold)
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            items(classRoomList){classroom ->
+                RoomDetails(
+                    classroom = classroom,
+                    colorEntry = colorEntry,
+                    modifier = Modifier
+                        .padding(dimensionResource(id =R.dimen.padding_small ))
+                        .clickable{navigateToRoomDetails(classroom.roomId)}
+                )
+            }
+        }
+    }
 }
 
 @Composable
 private fun RoomDetails(
+    colorEntry: ColorEntry,
     classroom: Classroom,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier,
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = colorEntry.backgroundColor)
     ) {
         Column(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large)),
@@ -128,7 +134,8 @@ private fun RoomDetails(
         ) {
             Text(
                 text = classroom.abbreviation,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                color = colorEntry.fontColor
             )
 
         }
@@ -137,9 +144,14 @@ private fun RoomDetails(
 
 @Composable
 fun BuildingDetail(
-    building: Building, modifier: Modifier = Modifier
+    building: Building,
+    modifier: Modifier = Modifier,
+    colorEntry: ColorEntry
 ){
-    Card(modifier = modifier){
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(containerColor = colorEntry.backgroundColor)
+    ){
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -150,14 +162,16 @@ fun BuildingDetail(
         ){
             BuildingDetailsRow(
                 labelResID = R.string.abbreviation,
+                colorEntry = colorEntry,
                 buildingDetail = building.abbreviation,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
                 )
             )
             BuildingDetailsRow(
-                labelResID = R.string.name,
-                buildingDetail = building.name,
+                labelResID = R.string.college,
+                colorEntry = colorEntry,
+                buildingDetail = building.college,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
                 )
@@ -168,11 +182,14 @@ fun BuildingDetail(
 
 @Composable
 private fun BuildingDetailsRow(
-    @StringRes labelResID: Int, buildingDetail: String, modifier: Modifier = Modifier
+    @StringRes labelResID: Int,
+    buildingDetail: String,
+    modifier: Modifier = Modifier,
+    colorEntry: ColorEntry
 ){
     Row(modifier = modifier){
-        Text(stringResource(id = labelResID))
+        Text(text = stringResource(id = labelResID), color = colorEntry.fontColor)
         Spacer(modifier = Modifier.weight(1f))
-        Text(text = buildingDetail, fontWeight = FontWeight.Bold)
+        Text(text = buildingDetail, fontWeight = FontWeight.Bold, color = colorEntry.fontColor)
     }
 }

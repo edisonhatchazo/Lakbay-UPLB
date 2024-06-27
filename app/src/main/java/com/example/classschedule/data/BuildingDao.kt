@@ -11,15 +11,15 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface BuildingDao {
 
-    @Query("SELECT * FROM Buildings ORDER BY title ASC")
+    @Query("SELECT * FROM Buildings ORDER BY college ASC")
     fun getAllBuildings(): Flow<List<Building>>
 
     @Query("""
         SELECT * FROM Buildings 
-        WHERE title LIKE '%' || :query || '%' 
+        WHERE name LIKE '%' || :query || '%' 
         OR abbreviation LIKE '%' || :query || '%'
-        OR name LIKE '%' || :query || '%'
-        ORDER BY title ASC
+        OR college LIKE '%' || :query || '%'
+        ORDER BY college ASC
     """)
     fun searchBuildings(query: String): Flow<List<Building>>
 
@@ -32,8 +32,9 @@ interface BuildingDao {
 interface ClassroomDao {
     @Query("""
         SELECT * FROM Rooms 
-        WHERE title LIKE '%' || :query || '%'
-        OR abbreviation LIKE '%' || :query || '%'
+        WHERE (title LIKE '%' || :query || '%'
+        OR abbreviation LIKE '%' || :query || '%')
+        AND type LIKE 'Room'
         ORDER BY title ASC
     """)
     fun searchRooms(query: String): Flow<List<Classroom>>

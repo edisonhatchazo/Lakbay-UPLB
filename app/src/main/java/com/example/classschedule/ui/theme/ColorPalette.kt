@@ -1,7 +1,6 @@
 package com.example.classschedule.ui.theme
 
 import androidx.compose.ui.graphics.Color
-import com.example.classschedule.ui.theme.ColorPalette.colors
 
 data class ColorEntry(
     val backgroundColor: Color,
@@ -34,11 +33,34 @@ object ColorPalette {
         "Lavender" to ColorEntry(Color(0xFFE6E6FA), Color.Black), // Lavender
         "Mustard" to ColorEntry(Color(0xFFFFDB58), Color.Black), // Mustard
         "Emerald" to ColorEntry(Color(0xFF50C878), Color.Black), // Emerald
-        "Chocolate" to ColorEntry(Color(0xFF7B3F00), Color.White) // Chocolate
+        "Chocolate" to ColorEntry(Color(0xFF7B3F00), Color.White), // Chocolate
+        "Red" to ColorEntry(Color.Red, Color.White) //Red
     )
     fun getColorEntry(colorName: String): ColorEntry {
         return colors[colorName] ?: ColorEntry(Color.Transparent, Color.Black)
     }
 }
 
+object CollegeColorPalette {
+    val colors = mapOf(
+        "College of Agriculture" to ColorPalette.getColorEntry("Brown"),
+        "College of Arts and Sciences" to ColorPalette.getColorEntry("Yellow"),
+        "College of Development Communication" to ColorPalette.getColorEntry("Pearl"),
+        "School of Environmental Science and Management" to ColorPalette.getColorEntry("Lemon"),
+        "Graduate School" to ColorPalette.getColorEntry("Blue"),
+        "College of Veterinary Medicine" to ColorPalette.getColorEntry("Red"),
+        "College of Human Ecology" to ColorPalette.getColorEntry("Orange"),
+        "College of Public Affairs and Development" to ColorPalette.getColorEntry("Emerald"),
+        "College of Forestry and Natural Resources" to ColorPalette.getColorEntry("Green"),
+        "College of Economics and Management" to ColorPalette.getColorEntry("Gold"),
+        "College of Engineering and Agro-industrial Technology" to ColorPalette.getColorEntry("Silver"),
+        "UP Unit" to ColorPalette.getColorEntry("Lavender"),
+        "Dormitory" to ColorPalette.getColorEntry("Copper Rose"),
+        "Landmark" to ColorPalette.getColorEntry("Pink"),
+        "UP College" to ColorPalette.getColorEntry("Dark Yellow")
+    )
 
+    fun getColorEntry(college: String): ColorEntry {
+        return colors[college] ?: ColorEntry(Color.Transparent, Color.Black)
+    }
+}

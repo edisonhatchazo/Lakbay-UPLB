@@ -429,7 +429,7 @@ fun BuildingsScreenTopAppBar(
                                     navigateToBuildingDetails(building.buildingId)
                                     showSearchBar = false
                                 },
-                                text = { Text(building.title) }
+                                text = { Text(building.name) }
                             )
                         }
                     }
