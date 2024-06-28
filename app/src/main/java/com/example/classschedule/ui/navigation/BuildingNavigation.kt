@@ -25,6 +25,7 @@ import com.example.classschedule.ui.buildingScreens.uplb.RoomDetailsScreen
 @Composable
 fun BuildingNavHost(
     navController: NavHostController,
+    mainNavController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
     NavHost(
@@ -57,7 +58,8 @@ fun BuildingNavHost(
                 type = NavType.IntType
             })
         ){
-            RoomDetailsScreen(navigateBack = {navController.navigateUp()})
+            RoomDetailsScreen(navigateBack = {navController.navigateUp()},mainNavController = mainNavController)
+
         }
 
 

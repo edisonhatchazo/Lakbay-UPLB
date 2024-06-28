@@ -43,7 +43,8 @@ object AppViewModelProvider {
         initializer{
             ClassScheduleDetailsViewModel(
                 this.createSavedStateHandle(),
-                classScheduleApplication().container.classScheduleRepository
+                classScheduleApplication().container.classScheduleRepository,
+                classScheduleApplication().container.buildingRepository
             )
         }
         initializer{
@@ -63,7 +64,8 @@ object AppViewModelProvider {
         initializer{
             ScheduleDetailsViewModel(
                 this.createSavedStateHandle(),
-                classScheduleApplication().container.classScheduleRepository
+                classScheduleApplication().container.classScheduleRepository,
+                classScheduleApplication().container.buildingRepository
             )
         }
         initializer{
@@ -86,7 +88,8 @@ object AppViewModelProvider {
         initializer{
             ExamDetailsViewModel(
                 this.createSavedStateHandle(),
-                classScheduleApplication().container.examScheduleRepository
+                classScheduleApplication().container.examScheduleRepository,
+                classScheduleApplication().container.buildingRepository
             )
         }
 

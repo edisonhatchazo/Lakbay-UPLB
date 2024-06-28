@@ -7,14 +7,14 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.classschedule.ui.classes.ClassHomeDestination
+import com.example.classschedule.ui.classes.ClassHomeScreen
 import com.example.classschedule.ui.classes.ClassScheduleDetailsDestination
 import com.example.classschedule.ui.classes.ClassScheduleDetailsScreen
 import com.example.classschedule.ui.classes.ClassScheduleEditDestination
 import com.example.classschedule.ui.classes.ClassScheduleEditScreen
 import com.example.classschedule.ui.classes.ClassScheduleEntryDestination
 import com.example.classschedule.ui.classes.ClassScheduleEntryScreen
-import com.example.classschedule.ui.classes.ClassHomeDestination
-import com.example.classschedule.ui.classes.ClassHomeScreen
 import com.example.classschedule.ui.exam.ExamDetailsDestination
 import com.example.classschedule.ui.exam.ExamDetailsScreen
 import com.example.classschedule.ui.exam.ExamEditDestination
@@ -27,6 +27,7 @@ import com.example.classschedule.ui.exam.ExamHomeScreen
 @Composable
 fun ClassScheduleNavHost(
     navController: NavHostController,
+    mainNavController: NavHostController,
     modifier: Modifier = Modifier,
 ){
     NavHost(
@@ -58,7 +59,9 @@ fun ClassScheduleNavHost(
         ){
             ClassScheduleDetailsScreen(
                 navigateToEditClassSchedule = {navController.navigate("${ClassScheduleEditDestination.route}/$it")},
-                navigateBack = {navController.navigateUp()})
+                navigateBack = {navController.navigateUp()},
+                mainNavController = mainNavController
+            )
         }
         composable(
             route = ClassScheduleEditDestination.routeWithArgs,
@@ -95,7 +98,8 @@ fun ClassScheduleNavHost(
         ){
             ExamDetailsScreen(
                 navigateToEditExam = {navController.navigate("${ExamEditDestination.route}/$it")},
-                navigateBack = {navController.navigateUp()})
+                navigateBack = {navController.navigateUp()},
+                mainNavController = mainNavController)
         }
         composable(
             route = ExamEditDestination.routeWithArgs,

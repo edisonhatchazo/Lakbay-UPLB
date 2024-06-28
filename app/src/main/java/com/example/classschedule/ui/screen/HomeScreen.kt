@@ -12,11 +12,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.classschedule.ui.home.ScheduleApp
 
 @Composable
-fun HomeScreen() {
-    ScheduleApp()
+fun HomeScreen(mainNavController: NavHostController) {
+    ScheduleApp(mainNavController)
 }
 
 @Composable

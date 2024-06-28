@@ -69,12 +69,13 @@ fun BuildingHomeBody(
     modifier: Modifier = Modifier,
     onBuildingClick: (Int) -> Unit,
 ){
+    val filteredBuildingList = buildingList.filterNot { it.college == "Landmark" || it.college == "Dormitory" || it.college == "UP Unit"}
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ){
        BuildingList(
-           buildingList = buildingList,
+           buildingList = filteredBuildingList,
            onBuildingClick = {onBuildingClick(it.buildingId)},
            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
        )
@@ -93,7 +94,7 @@ private fun BuildingList(
                 building = building,
                 modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.padding_small))
-                    .clickable{onBuildingClick(building)}
+                    .clickable { onBuildingClick(building) }
             )
         }
     }

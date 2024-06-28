@@ -30,7 +30,7 @@ enum class CustomMapType(val displayName: String, val mapType: MapType) {
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun MapScreen() {
+fun MapScreen(title: String, latitude: Double, longitude: Double) {
     val permissionsState = rememberMultiplePermissionsState(
         listOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -45,11 +45,11 @@ fun MapScreen() {
     if (permissionsState.allPermissionsGranted) {
         ClassScheduleTheme {
             Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                val UPLBGate = LatLng(14.16747822735461, 121.24338486047947)
+                val location = LatLng(latitude, longitude)
                 val cameraPositionState = rememberCameraPositionState {
-                    position = CameraPosition.fromLatLngZoom(UPLBGate, 18f)
+                    position = CameraPosition.fromLatLngZoom(location, 18f)
                 }
-                val markerState = rememberMarkerState(position = UPLBGate)
+                val markerState = rememberMarkerState(position = location)
 
                 GoogleMap(
                     modifier = Modifier.fillMaxSize(),
@@ -57,8 +57,8 @@ fun MapScreen() {
                 ) {
                     Marker(
                         state = markerState,
-                        title = "UP Los Baños Gate",
-                        snippet = "UP Los Baños Gate"
+                        title = title,
+                        snippet = title
                     )
                 }
             }

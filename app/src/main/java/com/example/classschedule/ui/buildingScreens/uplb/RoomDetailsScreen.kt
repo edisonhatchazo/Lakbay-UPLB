@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.example.classschedule.R
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
@@ -59,6 +62,7 @@ fun RoomDetailsScreen(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RoomDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    mainNavController: NavHostController
 ) {
 
     val roomUiState by viewModel.classroomUiState.collectAsState()
@@ -77,6 +81,7 @@ fun RoomDetailsScreen(
         }, modifier = modifier
     ){innerPadding ->
         ClassroomDetailsBody(
+            navController = mainNavController,
             mapType = mapType,
             classroomDetails = room,
             buildingCollege = buildingCollege,
@@ -88,6 +93,8 @@ fun RoomDetailsScreen(
                 )
                 .verticalScroll(rememberScrollState())
         )
+
+
     }
 }
 
@@ -96,6 +103,7 @@ private fun ClassroomDetailsBody(
     classroomDetails: ClassroomDetails,
     buildingCollege: String,
     mapType: MapType,
+    navController: NavHostController,
     modifier: Modifier = Modifier
 ){
 
@@ -106,6 +114,7 @@ private fun ClassroomDetailsBody(
     ) {
         ClassroomDetailed(
             colorEntry = colorEntry,
+            navController = navController,
             classroom = classroomDetails,
             modifier = Modifier.fillMaxWidth(),
             mapType = mapType,
@@ -119,6 +128,7 @@ fun ClassroomDetailed(
     classroom: ClassroomDetails,
     modifier: Modifier = Modifier,
     mapType: MapType,
+    navController: NavHostController,
     colorEntry: ColorEntry
 ){
     val selectedLocation = remember(classroom.latitude,classroom.longitude){ LatLng(classroom.latitude, classroom.longitude) }
@@ -174,6 +184,8 @@ fun ClassroomDetailed(
             )
         }
     }
+    Text(text = stringResource(R.string.location), fontWeight = FontWeight.Bold)
+
     Box(
         modifier = Modifier
             .height(300.dp)
@@ -187,10 +199,16 @@ fun ClassroomDetailed(
             Marker(
                 state = markerState,
                 title = classroom.title,
-                snippet = classroom.title,
                 draggable = false // No need to make it draggable if we handle map clicks
             )
         }
+    }
+    Button(
+        onClick = {  navController.navigate("map_screen/${classroom.title}/${classroom.latitude}/${classroom.longitude}")},
+        shape = MaterialTheme.shapes.small,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(text = stringResource(R.string.guide))
     }
 }
 

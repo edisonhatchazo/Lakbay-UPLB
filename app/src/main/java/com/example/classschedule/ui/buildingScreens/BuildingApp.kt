@@ -6,6 +6,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.classschedule.ui.navigation.BuildingNavHost
 
 @Composable
-fun BuildingApp(navController: NavHostController = rememberNavController()) {
-    BuildingNavHost(navController = navController)
+fun BuildingApp(mainNavController: NavHostController, navController: NavHostController = rememberNavController()) {
+    BuildingNavHost(navController = navController, mainNavController = mainNavController)
 }

@@ -7,14 +7,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.classschedule.ui.classes.ClassHomeDestination
 import com.example.classschedule.ui.exam.ExamDetailsDestination
 import com.example.classschedule.ui.exam.ExamDetailsScreen
 import com.example.classschedule.ui.exam.ExamEditDestination
 import com.example.classschedule.ui.exam.ExamEditScreen
 import com.example.classschedule.ui.exam.ExamEntryDestination
 import com.example.classschedule.ui.exam.ExamEntryScreen
-import com.example.classschedule.ui.exam.ExamHomeDestination
 import com.example.classschedule.ui.exam.ExamScheduleDestination
 import com.example.classschedule.ui.exam.ExamScheduleScreen
 import com.example.classschedule.ui.home.ScheduleDetailsDestination
@@ -29,6 +27,7 @@ import com.example.classschedule.ui.home.ScheduleScreen
 @Composable
 fun ScheduleNavHost(
     navController: NavHostController,
+    mainNavController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
     NavHost(
@@ -58,7 +57,10 @@ fun ScheduleNavHost(
         ){
             ScheduleDetailsScreen(
                 navigateToEditSchedule = {navController.navigate("${ScheduleEditDestination.route}/$it")},
-                navigateBack = {navController.navigateUp()})
+                navigateBack = {navController.navigateUp()},
+                mainNavController = mainNavController
+
+            )
         }
         composable(
             route = ScheduleEditDestination.routeWithArgs,
@@ -95,7 +97,8 @@ fun ScheduleNavHost(
         ){
             ExamDetailsScreen(
                 navigateToEditExam = {navController.navigate("${ExamEditDestination.route}/$it")},
-                navigateBack = {navController.navigateUp()})
+                navigateBack = {navController.navigateUp()},
+                mainNavController = mainNavController)
         }
         composable(
             route = ExamEditDestination.routeWithArgs,

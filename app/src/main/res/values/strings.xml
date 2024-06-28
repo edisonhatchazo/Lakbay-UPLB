@@ -16,11 +16,13 @@
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
     <string name="name">Name</string>
+    <string name="guide">Guide To Location</string>
     <string name="rooms">Rooms</string>
     <string name="abbreviation">Abbreviation</string>
     <string name="my_pins">My Coordinate Pins</string>
     <string name="floor">Floor</string>
     <string name="title">Title</string>
+    <string name="type">Type</string>
     <string name="day">Day</string>
     <string name="date">Date</string>
     <string name="map">Map</string>

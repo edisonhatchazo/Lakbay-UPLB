@@ -14,9 +14,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +37,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.example.classschedule.R
 import com.example.classschedule.data.ClassSchedule
 import com.example.classschedule.ui.navigation.AppViewModelProvider
@@ -59,6 +60,7 @@ fun ScheduleDetailsScreen(
     navigateToEditSchedule: (Int) -> Unit,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
+    mainNavController: NavHostController,
     viewModel: ScheduleDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState = viewModel.uiState.collectAsState()
@@ -85,6 +87,7 @@ fun ScheduleDetailsScreen(
     ) { innerPadding ->
         ClassScheduleDetailsBody(
             classScheduleDetailsUiState = uiState.value,
+            mainNavController = mainNavController,
             onDelete = {
                 coroutineScope.launch {
                     viewModel.deleteClassSchedule()
@@ -105,6 +108,7 @@ fun ScheduleDetailsScreen(
 @Composable
 private fun ClassScheduleDetailsBody(
     classScheduleDetailsUiState: ScheduleDetailsUiState,
+    mainNavController: NavHostController,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -118,6 +122,16 @@ private fun ClassScheduleDetailsBody(
             classSchedule = classScheduleDetailsUiState.scheduleDetails.toClass(),
             modifier = Modifier.fillMaxWidth()
         )
+
+        Button(
+            onClick = {  mainNavController.navigate(
+                "map_screen/${classScheduleDetailsUiState.scheduleDetails.title}/${classScheduleDetailsUiState.latitude}/${classScheduleDetailsUiState.longitude}")},
+            shape = MaterialTheme.shapes.small,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = stringResource(R.string.guide))
+        }
+
         OutlinedButton(
             onClick = { deleteConfirmationRequired = true },
             shape = MaterialTheme.shapes.small,
@@ -202,6 +216,7 @@ fun ClassScheduleDetails(
                 )
             )
         }
+
     }
 }
 

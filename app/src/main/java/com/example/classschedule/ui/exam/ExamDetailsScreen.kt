@@ -14,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -36,6 +37,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.example.classschedule.R
 import com.example.classschedule.data.ExamSchedule
 import com.example.classschedule.ui.navigation.AppViewModelProvider
@@ -56,6 +58,7 @@ object ExamDetailsDestination : NavigationDestination {
 fun ExamDetailsScreen(
     navigateToEditExam: (Int) -> Unit,
     navigateBack: () -> Unit,
+    mainNavController: NavHostController,
     modifier: Modifier = Modifier,
     viewModel: ExamDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -83,6 +86,7 @@ fun ExamDetailsScreen(
     ) { innerPadding ->
         ExamScheduleDetailsBody(
             examScheduleDetailsUiState = uiState.value,
+            mainNavController = mainNavController,
             onDelete = {
                 coroutineScope.launch {
                     viewModel.deleteExamSchedule()
@@ -103,6 +107,7 @@ fun ExamDetailsScreen(
 @Composable
 private fun ExamScheduleDetailsBody(
     examScheduleDetailsUiState: ExamScheduleDetailsUiState,
+    mainNavController: NavHostController,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -116,6 +121,17 @@ private fun ExamScheduleDetailsBody(
             examSchedule = examScheduleDetailsUiState.examScheduleDetails.toExam(),
             modifier = Modifier.fillMaxWidth()
         )
+
+        Button(
+            onClick = {  mainNavController.navigate(
+                "map_screen/${examScheduleDetailsUiState.examScheduleDetails.title}/${examScheduleDetailsUiState.latitude}/${examScheduleDetailsUiState.longitude}")},
+            shape = MaterialTheme.shapes.small,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = stringResource(R.string.guide))
+        }
+
+
         OutlinedButton(
             onClick = { deleteConfirmationRequired = true },
             shape = MaterialTheme.shapes.small,
