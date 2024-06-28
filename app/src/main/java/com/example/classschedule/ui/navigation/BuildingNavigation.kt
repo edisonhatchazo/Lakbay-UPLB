@@ -49,7 +49,9 @@ fun BuildingNavHost(
         ){
             BuildingDetailsScreen(
                 navigateToRoomDetails = {navController.navigate("${RoomDetailsDestination.route}/${it}") },
-                navigateBack = { navController.navigateUp() })
+                navigateBack = { navController.navigateUp() },
+                mainNavController = mainNavController
+                )
         }
 
         composable(
@@ -58,7 +60,8 @@ fun BuildingNavHost(
                 type = NavType.IntType
             })
         ){
-            RoomDetailsScreen(navigateBack = {navController.navigateUp()},mainNavController = mainNavController)
+            RoomDetailsScreen(navigateBack = {navController.navigateUp()},
+                mainNavController = mainNavController)
 
         }
 

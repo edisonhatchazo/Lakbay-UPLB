@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.example.classschedule.R
 import com.example.classschedule.data.Building
 import com.example.classschedule.data.Classroom
@@ -65,7 +67,8 @@ fun BuildingDetailsScreen (
     navigateToRoomDetails: (Int) -> Unit,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: BuildingDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: BuildingDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    mainNavController: NavHostController
 ){
     var mapType by remember { mutableStateOf(MapType.NORMAL) }
     val uiState = viewModel.uiState.collectAsState()
@@ -94,6 +97,7 @@ fun BuildingDetailsScreen (
     ){innerPadding ->
         BuildingDetailsBody(
             mapType = mapType,
+            navController = mainNavController,
             navigateToRoomDetails = navigateToRoomDetails,
             buildingDetailsUiState = uiState.value,
             classRoomList = room,
@@ -111,6 +115,7 @@ fun BuildingDetailsScreen (
 @Composable
 private fun BuildingDetailsBody(
     mapType: MapType,
+    navController: NavHostController,
     navigateToRoomDetails: (Int) -> Unit,
     buildingDetailsUiState: BuildingDetailsUiState,
     classRoomList: List<Classroom>,
@@ -127,6 +132,7 @@ private fun BuildingDetailsBody(
             LocationDetail(
                 mapType = mapType,
                 building = building,
+                navController = navController,
                 modifier = Modifier.fillMaxWidth(),
                 colorEntry = colorEntry
             )
@@ -137,6 +143,13 @@ private fun BuildingDetailsBody(
                 modifier = Modifier.fillMaxWidth(),
                 colorEntry = colorEntry
             )
+            Button(
+                onClick = {  navController.navigate("map_screen/${building.name}/${building.latitude}/${building.longitude}")},
+                shape = MaterialTheme.shapes.small,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = stringResource(R.string.guide))
+            }
             Text(text = stringResource(R.string.rooms), fontWeight = FontWeight.Bold)
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -161,6 +174,7 @@ private fun BuildingDetailsBody(
 fun LocationDetail(
     building: Building,
     modifier: Modifier = Modifier,
+    navController: NavHostController,
     colorEntry: ColorEntry,
     mapType: MapType
 ){
@@ -235,6 +249,14 @@ fun LocationDetail(
                 draggable = false // No need to make it draggable if we handle map clicks
             )
         }
+    }
+
+    Button(
+        onClick = {  navController.navigate("map_screen/${building.name}/${building.latitude}/${building.longitude}")},
+        shape = MaterialTheme.shapes.small,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(text = stringResource(R.string.guide))
     }
 }
 
