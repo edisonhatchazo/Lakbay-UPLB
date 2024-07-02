@@ -1,0 +1,617 @@
+{
+  "type": "FeatureCollection",
+  "generator": "overpass-turbo",
+  "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+  "timestamp": "2024-07-06T09:24:01Z",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/5509654199",
+        "bench": "yes",
+        "bin": "no",
+        "bus": "yes",
+        "highway": "bus_stop",
+        "name": "Raymundo Gate",
+        "public_transport": "platform",
+        "shelter": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2416532,
+          14.1677242
+        ]
+      },
+      "id": "node/5509654199"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/5509654200",
+        "highway": "bus_stop",
+        "name": "Raymundo Gate",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.241397,
+          14.1676533
+        ]
+      },
+      "id": "node/5509654200"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/606307042",
+        "highway": "bus_stop",
+        "name": "CSI/Humanities",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2407525,
+          14.1673357
+        ]
+      },
+      "id": "node/606307042"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/606307043",
+        "highway": "bus_stop",
+        "name": "CSI/BioSci/Humanities",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2401897,
+          14.1671303
+        ]
+      },
+      "id": "node/606307043"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3733105008",
+        "highway": "bus_stop",
+        "name": "BioSci",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2399398,
+          14.1669733
+        ]
+      },
+      "id": "node/3733105008"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3733105015",
+        "highway": "bus_stop",
+        "name": "Sacay/UPCO",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.23857,
+          14.1662999
+        ]
+      },
+      "id": "node/3733105015"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/606307044",
+        "highway": "bus_stop",
+        "name": "Sacay/UPCO",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2387514,
+          14.1665156
+        ]
+      },
+      "id": "node/606307044"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3730588824",
+        "highway": "bus_stop",
+        "name": "Main Library/Faculty Village",
+        "public_transport": "platform",
+        "shelter": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2385843,
+          14.1654236
+        ]
+      },
+      "id": "node/3730588824"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/594380025",
+        "highway": "bus_stop",
+        "name": "Main Library/Faculty Village",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2385293,
+          14.1654993
+        ]
+      },
+      "id": "node/594380025"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/4197238694",
+        "highway": "bus_stop",
+        "name": "Infirmary",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2388429,
+          14.1620914
+        ]
+      },
+      "id": "node/4197238694"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/4197238695",
+        "highway": "bus_stop",
+        "name": "Infirmary",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2389323,
+          14.1621055
+        ]
+      },
+      "id": "node/4197238695"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/527826402",
+        "highway": "bus_stop",
+        "name": "CPAF",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2380474,
+          14.1600217
+        ]
+      },
+      "id": "node/527826402"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/4197238691",
+        "highway": "bus_stop",
+        "name": "CPAF",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2378801,
+          14.160097
+        ]
+      },
+      "id": "node/4197238691"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3683254227",
+        "highway": "bus_stop",
+        "name": "Copeland Heights",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2374404,
+          14.1590402
+        ]
+      },
+      "id": "node/3683254227"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/821353909",
+        "highway": "bus_stop",
+        "name": "FPRDI/MNH",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.236215,
+          14.1568823
+        ]
+      },
+      "id": "node/821353909"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/4197238693",
+        "highway": "bus_stop",
+        "name": "FPRDI/MNH",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2358104,
+          14.156754
+        ]
+      },
+      "id": "node/4197238693"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3723252191",
+        "highway": "bus_stop",
+        "name": "ERDB",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2366554,
+          14.1556645
+        ]
+      },
+      "id": "node/3723252191"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3723252192",
+        "highway": "bus_stop",
+        "name": "Makiling Botanic Gardens",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2351684,
+          14.1558111
+        ]
+      },
+      "id": "node/3723252192"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3723252194",
+        "highway": "bus_stop",
+        "name": "Tamesis Hall",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2349496,
+          14.1552239
+        ]
+      },
+      "id": "node/3723252194"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3683254225",
+        "highway": "bus_stop",
+        "name": "Forest Science",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2360272,
+          14.1547361
+        ]
+      },
+      "id": "node/3683254225"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/1579271894",
+        "highway": "bus_stop",
+        "name": "Forest Science",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2355887,
+          14.154182
+        ]
+      },
+      "id": "node/1579271894"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/1579271889",
+        "highway": "bus_stop",
+        "name": "Forestry Library",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2351114,
+          14.153483
+        ]
+      },
+      "id": "node/1579271889"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3723252193",
+        "highway": "bus_stop",
+        "name": "New FoReHa",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2342491,
+          14.1523148
+        ]
+      },
+      "id": "node/3723252193"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/4547532556",
+        "highway": "bus_stop",
+        "name": "FoReHa",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2350554,
+          14.1527581
+        ]
+      },
+      "id": "node/4547532556"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3345224306",
+        "highway": "bus_stop",
+        "name": "MaReHa",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2353384,
+          14.1519177
+        ]
+      },
+      "id": "node/3345224306"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route": "Forestry Route up"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+          121.24248685900545,
+          14.168111170004224
+          ],
+          [
+            121.241397,
+            14.1676533
+          ],
+          [
+            121.2401897,
+            14.1671303
+          ],
+          [
+            121.2387514,
+            14.1665156
+          ],
+          [
+            121.2385293,
+            14.1654993
+          ],
+          [
+            121.2388429,
+            14.1620914
+          ],
+          [
+            121.2378801,
+            14.160097
+          ],
+          [
+            121.2374404,
+            14.1590402
+          ],
+          [
+            121.2358104,
+            14.156754
+          ],
+          [
+            121.2351684,
+            14.1558111
+          ],
+          [
+            121.2349496,
+            14.1552239
+          ],
+          [
+            121.2355887,
+            14.154182
+          ],
+          [
+            121.2351114,
+            14.153483
+          ],
+          [
+            121.2342491,
+            14.1523148
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route": "Forestry Route down"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            121.2353384,
+            14.1519177
+          ],
+          [
+            121.2350554,
+            14.1527581
+          ],
+          [
+            121.2351114,
+            14.153483
+          ],
+          [
+            121.2355887,
+            14.154182
+          ],
+          [
+            121.2360272,
+            14.1547361
+          ],
+          [
+            121.2366554,
+            14.1556645
+          ],
+          [
+            121.236215,
+            14.1568823
+          ],
+          [
+            121.2374404,
+            14.1590402
+          ],
+          [
+            121.2380474,
+            14.1600217
+          ],
+          [
+            121.2389323,
+            14.1621055
+          ],
+          [
+            121.2385843,
+            14.1654236
+          ],
+          [
+            121.23857,
+            14.1662999
+          ],
+          [
+            121.2399398,
+            14.1669733
+          ],
+          [
+            121.2407525,
+            14.1673357
+          ],
+          [
+            121.2416532,
+            14.1677242
+          ],
+          [
+          121.2429887,
+          14.1675438
+        ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/32148217",
+        "highway": "bus_stop",
+        "name": "Forestry Station",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24248685900545,
+          14.168111170004224
+        ],
+        "type": "Point"
+      }
+    },
+        {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3463468475",
+        "bench": "no",
+        "bin": "no",
+        "highway": "bus_stop",
+        "lit": "no",
+        "name": "UP Gate",
+        "public_transport": "platform",
+        "shelter": "no"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2429887,
+          14.1675438
+        ]
+      },
+      "id": 13
+    }
+  ]
+}

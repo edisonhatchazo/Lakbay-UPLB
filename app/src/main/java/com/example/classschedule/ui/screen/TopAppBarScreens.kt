@@ -1,10 +1,10 @@
 package com.example.classschedule.ui.screen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,7 +16,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -35,6 +35,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -42,22 +45,19 @@ import com.example.classschedule.R
 import com.example.classschedule.algorithm.CustomDatePickerDialog
 import com.example.classschedule.algorithm.SearchViewModel
 import com.example.classschedule.ui.navigation.AppViewModelProvider
-import com.google.maps.android.compose.MapType
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleEntryScreenTopAppBar(
-    title:String,
+    title: String,
     canNavigateBack: Boolean,
-    modifier: Modifier = Modifier,
     navigateUp: () -> Unit = {},
 ){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
         title = { Text( title,color = Color.White)},
-        modifier = modifier.height(60.dp),
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if(canNavigateBack){
@@ -88,21 +88,19 @@ fun ScheduleEntryScreenTopAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleScreenTopAppBar(
-    title:String,
+    title: String,
     canNavigateBack: Boolean,
-    modifier: Modifier = Modifier,
     navigateToScheduleEntry: () -> Unit,
     navigateToClassHome: () -> Unit,
     navigateToExamHome: () -> Unit,
     navigateUp: () -> Unit = {},
 
-){
+    ){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var showMenu  by remember { mutableStateOf(false) }
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
         title = { Text( title,color = Color.White)},
-        modifier = modifier.height(60.dp),
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if(canNavigateBack){
@@ -171,9 +169,8 @@ fun ScheduleScreenTopAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExamScheduleScreenTopAppBar(
-    title:String,
+    title: String,
     canNavigateBack: Boolean,
-    modifier: Modifier = Modifier,
     navigateToScheduleEntry: () -> Unit,
     navigateToClassHome: () -> Unit,
     navigateToExamHome: () -> Unit,
@@ -188,7 +185,6 @@ fun ExamScheduleScreenTopAppBar(
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
         title = { Text( title,color = Color.White)},
-        modifier = modifier.height(55.dp),
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if(canNavigateBack){
@@ -268,16 +264,14 @@ fun ExamScheduleScreenTopAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreenTopAppBar(
-    title:String,
+    title: String,
     canNavigateBack: Boolean,
-    modifier: Modifier = Modifier,
     navigateUp: () -> Unit = {},
 ){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
         title = { Text( title,color = Color.White)},
-        modifier = modifier.height(60.dp),
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if(canNavigateBack){
@@ -459,9 +453,8 @@ fun BuildingsScreenTopAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PinsScreenTopAppBar(
-    title:String,
+    title: String,
     canNavigateBack: Boolean,
-    modifier: Modifier = Modifier,
     navigateToPinEntry: () -> Unit,
     navigateToBuildingHome: () -> Unit,
     navigateUp: () -> Unit = {},
@@ -471,7 +464,6 @@ fun PinsScreenTopAppBar(
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
         title = { Text( title,color = Color.White)},
-        modifier = modifier.height(60.dp),
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if(canNavigateBack){
@@ -541,9 +533,7 @@ fun PinsScreenTopAppBar(
 fun CoordinateEntryScreenTopAppBar(
     title: String,
     canNavigateBack: Boolean,
-    modifier: Modifier = Modifier,
-    navigateUp: () -> Unit = {},
-    onMapTypeChange: (MapType) -> Unit
+    navigateUp: () -> Unit = {}
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var expanded by remember { mutableStateOf(false) }
@@ -551,7 +541,6 @@ fun CoordinateEntryScreenTopAppBar(
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
         title = { Text(title, color = Color.White) },
-        modifier = modifier.height(60.dp),
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if (canNavigateBack) {
@@ -575,28 +564,80 @@ fun CoordinateEntryScreenTopAppBar(
                 )
             }
 
-            IconButton(onClick = { expanded = true }) {
-                Icon(
-                    imageVector = Icons.Filled.MoreVert,
-                    contentDescription = stringResource(R.string.map_type),
-                    tint = Color.White
-                )
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    CustomMapType.entries.forEach { mapType ->
-                        DropdownMenuItem(
-                            onClick = {
-                                onMapTypeChange(mapType.mapType)
-                                expanded = false
-                            },
-                            text = {Text(mapType.displayName)}
-                        )
-                    }
-                }
-            }
         },
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MapScreenTopAppBar(
+    title: String,
+    onGetDirectionsClick: () -> Unit,
+    onRouteTypeSelected: (String) -> Unit,
+) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val carIcon: Painter = painterResource(id = R.drawable.car_icon)
+    val cyclingIcon: Painter = painterResource(id = R.drawable.cycling_icon)
+    val walkingIcon: Painter = painterResource(id = R.drawable.walking_icon)
+    val transitIcon: Painter = painterResource(id = R.mipmap.transit)
+    var expanded by remember { mutableStateOf(false) }
+    var selectedIcon by remember { mutableStateOf(walkingIcon) }
+    var selectedRouteType by remember { mutableStateOf("walking") }
+    TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
+        title = { Text(title, color = Color.White) },
+        scrollBehavior = scrollBehavior,
+        actions = {
+            IconButton(onClick = onGetDirectionsClick) {
+                Icon(
+                    imageVector = Icons.Filled.Place,
+                    contentDescription = stringResource(R.string.about),
+                    tint = Color.White
+                )
+            }
+            Box {
+                IconButton(onClick = { expanded = true }) {
+                    Image(
+                        painter = selectedIcon,
+                        contentDescription = "Route Icon",
+                        colorFilter = ColorFilter.tint(Color.White)
+                    )
+                }
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    DropdownMenuItem(onClick = {
+                        selectedIcon = walkingIcon
+                        selectedRouteType = "foot"
+                        onRouteTypeSelected(selectedRouteType)
+                        expanded = false
+                    }, text = {Text("Walking Route")}
+                    )
+                    DropdownMenuItem(onClick = {
+                        selectedIcon = cyclingIcon
+                        selectedRouteType = "bicycle"
+                        onRouteTypeSelected(selectedRouteType)
+                        expanded = false
+                    }, text = {Text("Cycling Route")}
+                    )
+                    DropdownMenuItem(onClick = {
+                        selectedIcon = carIcon
+                        selectedRouteType = "driving"
+                        onRouteTypeSelected(selectedRouteType)
+                        expanded = false
+                    }, text = {Text("Car Route")}
+                        )
+
+                    DropdownMenuItem(onClick = {
+                        selectedIcon = transitIcon
+                        selectedRouteType = "transit"
+                        onRouteTypeSelected(selectedRouteType)
+                        expanded = false
+                    },text = {Text("Transit Route")}
+                        )
+                }
+            }
+        }
+    )
+}

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,7 +25,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,17 +41,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
 import com.example.classschedule.data.Pins
+import com.example.classschedule.ui.map.OSMCustomMapType
+import com.example.classschedule.ui.map.OSMMapping
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.CoordinateEntryScreenTopAppBar
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapType
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
 import kotlinx.coroutines.launch
 
 object PinsDetailsDestination : NavigationDestination {
@@ -71,7 +63,7 @@ fun PinsDetailsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
-    var mapType by remember { mutableStateOf(MapType.NORMAL) }
+    var mapType by remember { mutableStateOf(OSMCustomMapType.STREET) }
 
     Scaffold(
         topBar = {
@@ -79,7 +71,6 @@ fun PinsDetailsScreen(
                 title = stringResource(PinsDetailsDestination.titleRes),
                 canNavigateBack = true,
                 navigateUp = navigateBack,
-                onMapTypeChange = { newMapType -> mapType = newMapType }
             )
         },
         floatingActionButton = {
@@ -120,7 +111,7 @@ fun PinsDetailsScreen(
 private fun PinsDetailsBody(
     pinsDetailsUiState: PinsDetailsUiState,
     onDelete: () -> Unit,
-    mapType: MapType,
+    mapType: OSMCustomMapType,
     modifier: Modifier = Modifier
 ){
     Column(
@@ -157,31 +148,9 @@ private fun PinsDetailsBody(
 
 @Composable
 fun PinDetails(
-    pin: Pins, modifier: Modifier = Modifier, mapType: MapType,
+    pin: Pins, modifier: Modifier = Modifier, mapType: OSMCustomMapType,
 ) {
-    val selectedLocation = remember(pin.latitude, pin.longitude) { LatLng(pin.latitude, pin.longitude) }
-    val markerState = rememberMarkerState(position = selectedLocation)
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(selectedLocation, 18f)
-    }
-    var properties by remember {
-        mutableStateOf(
-            MapProperties(
-                isMyLocationEnabled = false,
-                mapType = mapType
-            )
-        )
-    }
 
-    LaunchedEffect(pin) {
-        val newLocation = LatLng(pin.latitude, pin.longitude)
-        markerState.position = newLocation
-        cameraPositionState.position = CameraPosition.fromLatLngZoom(newLocation, 18f)
-    }
-
-    LaunchedEffect(mapType) {
-        properties = properties.copy(mapType = mapType)
-    }
     Card(
         modifier = modifier,
     ) {
@@ -213,18 +182,12 @@ fun PinDetails(
     Box(
         modifier = Modifier.height(300.dp).fillMaxWidth()
     ) {
-        GoogleMap(
-            modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState,
-            properties = properties,
-        ) {
-            Marker(
-                state = markerState,
-                title = pin.title,
-                snippet = pin.title,
-                draggable = false // No need to make it draggable if we handle map clicks
-            )
-        }
+        OSMMapping(
+            title = pin.title,
+            latitude = pin.latitude,
+            longitude = pin.longitude,
+            styleUrl = mapType.styleUrl
+        )
     }
 }
 @Composable

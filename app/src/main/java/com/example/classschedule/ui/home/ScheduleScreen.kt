@@ -1,4 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
 package com.example.classschedule.ui.home
 
 import androidx.compose.foundation.background
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,7 +39,6 @@ object ScheduleHomeDestination: NavigationDestination {
     override val titleRes = R.string.app_name
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleScreen(
     modifier: Modifier = Modifier,

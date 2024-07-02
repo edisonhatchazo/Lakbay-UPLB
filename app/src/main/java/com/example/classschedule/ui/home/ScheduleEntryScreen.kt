@@ -77,7 +77,8 @@ fun ScheduleEntryScreen(
             ScheduleEntryScreenTopAppBar(
                 title = stringResource(ScheduleEntryDestination.titleRes),
                 canNavigateBack = canNavigateBack,
-                navigateUp = onNavigateUp)
+                navigateUp = onNavigateUp
+            )
         }
     ) { innerPadding ->
         ScheduleEntryBody(

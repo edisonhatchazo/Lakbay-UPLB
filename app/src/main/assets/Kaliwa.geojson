@@ -1,0 +1,584 @@
+{
+  "type": "FeatureCollection",
+  "generator": "overpass-turbo",
+  "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+  "timestamp": "2024-07-06T09:24:01Z",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/12037301377",
+        "bench": "no",
+        "bin": "no",
+        "highway": "bus_stop",
+        "lit": "no",
+        "name": "UP Gate",
+        "public_transport": "platform",
+        "shelter": "no"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2436556,
+          14.167002
+        ]
+      },
+      "id": 21
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/584698198",
+        "highway": "bus_stop",
+        "name": "Maquiling School",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2441851,
+          14.1658894
+        ]
+      },
+      "id": 2
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/572991546",
+        "highway": "bus_stop",
+        "name": "Math Building/St. Therese",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.244529,
+          14.1650748
+        ]
+      },
+      "id": "node/572991546"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3733105013",
+        "highway": "bus_stop",
+        "name": "PhySci/Post Office",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2435869,
+          14.1634401
+        ]
+      },
+      "id": "node/3733105013"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/790115673",
+        "highway": "bus_stop",
+        "name": "Senior's Social Garden",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.24381,
+          14.1626671
+        ]
+      },
+      "id": "node/790115673"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3329860334",
+        "highway": "bus_stop",
+        "name": "CEAT/Engineering",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2449352,
+          14.1608523
+        ]
+      },
+      "id": "node/3329860334"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/1532125220",
+        "bench": "no",
+        "bin": "no",
+        "highway": "bus_stop",
+        "lit": "no",
+        "name": "FoodTech/Agronomy",
+        "public_transport": "platform",
+        "shelter": "no"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2444066,
+          14.1601432
+        ]
+      },
+      "id": "node/1532125220"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/894119546",
+        "highway": "bus_stop",
+        "name": "Animal Science/Putho",
+        "public_transport": "platform",
+        "shelter": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2436166,
+          14.1597934
+        ]
+      },
+      "id": "node/894119546"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/761178666",
+        "highway": "bus_stop",
+        "name": "Baker Hall",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2424934,
+          14.1614215
+        ]
+      },
+      "id": "node/761178666"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/438057132",
+        "highway": "bus_stop",
+        "name": "SU",
+        "shelter": "no",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2413417,
+          14.1628195
+        ]
+      },
+      "id": "node/438057132"
+    },
+
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/589472362",
+        "highway": "bus_stop",
+        "name": "YMCA",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2414561,
+          14.1609739
+        ]
+      },
+      "id": "node/589472362"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/5509654204",
+        "highway": "bus_stop",
+        "name": "Men's Dorm",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.24092,
+          14.1612352
+        ]
+      },
+      "id": "node/5509654204"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/589472350",
+        "highway": "bus_stop",
+        "name": "Freedom Park",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2408855,
+          14.161687
+        ]
+      },
+      "id": "node/589472350"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/606516192",
+        "highway": "bus_stop",
+        "name": "Women's Dorm",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2404666,
+          14.1622631
+        ]
+      },
+      "id": "node/606516192"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/4547532569",
+        "highway": "bus_stop",
+        "name": "Umali/SU",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2400171,
+          14.1636534
+        ]
+      },
+      "id": "node/4547532569"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3730588824",
+        "highway": "bus_stop",
+        "name": "Main Library/Faculty Village",
+        "public_transport": "platform",
+        "shelter": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2385843,
+          14.1654236
+        ]
+      },
+      "id": "node/3730588824"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3733105015",
+        "highway": "bus_stop",
+        "name": "Sacay/UPCO",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.23857,
+          14.1662999
+        ]
+      },
+      "id": "node/3733105015"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3733105008",
+        "highway": "bus_stop",
+        "name": "BioSci",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2399398,
+          14.1669733
+        ]
+      },
+      "id": "node/3733105008"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/606307042",
+        "highway": "bus_stop",
+        "name": "CSI/Humanities",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2407525,
+          14.1673357
+        ]
+      },
+      "id": "node/606307042"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route": "Kaliwa Route 1",
+        "@id": ""
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            121.2439,
+            14.1683
+          ],
+          [
+            121.2436556,
+            14.167002
+          ],
+          [
+            121.2441851,
+            14.1658894
+          ],
+          [
+            121.244529,
+            14.1650748
+          ],
+          [
+            121.2435869,
+            14.1634401
+          ],
+          [
+            121.24381,
+            14.1626671
+          ],
+          [
+            121.2449352,
+            14.1608523
+          ],
+          [
+            121.2444066,
+            14.1601432
+          ],
+          [
+            121.2444066,
+            14.1601432
+          ],
+          [
+            121.2436166,
+            14.1597934
+          ],
+          [
+            121.2436166,
+            14.1597934
+          ],
+          [
+            121.2424934,
+            14.1614215
+          ],
+          [
+            121.2414561,
+            14.1609739
+          ],
+          [
+            121.24092,
+            14.1612352
+          ],
+          [
+            121.2408855,
+            14.161687
+          ],
+          [
+            121.2404666,
+            14.1622631
+          ],
+          [
+            121.2400171,
+            14.1636534
+          ],
+          [
+            121.2385843,
+            14.1654236
+          ],
+          [
+            121.23857,
+            14.1662999
+          ],
+          [
+            121.2399398,
+            14.1669733
+          ],
+          [
+            121.2407525,
+            14.1673357
+          ],
+          [
+            121.2416532,
+            14.1677242
+          ],
+          [
+            121.2429887,
+            14.1675438
+          ],
+          [
+            121.2437,
+            14.1681
+          ]
+        ]
+      }
+    },
+        {
+      "type": "Feature",
+      "properties": {
+        "route": "Kaliwa Route 2"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            121.2439,
+            14.1683
+          ],
+          [
+            121.2436556,
+            14.167002
+          ],
+          [
+            121.2441851,
+            14.1658894
+          ],
+          [
+            121.244529,
+            14.1650748
+          ],
+          [
+            121.2435869,
+            14.1634401
+          ],
+          [
+            121.24381,
+            14.1626671
+          ],
+          [
+            121.2449352,
+            14.1608523
+          ],
+          [
+            121.2444066,
+            14.1601432
+          ],
+          [
+            121.2444066,
+            14.1601432
+          ],
+          [
+            121.2436166,
+            14.1597934
+          ],
+          [
+            121.2424934,
+            14.1614215
+          ],
+          [
+            121.2413417,
+            14.1628195
+          ],
+          [
+            121.2400171,
+            14.1636534
+          ],
+          [
+            121.2385843,
+            14.1654236
+          ],
+          [
+            121.23857,
+            14.1662999
+          ],
+          [
+            121.2399398,
+            14.1669733
+          ],
+          [
+            121.2407525,
+            14.1673357
+          ],
+          [
+            121.2416532,
+            14.1677242
+          ],
+          [
+            121.2429887,
+            14.1675438
+          ],
+          [
+            121.2437,
+            14.1681
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/5509654199",
+        "bench": "yes",
+        "bin": "no",
+        "bus": "yes",
+        "highway": "bus_stop",
+        "name": "Raymundo Gate",
+        "public_transport": "platform",
+        "shelter": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2416532,
+          14.1677242
+        ]
+      },
+      "id": 20
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3463468475",
+        "bench": "no",
+        "bin": "no",
+        "highway": "bus_stop",
+        "lit": "no",
+        "name": "UP Gate",
+        "public_transport": "platform",
+        "shelter": "no"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2429887,
+          14.1675438
+        ]
+      },
+      "id": 13
+    }
+  ]
+}

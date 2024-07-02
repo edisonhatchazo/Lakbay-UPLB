@@ -26,6 +26,7 @@ import com.example.classschedule.ui.home.ScheduleDetailsViewModel
 import com.example.classschedule.ui.home.ScheduleEditViewModel
 import com.example.classschedule.ui.home.ScheduleEntryViewModel
 import com.example.classschedule.ui.home.ScheduleViewModel
+import com.example.classschedule.ui.map.MapViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory{
@@ -140,6 +141,13 @@ object AppViewModelProvider {
         initializer {
             SearchViewModel(
                 classScheduleApplication().container.buildingRepository
+            )
+        }
+
+        initializer {
+            MapViewModel(
+                classScheduleApplication().container.osrmRepository,
+                classScheduleApplication()
             )
         }
 

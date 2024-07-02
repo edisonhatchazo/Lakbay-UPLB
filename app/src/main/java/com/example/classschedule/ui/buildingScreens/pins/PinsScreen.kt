@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -37,7 +36,6 @@ object PinsHomeDestination: NavigationDestination {
     override val titleRes = R.string.my_pins
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PinsScreen(
     navigateToPinsEntry: () -> Unit,

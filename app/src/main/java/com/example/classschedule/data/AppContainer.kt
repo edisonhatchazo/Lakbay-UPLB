@@ -1,12 +1,18 @@
 package com.example.classschedule.data
 
 import android.content.Context
+import com.example.classschedule.algorithm.osrms.OSRMRepository
+import com.example.classschedule.algorithm.osrms.OSRMService
+import com.example.classschedule.algorithm.retrofit.RetrofitClient
+import com.example.classschedule.algorithm.transit.BusRoute
+import com.example.classschedule.algorithm.transit.loadBusRoutes
 
 interface AppContainer {
     val classScheduleRepository: ClassScheduleRepository
     val examScheduleRepository: ExamScheduleRepository
     val pinsRepository: PinsRepository
     val buildingRepository: BuildingRepository
+    val osrmRepository: OSRMRepository
 }
 
 class AppDataContainer(private val context: Context): AppContainer{
@@ -28,4 +34,15 @@ class AppDataContainer(private val context: Context): AppContainer{
         OfflineBuildingRepository(db.buildingDao(), db.classroomDao())
     }
 
+    private fun loadAllBusRoutes(context: Context): List<BusRoute> {
+        val kananRoutes = loadBusRoutes(context, "Kanan.geojson")
+        val kaliwaRoutes = loadBusRoutes(context, "Kaliwa.geojson")
+        val forestryRoutes = loadBusRoutes(context, "Forestry_Stops.geojson")
+        return kananRoutes + kaliwaRoutes + forestryRoutes
+    }
+
+    override val osrmRepository: OSRMRepository by lazy {
+        val busRoutes = loadAllBusRoutes(context)
+        OSRMRepository(busRoutes)
+    }
 }

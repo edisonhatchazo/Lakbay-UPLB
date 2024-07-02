@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -29,7 +28,6 @@ object ScheduleEditDestination: NavigationDestination {
     const val SCHEDULEIDARG = "scheduleId"
     val routeWithArgs = "$route/{$SCHEDULEIDARG}"
 }
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleEditScreen(
     navigateBack: () -> Unit,

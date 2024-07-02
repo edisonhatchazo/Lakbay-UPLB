@@ -69,8 +69,8 @@ fun ExamScheduleScreen(
                 title = stringResource(R.string.exam_schedule),
                 canNavigateBack = false,
                 navigateToScheduleEntry = navigateToScheduleEntry,
-                navigateToExamHome = {},
                 navigateToClassHome = navigateToScheduleHomeDestination,
+                navigateToExamHome = {},
                 examDates = examDates,
                 selectedDate = selectedDate,
                 onDateSelected = { date -> selectedDate = date }

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,7 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,20 +38,14 @@ import androidx.navigation.NavHostController
 import com.example.classschedule.R
 import com.example.classschedule.data.Building
 import com.example.classschedule.data.Classroom
+import com.example.classschedule.ui.map.OSMCustomMapType
+import com.example.classschedule.ui.map.OSMMapping
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.CoordinateEntryScreenTopAppBar
 import com.example.classschedule.ui.screen.DetailsScreenTopAppBar
 import com.example.classschedule.ui.theme.CollegeColorPalette
 import com.example.classschedule.ui.theme.ColorEntry
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapType
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
 
 object BuildingDetailsDestination : NavigationDestination {
     override val route = "building_details"
@@ -70,20 +62,18 @@ fun BuildingDetailsScreen (
     viewModel: BuildingDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
     mainNavController: NavHostController
 ){
-    var mapType by remember { mutableStateOf(MapType.NORMAL) }
-    val uiState = viewModel.uiState.collectAsState()
+    var mapType by remember { mutableStateOf(OSMCustomMapType.STREET) }
     val roomUiState by viewModel.buildingRoomUiState.collectAsState()
     val room = roomUiState.roomList
+    val uiState = viewModel.uiState.collectAsState()
     val build = uiState.value.buildingDetails.toBuilding()
-
     Scaffold(
         topBar = {
             if(build.college == "Landmark" || build.college == "Dormitory" || build.college == "UP unit"){
                 CoordinateEntryScreenTopAppBar(
-                    title = build.abbreviation,
+                    title = build.name,
                     canNavigateBack = true,
-                    navigateUp = navigateBack,
-                    onMapTypeChange = { newMapType -> mapType = newMapType }
+                    navigateUp = navigateBack
                 )
             }
             else {
@@ -114,7 +104,7 @@ fun BuildingDetailsScreen (
 
 @Composable
 private fun BuildingDetailsBody(
-    mapType: MapType,
+    mapType: OSMCustomMapType,
     navController: NavHostController,
     navigateToRoomDetails: (Int) -> Unit,
     buildingDetailsUiState: BuildingDetailsUiState,
@@ -176,32 +166,8 @@ fun LocationDetail(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     colorEntry: ColorEntry,
-    mapType: MapType
+    mapType: OSMCustomMapType
 ){
-
-    val selectedLocation = remember(building.latitude,building.longitude){ LatLng(building.latitude, building.longitude) }
-    val markerState = rememberMarkerState(position = selectedLocation)
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(selectedLocation, 18f)
-    }
-    var properties by remember {
-        mutableStateOf(
-            MapProperties(
-                isMyLocationEnabled = false,
-                mapType = mapType
-            )
-        )
-    }
-    LaunchedEffect(building) {
-        val newLocation = LatLng(building.latitude, building.longitude)
-        markerState.position = newLocation
-        cameraPositionState.position = CameraPosition.fromLatLngZoom(newLocation, 18f)
-    }
-
-    LaunchedEffect(mapType) {
-        properties = properties.copy(mapType = mapType)
-    }
-
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = colorEntry.backgroundColor)
@@ -215,9 +181,9 @@ fun LocationDetail(
             )
         ) {
             BuildingDetailsRow(
-                labelResID = R.string.abbreviation,
+                labelResID = R.string.name,
                 colorEntry = colorEntry,
-                buildingDetail = building.abbreviation,
+                buildingDetail = building.name,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
                 )
@@ -238,17 +204,12 @@ fun LocationDetail(
             .height(300.dp)
             .fillMaxWidth()
     ) {
-        GoogleMap(
-            modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState,
-            properties = properties,
-        ) {
-            Marker(
-                state = markerState,
-                title = building.name,
-                draggable = false // No need to make it draggable if we handle map clicks
-            )
-        }
+        OSMMapping(
+            title = building.name,
+            latitude = building.latitude,
+            longitude = building.longitude,
+            styleUrl = mapType.styleUrl
+        )
     }
 
     Button(

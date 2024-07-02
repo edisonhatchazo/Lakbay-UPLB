@@ -1,0 +1,434 @@
+{
+  "type": "FeatureCollection",
+  "generator": "overpass-turbo",
+  "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+  "timestamp": "2024-07-06T09:24:01Z",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/438057287",
+        "highway": "bus_stop",
+        "name": "SU",
+        "shelter": "no"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2411294,
+          14.1628594
+        ]
+      },
+      "id": "node/438057287"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/584698210",
+        "bench": "yes",
+        "highway": "bus_stop",
+        "name": "Math Building/St. Therese",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2446069,
+          14.1650861
+        ]
+      },
+      "id": "node/584698210"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/589472350",
+        "highway": "bus_stop",
+        "name": "Freedom Park",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2408855,
+          14.161687
+        ]
+      },
+      "id": 4
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/589472352",
+        "highway": "bus_stop",
+        "name": "Baker Hall",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2422655,
+          14.1613905
+        ]
+      },
+      "id": "node/589472352"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/594380025",
+        "highway": "bus_stop",
+        "name": "Main Library/Faculty Village",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2385293,
+          14.1654993
+        ]
+      },
+      "id": "node/594380025"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/606307043",
+        "highway": "bus_stop",
+        "name": "CSI/BioSci/Humanities",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2401897,
+          14.1671303
+        ]
+      },
+      "id": "node/606307043"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/606307044",
+        "highway": "bus_stop",
+        "name": "Sacay/UPCO",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2387514,
+          14.1665156
+        ]
+      },
+      "id": "node/606307044"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/606516192",
+        "highway": "bus_stop",
+        "name": "Women's Dorm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2404666,
+          14.1622631
+        ]
+      },
+      "id": "node/606516192"
+    },
+{
+      "type": "Feature",
+      "properties": {
+        "@id": "node/884341879",
+        "highway": "bus_stop",
+        "name": "SU - Umali",
+        "shelter": "no",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2406282,
+          14.1635619
+        ]
+      },
+      "id": "node/884341879"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/1532125053",
+        "bench": "no",
+        "bin": "no",
+        "check_date:shelter": "2023-03-12",
+        "highway": "bus_stop",
+        "lit": "no",
+        "name": "Animal Science/Putho",
+        "public_transport": "platform",
+        "shelter": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2434548,
+          14.1598585
+        ]
+      },
+      "id": "node/1532125053"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3329860333",
+        "highway": "bus_stop",
+        "name": "CEAT/Engineering",
+        "public_transport": "platform",
+        "shelter": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.245038,
+          14.1609052
+        ]
+      },
+      "id": "node/3329860333"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3463468476",
+        "bench": "yes",
+        "bin": "yes",
+        "check_date:bin": "2022-10-27",
+        "check_date:shelter": "2022-10-24",
+        "highway": "bus_stop",
+        "name": "UP Gate",
+        "public_transport": "platform",
+        "shelter": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2430325,
+          14.1676036
+        ]
+      },
+      "id": "node/3463468476"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3733105014",
+        "highway": "bus_stop",
+        "name": "PhySci/Post Office",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2437679,
+          14.1634643
+        ]
+      },
+      "id": "node/3733105014"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3733105016",
+        "highway": "bus_stop",
+        "name": "Senior's Social Garden",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2438536,
+          14.1626702
+        ]
+      },
+      "id": "node/3733105016"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/4547532546",
+        "bench": "no",
+        "bin": "no",
+        "highway": "bus_stop",
+        "lit": "no",
+        "name": "AnSci/Agronomy",
+        "public_transport": "platform",
+        "shelter": "no"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2446384,
+          14.160215
+        ]
+      },
+      "id": "node/4547532546"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/4547532570",
+        "highway": "bus_stop",
+        "name": "Umali/SU",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2399205,
+          14.1637471
+        ]
+      },
+      "id": "node/4547532570"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/5509654200",
+        "highway": "bus_stop",
+        "name": "Raymundo Gate",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.241397,
+          14.1676533
+        ]
+      },
+      "id": "node/5509654200"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/5509654204",
+        "highway": "bus_stop",
+        "name": "Men's Dorm",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.24092,
+          14.1612352
+        ]
+      },
+      "id": 27
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/12037301378",
+        "bench": "no",
+        "bin": "no",
+        "bus": "yes",
+        "highway": "bus_stop",
+        "lit": "no",
+        "name": "UP Gate",
+        "public_transport": "platform",
+        "shelter": "no"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.243722,
+          14.1670243
+        ]
+      },
+      "id": "node/12037301378"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route": "Kanan Route 1"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.2438,14.1681],
+          [121.2430325,14.1676036],
+          [121.241397,14.1676533],
+          [121.2401897,14.1671303],
+          [121.2387514,14.1665156],
+          [121.2385293,14.1654993],
+          [121.2399205,14.1637471],
+          [121.2404666,14.1622631],
+          [121.2408855,14.161687],
+          [121.24092,14.1612352],
+          [121.2422655,14.1613905],
+          [121.24247678108213,14.161427903323997],
+          [121.2434548,14.1598585],
+          [121.2446384,14.160215],
+          [121.245038,14.1609052],
+          [121.2438536,14.1626702],
+          [121.2437679,14.1634643],
+          [121.2446069,14.1650861],
+          [121.243722,14.1670243],
+          [121.2439,14.1683]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route": "Kanan Route 2"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [121.2438,14.1681],
+          [121.2430325,14.1676036],
+          [121.241397,14.1676533],
+          [121.2401897,14.1671303],
+          [121.2387514,14.1665156],
+          [121.2385293,14.1654993],
+          [121.2399205,14.1637471],
+          [121.2406282,14.1635619],
+          [121.2411294,14.1628594],
+          [121.24247678108213,14.161427903323997],
+          [121.2434548,14.1598585],
+          [121.2446384,14.160215],
+          [121.245038,14.1609052],
+          [121.2438536,14.1626702],
+          [121.2437679,14.1634643],
+          [121.2446069,14.1650861],
+          [121.243722,14.1670243],
+          [121.2439,14.1683]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/761178666",
+        "bench": "no",
+        "bin": "no",
+        "bus": "yes",
+        "highway": "bus_stop",
+        "lit": "no",
+        "name": "Baker Hall",
+        "public_transport": "platform",
+        "shelter": "yes"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24247678108213,
+          14.161427903323997
+        ],
+        "type": "Point"
+      },
+      "id": "node/761178666"
+    }
+  ]
+}
