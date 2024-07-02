@@ -1,5 +1,6 @@
 package com.example.classschedule.ui.buildingScreens.pins
 
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,24 +25,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.CoordinateEntryScreenTopAppBar
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapType
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
+import com.example.classschedule.ui.screen.OSMCustomMapType
 import kotlinx.coroutines.launch
+import org.maplibre.android.MapLibre
+import org.maplibre.android.WellKnownTileServer
+import org.maplibre.android.camera.CameraUpdateFactory
+import org.maplibre.android.geometry.LatLng
+import org.maplibre.android.maps.MapView
+import org.maplibre.android.plugins.annotation.SymbolManager
+import org.maplibre.android.plugins.annotation.SymbolOptions
 
 object PinsEntryDestination: NavigationDestination {
     override val route = "pins_entry"
@@ -57,7 +60,7 @@ fun PinsEntryScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val pinsUiState = viewModel.pinsUiState
-    var mapType by remember { mutableStateOf(MapType.NORMAL) }
+    var mapType by remember { mutableStateOf(OSMCustomMapType.STREET) }
 
     Scaffold(
         topBar = {
@@ -65,7 +68,6 @@ fun PinsEntryScreen(
                 title = stringResource(PinsEntryDestination.titleRes),
                 canNavigateBack = canNavigateBack,
                 navigateUp = onNavigateUp,
-                onMapTypeChange = { newMapType -> mapType = newMapType }
             )
         }
     ) { innerPadding ->
@@ -100,7 +102,7 @@ fun PinsEntryBody(
     pinsUiState: PinsUiState,
     onPinsValueChange: (PinsDetails) -> Unit,
     onSaveClick: () -> Unit,
-    mapType: MapType,
+    mapType: OSMCustomMapType,
     modifier: Modifier = Modifier
 ){
     Column(
@@ -128,23 +130,16 @@ fun PinsEntryBody(
 fun PinsInputForm(
     pinsDetails: PinsDetails,
     onValueChange: (PinsDetails) -> Unit,
-    mapType: MapType,
+    mapType: OSMCustomMapType,
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ){
     var selectedLocation by remember { mutableStateOf(LatLng(pinsDetails.latitude, pinsDetails.longitude)) }
-    val markerState = rememberMarkerState(position = selectedLocation)
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(selectedLocation, 18f)
-    }
-    var properties by remember{
-        mutableStateOf(
-            MapProperties(
-                isMyLocationEnabled = false,
-                mapType = mapType
-            )
-        )
-    }
+
+    val context = LocalContext.current
+    val apiKey = context.getString(R.string.kento)
+    val tileServer: WellKnownTileServer = WellKnownTileServer.MapLibre
+
     // Update pinsDetails when selectedLocation changes
     LaunchedEffect(selectedLocation) {
         onValueChange(pinsDetails.copy(latitude = selectedLocation.latitude, longitude = selectedLocation.longitude))
@@ -153,14 +148,8 @@ fun PinsInputForm(
     LaunchedEffect(pinsDetails) {
         val newLocation = LatLng(pinsDetails.latitude, pinsDetails.longitude)
         selectedLocation = newLocation
-        cameraPositionState.position = CameraPosition.fromLatLngZoom(newLocation, 18f)
-        markerState.position = newLocation
     }
 
-    // Update map properties when mapType changes
-    LaunchedEffect(mapType) {
-        properties = properties.copy(mapType = mapType)
-    }
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
@@ -185,23 +174,50 @@ fun PinsInputForm(
         Box(
             modifier = Modifier.height(300.dp).fillMaxWidth()
         ) {
-
-            GoogleMap(
+            AndroidView(
                 modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState,
-                properties = properties,
-                onMapClick = { latLng ->
-                    selectedLocation = latLng
-                    markerState.position = latLng
-                },
-            ) {
-                Marker(
-                    state = markerState,
-                    title = pinsDetails.title,
-                    snippet = pinsDetails.title,
-                    draggable = false // No need to make it draggable if we handle map clicks
-                )
-            }
+                factory = { context ->
+                    MapLibre.getInstance(context, apiKey, tileServer)
+                    MapView(context).apply {
+                        getMapAsync { mapLibreMap ->
+                            mapLibreMap.setStyle(mapType.styleUrl) { style ->
+                                val location = LatLng(pinsDetails.latitude, pinsDetails.longitude)
+                                mapLibreMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 18.0))
+
+                                // Add the marker icon to the style
+                                style.addImage("marker-icon", BitmapFactory.decodeResource(context.resources, R.drawable.marker_48))
+
+                                // Initialize SymbolManager
+                                val symbolManager = SymbolManager(this, mapLibreMap, style).apply {
+                                    iconAllowOverlap = true
+                                    textAllowOverlap = true
+                                }
+
+                                // Add a marker (symbol)
+                                val symbolOptions = SymbolOptions()
+                                    .withLatLng(location)
+                                    .withIconImage("marker-icon")
+                                    .withTextField(pinsDetails.title)
+                                    .withTextOffset(arrayOf(0f, 1.5f))
+                                symbolManager.create(symbolOptions)
+
+                                mapLibreMap.addOnMapClickListener { latLng ->
+                                    selectedLocation = latLng
+                                    symbolManager.deleteAll()
+                                    symbolManager.create(
+                                        SymbolOptions()
+                                            .withLatLng(latLng)
+                                            .withIconImage("marker-icon")
+                                            .withTextField(pinsDetails.title)
+                                            .withTextOffset(arrayOf(0f, 1.5f))
+                                    )
+                                    true
+                                }
+                            }
+                        }
+                    }
+                }
+            )
         }
 
 

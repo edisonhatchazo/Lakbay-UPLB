@@ -20,7 +20,7 @@ import com.example.classschedule.R
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.CoordinateEntryScreenTopAppBar
-import com.google.maps.android.compose.MapType
+import com.example.classschedule.ui.screen.OSMCustomMapType
 import kotlinx.coroutines.launch
 
 object PinsEditDestination: NavigationDestination {
@@ -39,14 +39,13 @@ fun PinsEditScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val pinsUiState = viewModel.pinsUiState
-    var mapType by remember { mutableStateOf(MapType.NORMAL) }
+    var mapType by remember { mutableStateOf(OSMCustomMapType.STREET) }
     Scaffold(
         topBar = {
             CoordinateEntryScreenTopAppBar(
                 title = stringResource(PinsEditDestination.titleRes),
                 canNavigateBack = true,
                 navigateUp = onNavigateUp,
-                onMapTypeChange = { newMapType -> mapType = newMapType }
             )
         },
         modifier = modifier

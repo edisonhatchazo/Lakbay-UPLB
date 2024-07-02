@@ -13,7 +13,7 @@ object ColorPalette {
         "Blue" to ColorEntry(Color.Blue, Color.White),
         "Green" to ColorEntry(Color.Green, Color.Black),
         "Purple" to ColorEntry(Color(0xFF800080), Color.White), // Purple
-        "Dark Yellow" to ColorEntry(Color(0xFF808000), Color.Black), // Dark Yellow
+        "Dark Yellow" to ColorEntry(Color(0xFF808000), Color.White), // Dark Yellow
         "Magenta" to ColorEntry(Color.Magenta, Color.Black),
         "Cyan" to ColorEntry(Color.Cyan, Color.Black),
         "Orange" to ColorEntry(Color(0xFFFFA500), Color.Black), // Orange
@@ -26,7 +26,7 @@ object ColorPalette {
         "Bronze" to ColorEntry(Color(0xFFCD7F32), Color.Black), // Bronze
         "Silver" to ColorEntry(Color(0xFFC0C0C0), Color.Black), // Silver
         "Gold" to ColorEntry(Color(0xFFFFD700), Color.Black), // Gold
-        "Copper Rose" to ColorEntry(Color(0xFF996666), Color.Black), // Copper Rose
+        "Copper Rose" to ColorEntry(Color(0xFF996666), Color.White), // Copper Rose
         "Turquoise" to ColorEntry(Color(0xFF40E0D0), Color.Black), // Turquoise
         "Pearl" to ColorEntry(Color(0xFFF0EAD6), Color.Black), // Pearl
         "Lemon" to ColorEntry(Color(0xFFFFE700), Color.Black), // Lemon

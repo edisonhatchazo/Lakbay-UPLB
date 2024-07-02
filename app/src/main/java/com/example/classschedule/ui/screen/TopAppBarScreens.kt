@@ -16,7 +16,6 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -42,7 +41,6 @@ import com.example.classschedule.R
 import com.example.classschedule.algorithm.CustomDatePickerDialog
 import com.example.classschedule.algorithm.SearchViewModel
 import com.example.classschedule.ui.navigation.AppViewModelProvider
-import com.google.maps.android.compose.MapType
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -542,8 +540,7 @@ fun CoordinateEntryScreenTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     modifier: Modifier = Modifier,
-    navigateUp: () -> Unit = {},
-    onMapTypeChange: (MapType) -> Unit
+    navigateUp: () -> Unit = {}
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var expanded by remember { mutableStateOf(false) }
@@ -575,27 +572,6 @@ fun CoordinateEntryScreenTopAppBar(
                 )
             }
 
-            IconButton(onClick = { expanded = true }) {
-                Icon(
-                    imageVector = Icons.Filled.MoreVert,
-                    contentDescription = stringResource(R.string.map_type),
-                    tint = Color.White
-                )
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    CustomMapType.entries.forEach { mapType ->
-                        DropdownMenuItem(
-                            onClick = {
-                                onMapTypeChange(mapType.mapType)
-                                expanded = false
-                            },
-                            text = {Text(mapType.displayName)}
-                        )
-                    }
-                }
-            }
         },
     )
 }

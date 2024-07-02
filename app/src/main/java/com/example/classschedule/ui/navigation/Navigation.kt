@@ -11,6 +11,7 @@ import com.example.classschedule.ui.screen.BuildingScreen
 import com.example.classschedule.ui.screen.ClassesScreen
 import com.example.classschedule.ui.screen.HomeScreen
 import com.example.classschedule.ui.screen.MapScreen
+import com.example.classschedule.ui.screen.OSMCustomMapType
 import com.example.classschedule.ui.screen.Screen
 
 @Composable
@@ -19,7 +20,7 @@ fun Navigation(navController: NavHostController, modifier: Modifier = Modifier) 
         composable(Screen.Home.route) { HomeScreen(navController) }
         composable(Screen.Classes.route) { ClassesScreen(navController) }
         composable(Screen.Building.route) { BuildingScreen(navController) }
-        composable(Screen.Map.route) { MapScreen("UPLB Gate", 14.16747822735461, 121.24338486047947) }
+        composable(Screen.Map.route) { MapScreen("UPLB Gate", 14.16747822735461, 121.24338486047947, OSMCustomMapType.STREET.styleUrl) }
 
         composable(
             route = "map_screen/{title}/{latitude}/{longitude}",
@@ -32,7 +33,7 @@ fun Navigation(navController: NavHostController, modifier: Modifier = Modifier) 
             val title = backStackEntry.arguments?.getString("title") ?: ""
             val latitude = backStackEntry.arguments?.getString("latitude")?.toDoubleOrNull() ?: 0.0
             val longitude = backStackEntry.arguments?.getString("longitude")?.toDoubleOrNull() ?: 0.0
-            MapScreen(title, latitude, longitude)
+            MapScreen(title, latitude, longitude, OSMCustomMapType.STREET.styleUrl)
         }
     }
 }

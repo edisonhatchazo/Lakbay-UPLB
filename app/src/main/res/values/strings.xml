@@ -18,6 +18,7 @@
     <string name="name">Name</string>
     <string name="guide">Guide To Location</string>
     <string name="rooms">Rooms</string>
+    <string name="other_name">Other Name</string>
     <string name="abbreviation">Abbreviation</string>
     <string name="my_pins">My Coordinate Pins</string>
     <string name="floor">Floor</string>
@@ -50,6 +51,7 @@
     <string name="class_name_req">Class Title</string>
     <string name="exams_name_req">Exams Title</string>
     <string name="no">No</string>
+    <string name="kento">sk.eyJ1IjoiZWRpc29uaGF0Y2hhem8xNyIsImEiOiJjbHkyeXQwOXgwMXhvMmpyNHgybmJveXpyIn0.86kF89q34QqMEkX9f8pgqg</string>
     <string name="save_action">Save</string>
     <string name="yes">Yes</string>
     <string name="about">About</string>

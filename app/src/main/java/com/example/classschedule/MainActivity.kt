@@ -12,10 +12,13 @@ import com.example.classschedule.ui.navigation.BottomNavigationBar
 import com.example.classschedule.ui.navigation.Navigation
 import com.example.classschedule.ui.theme.ClassScheduleTheme
 
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+
+
         setContent {
             ClassScheduleTheme {
                 val navController = rememberNavController()

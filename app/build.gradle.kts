@@ -4,9 +4,12 @@ plugins {
     id("com.google.devtools.ksp") version "1.9.20-1.0.14"
 }
 
+
 android {
     namespace = "com.example.classschedule"
     compileSdk = 34
+
+
 
     defaultConfig {
         applicationId = "com.example.classschedule"
@@ -67,12 +70,10 @@ dependencies {
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.material)
-    implementation(libs.maps.compose)
-    implementation(libs.play.services.maps)
-    implementation(libs.maps.ktx)
     implementation(libs.ui)
     implementation(libs.accompanist.permissions)
-
+    implementation("org.maplibre.gl:android-plugin-annotation-v9:3.0.0")
+    implementation("org.maplibre.gl:android-sdk:11.0.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

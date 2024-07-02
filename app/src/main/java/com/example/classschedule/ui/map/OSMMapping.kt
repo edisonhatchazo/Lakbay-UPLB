@@ -1,4 +1,4 @@
-package com.example.classschedule.ui.screen
+package com.example.classschedule.ui.map
 
 import android.Manifest
 import android.graphics.BitmapFactory
@@ -27,19 +27,9 @@ import org.maplibre.android.maps.MapView
 import org.maplibre.android.plugins.annotation.SymbolManager
 import org.maplibre.android.plugins.annotation.SymbolOptions
 
-
-enum class OSMCustomMapType( val styleUrl: String) {
-    STREET("https://api.maptiler.com/maps/streets-v2/style.json?key=w30aQM8FugoPfybqIZz7"),
-    OSM("https://api.maptiler.com/maps/openstreetmap/style.json?key=w30aQM8FugoPfybqIZz7"),
-    SATELLITE("https://api.maptiler.com/maps/satellite/style.json?key=w30aQM8FugoPfybqIZz7"),
-    LANDSCAPE( "https://api.maptiler.com/maps/landscape/style.json?key=w30aQM8FugoPfybqIZz7")
-}
-
-
-
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun MapScreen(title: String, latitude: Double, longitude: Double, styleUrl: String) {
+fun OSMMapping(title: String, latitude: Double, longitude: Double, styleUrl: String) {
     val context = LocalContext.current
     val apiKey = context.getString(R.string.kento)
     val tileServer: WellKnownTileServer = WellKnownTileServer.MapLibre
@@ -49,12 +39,11 @@ fun MapScreen(title: String, latitude: Double, longitude: Double, styleUrl: Stri
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
     )
-
     LaunchedEffect(Unit) {
         permissionsState.launchMultiplePermissionRequest()
     }
 
-    if (permissionsState.allPermissionsGranted) {
+    if (permissionsState.allPermissionsGranted && title.isNotEmpty()) {
         var mapView by remember { mutableStateOf<MapView?>(null) }
 
         DisposableEffect(Unit) {

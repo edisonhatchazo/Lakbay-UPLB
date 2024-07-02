@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.stateIn
 
 class BuildingDetailsViewModel(
     savedStateHandle: SavedStateHandle,
-    private val buildingRepository: BuildingRepository
+    buildingRepository: BuildingRepository
 ): ViewModel() {
     private val buildingId: Int = checkNotNull(savedStateHandle[BuildingDetailsDestination.BUILDINGIDARG])
 

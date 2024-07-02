@@ -36,6 +36,7 @@ data class Classroom(
     val type: String,
     val latitude: Double,
     val longitude: Double,
+    val college: String,
     @ColumnInfo(name = "building_id")
     val buildingId: Int
 )

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,7 +20,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,19 +34,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.classschedule.R
+import com.example.classschedule.data.Classroom
+import com.example.classschedule.ui.map.OSMMapping
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.CoordinateEntryScreenTopAppBar
+import com.example.classschedule.ui.screen.OSMCustomMapType
 import com.example.classschedule.ui.theme.CollegeColorPalette
 import com.example.classschedule.ui.theme.ColorEntry
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapType
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
 
 object RoomDetailsDestination : NavigationDestination {
     override val route = "room_details"
@@ -65,10 +58,11 @@ fun RoomDetailsScreen(
     mainNavController: NavHostController
 ) {
 
-    val roomUiState by viewModel.classroomUiState.collectAsState()
-    val room = roomUiState.classroomDetails
-    val buildingCollege = roomUiState.buildingCollege
-    var mapType by remember { mutableStateOf(MapType.NORMAL) }
+    val roomUiState = viewModel.uiState.collectAsState()
+    val room = roomUiState.value.classroomDetails.toClassroom()
+
+
+    var mapType by remember { mutableStateOf(OSMCustomMapType.STREET) }
 
     Scaffold(
         topBar = {
@@ -76,15 +70,14 @@ fun RoomDetailsScreen(
                 title = room.abbreviation,
                 canNavigateBack = true,
                 navigateUp = navigateBack,
-                onMapTypeChange = { newMapType -> mapType = newMapType }
             )
         }, modifier = modifier
     ){innerPadding ->
         ClassroomDetailsBody(
             navController = mainNavController,
             mapType = mapType,
-            classroomDetails = room,
-            buildingCollege = buildingCollege,
+            classroomDetailsUiState = roomUiState.value,
+            buildingCollege = room.college,
             modifier = Modifier
                 .padding(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
@@ -100,13 +93,13 @@ fun RoomDetailsScreen(
 
 @Composable
 private fun ClassroomDetailsBody(
-    classroomDetails: ClassroomDetails,
+    classroomDetailsUiState: ClassroomDetailsUiState,
     buildingCollege: String,
-    mapType: MapType,
+    mapType: OSMCustomMapType,
     navController: NavHostController,
     modifier: Modifier = Modifier
 ){
-
+    val classroom = classroomDetailsUiState.classroomDetails.toClassroom()
     val colorEntry = CollegeColorPalette.getColorEntry(buildingCollege)
     Column(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
@@ -115,7 +108,7 @@ private fun ClassroomDetailsBody(
         ClassroomDetailed(
             colorEntry = colorEntry,
             navController = navController,
-            classroom = classroomDetails,
+            classroom = classroom,
             modifier = Modifier.fillMaxWidth(),
             mapType = mapType,
         )
@@ -125,35 +118,12 @@ private fun ClassroomDetailsBody(
 
 @Composable
 fun ClassroomDetailed(
-    classroom: ClassroomDetails,
+    classroom: Classroom,
     modifier: Modifier = Modifier,
-    mapType: MapType,
+    mapType: OSMCustomMapType,
     navController: NavHostController,
     colorEntry: ColorEntry
 ){
-    val selectedLocation = remember(classroom.latitude,classroom.longitude){ LatLng(classroom.latitude, classroom.longitude) }
-    val markerState = rememberMarkerState(position = selectedLocation)
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(selectedLocation, 18f)
-    }
-    var properties by remember {
-        mutableStateOf(
-            MapProperties(
-                isMyLocationEnabled = false,
-                mapType = mapType
-            )
-        )
-    }
-    LaunchedEffect(classroom) {
-        val newLocation = LatLng(classroom.latitude, classroom.longitude)
-        markerState.position = newLocation
-        cameraPositionState.position = CameraPosition.fromLatLngZoom(newLocation, 18f)
-    }
-
-    LaunchedEffect(mapType) {
-        properties = properties.copy(mapType = mapType)
-    }
-
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = colorEntry.backgroundColor)
@@ -185,24 +155,20 @@ fun ClassroomDetailed(
         }
     }
     Text(text = stringResource(R.string.location), fontWeight = FontWeight.Bold)
-
     Box(
         modifier = Modifier
             .height(300.dp)
             .fillMaxWidth()
     ) {
-        GoogleMap(
-            modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState,
-            properties = properties,
-        ) {
-            Marker(
-                state = markerState,
-                title = classroom.title,
-                draggable = false // No need to make it draggable if we handle map clicks
-            )
-        }
+
+        OSMMapping(
+            title = classroom.title,
+            latitude = classroom.latitude,
+            longitude = classroom.longitude,
+            styleUrl = mapType.styleUrl
+        )
     }
+
     Button(
         onClick = {  navController.navigate("map_screen/${classroom.title}/${classroom.latitude}/${classroom.longitude}")},
         shape = MaterialTheme.shapes.small,
