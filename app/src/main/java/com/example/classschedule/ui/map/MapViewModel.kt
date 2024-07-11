@@ -62,3 +62,5 @@ class MapViewModel(private val repository: OSRMRepository, application: Applicat
     }
 
 }
+
+

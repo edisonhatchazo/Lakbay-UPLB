@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.classschedule.data.BuildingRepository
 import com.example.classschedule.data.ExamScheduleRepository
+import com.example.classschedule.data.MapData
+import com.example.classschedule.data.MapDataRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +18,8 @@ import kotlinx.coroutines.launch
 class ExamDetailsViewModel(
     savedStateHandle: SavedStateHandle,
     private val examScheduleRepository: ExamScheduleRepository,
-    private val classroomRepository: BuildingRepository
+    private val classroomRepository: BuildingRepository,
+    private val mapDataRepository: MapDataRepository,
 ) : ViewModel() {
     private val classScheduleId: Int = checkNotNull(savedStateHandle[ExamDetailsDestination.SCHEDULEIDARG])
 
@@ -30,9 +33,21 @@ class ExamDetailsViewModel(
             _uiState.value = ExamScheduleDetailsUiState(
                 examScheduleDetails = schedule.toExamScheduleDetails(),
                 latitude = room?.latitude ?: 0.0,
-                longitude = room?.longitude ?: 0.0
+                longitude = room?.longitude ?: 0.0,
+                floor = room?.floor ?: ""
             )
         }
+    }
+
+    suspend fun addOrUpdateMapData(examScheduleDetails: ExamScheduleDetailsUiState) {
+        val mapData = MapData(
+            mapId = 0,
+            title = examScheduleDetails.examScheduleDetails.title,
+            latitude = examScheduleDetails.latitude,
+            longitude = examScheduleDetails.longitude,
+            snippet = examScheduleDetails.floor
+        )
+        mapDataRepository.insertOrUpdateMapData(mapData)
     }
 
     suspend fun deleteExamSchedule() {
@@ -44,5 +59,6 @@ class ExamDetailsViewModel(
 data class ExamScheduleDetailsUiState(
     val examScheduleDetails: ExamScheduleDetails = ExamScheduleDetails(),
     val latitude: Double = 0.0,
-    val longitude: Double = 0.0
+    val longitude: Double = 0.0,
+    val floor: String = ""
 )

@@ -112,6 +112,7 @@ fun MapDetails(
     val styleUrl = OSMCustomMapType.STREET.styleUrl
     val coordinates= LatLng(14.165008914904659, 121.24150742562976)
     OSMMainMap(
+        title = null,
         location = coordinates,
         initialLocation = initialLocation,
         destinationLocation = destinationLocation,

@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.classschedule.data.BuildingRepository
 import com.example.classschedule.data.ClassScheduleRepository
+import com.example.classschedule.data.MapData
+import com.example.classschedule.data.MapDataRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +18,8 @@ import kotlinx.coroutines.launch
 class ScheduleDetailsViewModel(
     savedStateHandle: SavedStateHandle,
     private val classScheduleRepository: ClassScheduleRepository,
-    private val classroomRepository: BuildingRepository
+    private val classroomRepository: BuildingRepository,
+    private val mapDataRepository: MapDataRepository,
 ) : ViewModel() {
     private val classScheduleId: Int = checkNotNull(savedStateHandle[ScheduleDetailsDestination.SCHEDULEIDARG])
 
@@ -30,9 +33,21 @@ class ScheduleDetailsViewModel(
             _uiState.value = ScheduleDetailsUiState(
                 scheduleDetails = schedule.toScheduleDetails(),
                 latitude = room?.latitude ?: 0.0,
-                longitude = room?.longitude ?: 0.0
+                longitude = room?.longitude ?: 0.0,
+                floor = room?.floor ?: ""
             )
         }
+    }
+
+    suspend fun addOrUpdateMapData(scheduleDetails: ScheduleDetailsUiState) {
+        val mapData = MapData(
+            mapId = 0,
+            title = scheduleDetails.scheduleDetails.title,
+            latitude = scheduleDetails.latitude,
+            longitude = scheduleDetails.longitude,
+            snippet = scheduleDetails.floor
+        )
+        mapDataRepository.insertOrUpdateMapData(mapData)
     }
 
     suspend fun deleteClassSchedule() {
@@ -44,5 +59,6 @@ class ScheduleDetailsViewModel(
 data class ScheduleDetailsUiState(
     val scheduleDetails: ScheduleDetails = ScheduleDetails(),
     val latitude: Double = 0.0,
-    val longitude: Double = 0.0
+    val longitude: Double = 0.0,
+    val floor: String = ""
 )

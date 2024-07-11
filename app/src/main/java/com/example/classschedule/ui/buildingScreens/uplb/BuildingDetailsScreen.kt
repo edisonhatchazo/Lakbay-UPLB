@@ -1,5 +1,6 @@
 package com.example.classschedule.ui.buildingScreens.uplb
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -46,6 +48,7 @@ import com.example.classschedule.ui.screen.CoordinateEntryScreenTopAppBar
 import com.example.classschedule.ui.screen.DetailsScreenTopAppBar
 import com.example.classschedule.ui.theme.CollegeColorPalette
 import com.example.classschedule.ui.theme.ColorEntry
+import kotlinx.coroutines.launch
 
 object BuildingDetailsDestination : NavigationDestination {
     override val route = "building_details"
@@ -60,6 +63,7 @@ fun BuildingDetailsScreen (
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: BuildingDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    navigateToMap: (Int) -> Unit,
     mainNavController: NavHostController
 ){
     var mapType by remember { mutableStateOf(OSMCustomMapType.STREET) }
@@ -67,6 +71,7 @@ fun BuildingDetailsScreen (
     val room = roomUiState.roomList
     val uiState = viewModel.uiState.collectAsState()
     val build = uiState.value.buildingDetails.toBuilding()
+
     Scaffold(
         topBar = {
             if(build.college == "Landmark" || build.college == "Dormitory" || build.college == "UP unit"){
@@ -90,6 +95,8 @@ fun BuildingDetailsScreen (
             navController = mainNavController,
             navigateToRoomDetails = navigateToRoomDetails,
             buildingDetailsUiState = uiState.value,
+            navigateToMap = navigateToMap,
+            viewModel = viewModel,
             classRoomList = room,
             modifier = Modifier
                 .padding(
@@ -106,14 +113,17 @@ fun BuildingDetailsScreen (
 private fun BuildingDetailsBody(
     mapType: OSMCustomMapType,
     navController: NavHostController,
+    viewModel: BuildingDetailsViewModel,
+    navigateToMap: (Int) -> Unit,
     navigateToRoomDetails: (Int) -> Unit,
     buildingDetailsUiState: BuildingDetailsUiState,
     classRoomList: List<Classroom>,
     modifier: Modifier = Modifier
 ){
+    val coroutineScope = rememberCoroutineScope()
     val building = buildingDetailsUiState.buildingDetails.toBuilding()
     val colorEntry = CollegeColorPalette.getColorEntry(building.college)
-
+    Log.d("MapScreen","From Buildings")
     Column(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
@@ -123,6 +133,8 @@ private fun BuildingDetailsBody(
                 mapType = mapType,
                 building = building,
                 navController = navController,
+                viewModel = viewModel,
+                navigateToMap = navigateToMap,
                 modifier = Modifier.fillMaxWidth(),
                 colorEntry = colorEntry
             )
@@ -134,7 +146,10 @@ private fun BuildingDetailsBody(
                 colorEntry = colorEntry
             )
             Button(
-                onClick = {  navController.navigate("map_screen/${building.name}/${building.latitude}/${building.longitude}")},
+                onClick = {
+                    coroutineScope.launch{ viewModel.addOrUpdateMapData(building.toBuildingDetails())}
+                    navigateToMap(0)
+                    },
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -164,10 +179,13 @@ private fun BuildingDetailsBody(
 fun LocationDetail(
     building: Building,
     modifier: Modifier = Modifier,
+    viewModel: BuildingDetailsViewModel,
+    navigateToMap: (Int) -> Unit,
     navController: NavHostController,
     colorEntry: ColorEntry,
     mapType: OSMCustomMapType
 ){
+    val coroutineScope = rememberCoroutineScope()
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = colorEntry.backgroundColor)
@@ -213,7 +231,9 @@ fun LocationDetail(
     }
 
     Button(
-        onClick = {  navController.navigate("map_screen/${building.name}/${building.latitude}/${building.longitude}")},
+        onClick = {
+            coroutineScope.launch{ viewModel.addOrUpdateMapData(building.toBuildingDetails())}
+            navigateToMap(0)},//Navigate to GuideMap Screen
         shape = MaterialTheme.shapes.small,
         modifier = Modifier.fillMaxWidth()
     ) {

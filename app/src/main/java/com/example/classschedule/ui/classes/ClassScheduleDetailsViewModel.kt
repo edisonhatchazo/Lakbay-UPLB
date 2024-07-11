@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.classschedule.data.BuildingRepository
 import com.example.classschedule.data.ClassScheduleRepository
+import com.example.classschedule.data.MapData
+import com.example.classschedule.data.MapDataRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +18,8 @@ import kotlinx.coroutines.launch
 class ClassScheduleDetailsViewModel(
     savedStateHandle: SavedStateHandle,
     private val classScheduleRepository: ClassScheduleRepository,
-    private val classroomRepository: BuildingRepository
+    private val classroomRepository: BuildingRepository,
+    private val mapDataRepository: MapDataRepository,
 ) : ViewModel() {
     private val classScheduleId: Int = checkNotNull(savedStateHandle[ClassScheduleDetailsDestination.CLASSSCHEDULEIDARG])
     private val _uiState = MutableStateFlow(ClassScheduleDetailsUiState())
@@ -29,7 +32,8 @@ class ClassScheduleDetailsViewModel(
             _uiState.value = ClassScheduleDetailsUiState(
                 classScheduleDetails = schedule.toClassScheduleDetails(),
                 latitude = room?.latitude ?: 0.0,
-                longitude = room?.longitude ?: 0.0
+                longitude = room?.longitude ?: 0.0,
+                floor = room?.floor ?:""
             )
         }
     }
@@ -38,10 +42,22 @@ class ClassScheduleDetailsViewModel(
         classScheduleRepository.deleteClassSchedule(uiState.value.classScheduleDetails.toClass())
     }
 
+    suspend fun addOrUpdateMapData(classScheduleDetails: ClassScheduleDetailsUiState) {
+        val mapData = MapData(
+            mapId = 0,
+            title = classScheduleDetails.classScheduleDetails.title,
+            latitude = classScheduleDetails.latitude,
+            longitude = classScheduleDetails.longitude,
+            snippet = classScheduleDetails.floor
+        )
+        mapDataRepository.insertOrUpdateMapData(mapData)
+    }
+
 }
 
 data class ClassScheduleDetailsUiState(
     val classScheduleDetails: ClassScheduleDetails = ClassScheduleDetails(),
     val latitude: Double = 0.0,
-    val longitude: Double = 0.0
+    val longitude: Double = 0.0,
+    val floor: String = ""
 )

@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.classschedule.data.BuildingRepository
 import com.example.classschedule.data.Classroom
+import com.example.classschedule.data.MapData
+import com.example.classschedule.data.MapDataRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -13,7 +15,8 @@ import kotlinx.coroutines.flow.stateIn
 
 class BuildingDetailsViewModel(
     savedStateHandle: SavedStateHandle,
-    buildingRepository: BuildingRepository
+    buildingRepository: BuildingRepository,
+    private val mapDataRepository: MapDataRepository,
 ): ViewModel() {
     private val buildingId: Int = checkNotNull(savedStateHandle[BuildingDetailsDestination.BUILDINGIDARG])
 
@@ -35,11 +38,21 @@ class BuildingDetailsViewModel(
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
                 initialValue = BuildingRoomUiState()
             )
-
+    suspend fun addOrUpdateMapData(building: BuildingDetails) {
+        val mapData = MapData(
+            mapId = 0,
+            title = building.name,
+            latitude = building.latitude,
+            longitude = building.longitude,
+            snippet = ""
+        )
+        mapDataRepository.insertOrUpdateMapData(mapData)
+    }
 
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
     }
+
 }
 
 data class BuildingDetailsUiState(

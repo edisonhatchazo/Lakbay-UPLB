@@ -1,5 +1,6 @@
 package com.example.classschedule.ui.buildingScreens.pins
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -39,6 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.example.classschedule.R
 import com.example.classschedule.data.Pins
 import com.example.classschedule.ui.map.OSMCustomMapType
@@ -59,6 +62,8 @@ fun PinsDetailsScreen(
     navigateToEditPin: (Int) -> Unit,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
+    navigateToMap: (Int) -> Unit,
+    mainNavController: NavHostController,
     viewModel: PinsDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -95,7 +100,10 @@ fun PinsDetailsScreen(
                     navigateBack()
                 }
             },
+            navigateToMap = navigateToMap,
+            viewModel = viewModel,
             mapType = mapType,
+            navController = mainNavController,
             modifier = Modifier
                 .padding(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
@@ -111,20 +119,35 @@ fun PinsDetailsScreen(
 private fun PinsDetailsBody(
     pinsDetailsUiState: PinsDetailsUiState,
     onDelete: () -> Unit,
+    navigateToMap: (Int) -> Unit,
+    viewModel: PinsDetailsViewModel,
+    navController: NavHostController,
     mapType: OSMCustomMapType,
     modifier: Modifier = Modifier
 ){
+    val coroutineScope = rememberCoroutineScope()
     Column(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
     ) {
+        Log.d("MapScreen","From Pins")
         var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
-
+        val pin = pinsDetailsUiState.pinsDetails.toPins()
         PinDetails(
-            pin = pinsDetailsUiState.pinsDetails.toPins(),
+            pin = pin,
             modifier = Modifier.fillMaxWidth(),
             mapType = mapType
         )
+        Button(
+            onClick = {
+                coroutineScope.launch{ viewModel.addOrUpdateMapData(pin.toPinsDetails())}
+                navigateToMap(0)
+            },
+            shape = MaterialTheme.shapes.small,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = stringResource(R.string.guide))
+        }
         OutlinedButton(
             onClick = { deleteConfirmationRequired = true },
             shape = MaterialTheme.shapes.small,
@@ -180,7 +203,9 @@ fun PinDetails(
         }
     }
     Box(
-        modifier = Modifier.height(300.dp).fillMaxWidth()
+        modifier = Modifier
+            .height(300.dp)
+            .fillMaxWidth()
     ) {
         OSMMapping(
             title = pin.title,

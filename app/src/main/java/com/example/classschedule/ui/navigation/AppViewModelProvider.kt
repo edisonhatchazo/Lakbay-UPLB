@@ -26,6 +26,7 @@ import com.example.classschedule.ui.home.ScheduleDetailsViewModel
 import com.example.classschedule.ui.home.ScheduleEditViewModel
 import com.example.classschedule.ui.home.ScheduleEntryViewModel
 import com.example.classschedule.ui.home.ScheduleViewModel
+import com.example.classschedule.ui.map.LocationViewModel
 import com.example.classschedule.ui.map.MapViewModel
 
 object AppViewModelProvider {
@@ -45,7 +46,8 @@ object AppViewModelProvider {
             ClassScheduleDetailsViewModel(
                 this.createSavedStateHandle(),
                 classScheduleApplication().container.classScheduleRepository,
-                classScheduleApplication().container.buildingRepository
+                classScheduleApplication().container.buildingRepository,
+                classScheduleApplication().container.mapDataRepository
             )
         }
         initializer{
@@ -66,7 +68,8 @@ object AppViewModelProvider {
             ScheduleDetailsViewModel(
                 this.createSavedStateHandle(),
                 classScheduleApplication().container.classScheduleRepository,
-                classScheduleApplication().container.buildingRepository
+                classScheduleApplication().container.buildingRepository,
+                classScheduleApplication().container.mapDataRepository,
             )
         }
         initializer{
@@ -90,7 +93,8 @@ object AppViewModelProvider {
             ExamDetailsViewModel(
                 this.createSavedStateHandle(),
                 classScheduleApplication().container.examScheduleRepository,
-                classScheduleApplication().container.buildingRepository
+                classScheduleApplication().container.buildingRepository,
+                classScheduleApplication().container.mapDataRepository,
             )
         }
 
@@ -113,6 +117,7 @@ object AppViewModelProvider {
         initializer{
             PinsDetailsViewModel(
                 this.createSavedStateHandle(),
+                classScheduleApplication().container.mapDataRepository,
                 classScheduleApplication().container.pinsRepository
             )
         }
@@ -128,13 +133,15 @@ object AppViewModelProvider {
         initializer {
             BuildingDetailsViewModel(
                 this.createSavedStateHandle(),
-                classScheduleApplication().container.buildingRepository
+                classScheduleApplication().container.buildingRepository,
+                classScheduleApplication().container.mapDataRepository
             )
         }
         initializer{
             RoomDetailsViewModel(
                 this.createSavedStateHandle(),
-                classScheduleApplication().container.buildingRepository
+                classScheduleApplication().container.buildingRepository,
+                classScheduleApplication().container.mapDataRepository
             )
         }
 
@@ -148,6 +155,12 @@ object AppViewModelProvider {
             MapViewModel(
                 classScheduleApplication().container.osrmRepository,
                 classScheduleApplication()
+            )
+        }
+        initializer{
+            LocationViewModel(
+                classScheduleApplication(),
+                classScheduleApplication().container.mapDataRepository
             )
         }
 

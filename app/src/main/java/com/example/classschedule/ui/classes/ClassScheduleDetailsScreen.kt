@@ -1,5 +1,6 @@
 package com.example.classschedule.ui.classes
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,7 +38,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.example.classschedule.R
 import com.example.classschedule.data.ClassSchedule
 import com.example.classschedule.ui.navigation.AppViewModelProvider
@@ -59,8 +59,8 @@ object ClassScheduleDetailsDestination : NavigationDestination {
 fun ClassScheduleDetailsScreen (
     navigateToEditClassSchedule: (Int) -> Unit,
     navigateBack: () -> Unit,
+    navigateToMap: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    mainNavController: NavHostController,
     viewModel: ClassScheduleDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ){
     val uiState = viewModel.uiState.collectAsState()
@@ -87,7 +87,8 @@ fun ClassScheduleDetailsScreen (
     ) { innerPadding ->
         ClassScheduleDetailsBody(
             classScheduleDetailsUiState = uiState.value,
-            mainNavController = mainNavController,
+            navigateToMap = navigateToMap,
+            viewModel = viewModel,
             onDelete = {
                 coroutineScope.launch {
                     viewModel.deleteClassSchedule()
@@ -109,23 +110,27 @@ fun ClassScheduleDetailsScreen (
 private fun ClassScheduleDetailsBody(
     classScheduleDetailsUiState: ClassScheduleDetailsUiState,
     onDelete: () -> Unit,
-    mainNavController: NavHostController,
+    navigateToMap: (Int) -> Unit,
+    viewModel: ClassScheduleDetailsViewModel,
     modifier: Modifier = Modifier
 ){
+    val coroutineScope = rememberCoroutineScope()
     Column(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
     ) {
         var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
-
+        Log.d("MapScreen","From Classes")
         ClassScheduleDetails(
             classSchedule = classScheduleDetailsUiState.classScheduleDetails.toClass(),
             modifier = Modifier.fillMaxWidth()
         )
 
         Button(
-            onClick = {  mainNavController.navigate(
-                "map_screen/${classScheduleDetailsUiState.classScheduleDetails.title}/${classScheduleDetailsUiState.latitude}/${classScheduleDetailsUiState.longitude}")},
+            onClick = {
+                coroutineScope.launch{ viewModel.addOrUpdateMapData(classScheduleDetailsUiState)}
+                navigateToMap(0)
+            },
             shape = MaterialTheme.shapes.small,
             modifier = Modifier.fillMaxWidth()
         ) {

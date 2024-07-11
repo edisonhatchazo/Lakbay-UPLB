@@ -1,5 +1,6 @@
 package com.example.classschedule.ui.buildingScreens.uplb
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,6 +25,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -42,6 +44,7 @@ import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.CoordinateEntryScreenTopAppBar
 import com.example.classschedule.ui.theme.CollegeColorPalette
 import com.example.classschedule.ui.theme.ColorEntry
+import kotlinx.coroutines.launch
 
 object RoomDetailsDestination : NavigationDestination {
     override val route = "room_details"
@@ -53,6 +56,7 @@ object RoomDetailsDestination : NavigationDestination {
 @Composable
 fun RoomDetailsScreen(
     navigateBack: () -> Unit,
+    navigateToMap: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RoomDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
     mainNavController: NavHostController
@@ -76,7 +80,9 @@ fun RoomDetailsScreen(
         ClassroomDetailsBody(
             navController = mainNavController,
             mapType = mapType,
+            navigateToMap = navigateToMap,
             classroomDetailsUiState = roomUiState.value,
+            viewModel = viewModel,
             buildingCollege = room.college,
             modifier = Modifier
                 .padding(
@@ -96,6 +102,8 @@ private fun ClassroomDetailsBody(
     classroomDetailsUiState: ClassroomDetailsUiState,
     buildingCollege: String,
     mapType: OSMCustomMapType,
+    navigateToMap: (Int) -> Unit,
+    viewModel: RoomDetailsViewModel,
     navController: NavHostController,
     modifier: Modifier = Modifier
 ){
@@ -109,8 +117,10 @@ private fun ClassroomDetailsBody(
             colorEntry = colorEntry,
             navController = navController,
             classroom = classroom,
+            viewModel = viewModel,
+            navigateToMap = navigateToMap,
             modifier = Modifier.fillMaxWidth(),
-            mapType = mapType,
+            mapType = mapType
         )
 
     }
@@ -121,9 +131,13 @@ fun ClassroomDetailed(
     classroom: Classroom,
     modifier: Modifier = Modifier,
     mapType: OSMCustomMapType,
+    navigateToMap: (Int) -> Unit,
+    viewModel: RoomDetailsViewModel,
     navController: NavHostController,
     colorEntry: ColorEntry
 ){
+    val coroutineScope = rememberCoroutineScope()
+    Log.d("MapScreen","From Rooms")
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = colorEntry.backgroundColor)
@@ -170,7 +184,10 @@ fun ClassroomDetailed(
     }
 
     Button(
-        onClick = {  navController.navigate("map_screen/${classroom.title}/${classroom.latitude}/${classroom.longitude}")},
+        onClick = {
+            coroutineScope.launch{ viewModel.addOrUpdateMapData(classroom.toClassroomDetails())}
+            navigateToMap(0)
+        },
         shape = MaterialTheme.shapes.small,
         modifier = Modifier.fillMaxWidth()
     ) {

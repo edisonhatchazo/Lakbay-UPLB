@@ -40,3 +40,4 @@ data class Classroom(
     @ColumnInfo(name = "building_id")
     val buildingId: Int
 )
+

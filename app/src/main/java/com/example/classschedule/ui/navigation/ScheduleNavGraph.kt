@@ -23,6 +23,8 @@ import com.example.classschedule.ui.home.ScheduleEntryDestination
 import com.example.classschedule.ui.home.ScheduleEntryScreen
 import com.example.classschedule.ui.home.ScheduleHomeDestination
 import com.example.classschedule.ui.home.ScheduleScreen
+import com.example.classschedule.ui.map.GuideMapDestination
+import com.example.classschedule.ui.map.GuideMapScreen
 
 @Composable
 fun ScheduleNavHost(
@@ -58,7 +60,7 @@ fun ScheduleNavHost(
             ScheduleDetailsScreen(
                 navigateToEditSchedule = {navController.navigate("${ScheduleEditDestination.route}/$it")},
                 navigateBack = {navController.navigateUp()},
-                mainNavController = mainNavController
+                navigateToMap = {navController.navigate("${GuideMapDestination.route}/${it}")},
 
             )
         }
@@ -98,7 +100,8 @@ fun ScheduleNavHost(
             ExamDetailsScreen(
                 navigateToEditExam = {navController.navigate("${ExamEditDestination.route}/$it")},
                 navigateBack = {navController.navigateUp()},
-                mainNavController = mainNavController)
+                navigateToMap = {navController.navigate("${GuideMapDestination.route}/${it}")},
+            )
         }
         composable(
             route = ExamEditDestination.routeWithArgs,
@@ -109,6 +112,16 @@ fun ScheduleNavHost(
             ExamEditScreen(
                 navigateBack = { navController.popBackStack() },
                 onNavigateUp = { navController.navigateUp() })
+        }
+        composable(
+            route = GuideMapDestination.routeWithArgs,
+            arguments = listOf(navArgument(GuideMapDestination.MAPDATAIDARG){
+                type = NavType.IntType
+            })
+        ) {
+            GuideMapScreen(
+                navigateBack = { navController.navigateUp() }
+            )
         }
     }
 }

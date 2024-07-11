@@ -1,5 +1,6 @@
 package com.example.classschedule.ui.exam
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,7 +38,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.example.classschedule.R
 import com.example.classschedule.data.ExamSchedule
 import com.example.classschedule.ui.navigation.AppViewModelProvider
@@ -58,8 +58,8 @@ object ExamDetailsDestination : NavigationDestination {
 fun ExamDetailsScreen(
     navigateToEditExam: (Int) -> Unit,
     navigateBack: () -> Unit,
-    mainNavController: NavHostController,
     modifier: Modifier = Modifier,
+    navigateToMap: (Int) -> Unit,
     viewModel: ExamDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState = viewModel.uiState.collectAsState()
@@ -86,7 +86,8 @@ fun ExamDetailsScreen(
     ) { innerPadding ->
         ExamScheduleDetailsBody(
             examScheduleDetailsUiState = uiState.value,
-            mainNavController = mainNavController,
+            navigateToMap = navigateToMap,
+            viewModel = viewModel,
             onDelete = {
                 coroutineScope.launch {
                     viewModel.deleteExamSchedule()
@@ -107,10 +108,13 @@ fun ExamDetailsScreen(
 @Composable
 private fun ExamScheduleDetailsBody(
     examScheduleDetailsUiState: ExamScheduleDetailsUiState,
-    mainNavController: NavHostController,
+    navigateToMap: (Int) -> Unit,
+    viewModel: ExamDetailsViewModel,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    Log.d("MapScreen","From Exams")
+    val coroutineScope = rememberCoroutineScope()
     Column(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
@@ -123,8 +127,10 @@ private fun ExamScheduleDetailsBody(
         )
 
         Button(
-            onClick = {  mainNavController.navigate(
-                "map_screen/${examScheduleDetailsUiState.examScheduleDetails.title}/${examScheduleDetailsUiState.latitude}/${examScheduleDetailsUiState.longitude}")},
+            onClick = {
+                coroutineScope.launch{ viewModel.addOrUpdateMapData(examScheduleDetailsUiState)}
+                navigateToMap(0)
+            },
             shape = MaterialTheme.shapes.small,
             modifier = Modifier.fillMaxWidth()
         ) {

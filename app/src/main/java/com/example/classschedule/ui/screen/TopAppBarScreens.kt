@@ -641,3 +641,82 @@ fun MapScreenTopAppBar(
         }
     )
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun GuideScreenTopAppBar(
+    title: String,
+    canNavigateBack: Boolean,
+    navigateUp: () -> Unit = {},
+    onRouteTypeSelected: (String) -> Unit,
+) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val carIcon: Painter = painterResource(id = R.drawable.car_icon)
+    val cyclingIcon: Painter = painterResource(id = R.drawable.cycling_icon)
+    val walkingIcon: Painter = painterResource(id = R.drawable.walking_icon)
+    val transitIcon: Painter = painterResource(id = R.mipmap.transit)
+    var expanded by remember { mutableStateOf(false) }
+    var selectedIcon by remember { mutableStateOf(walkingIcon) }
+    var selectedRouteType by remember { mutableStateOf("walking") }
+    TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
+        title = { Text(title, color = Color.White) },
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            if (canNavigateBack) {
+                IconButton(onClick = navigateUp) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.back_button),
+                        tint = Color.White
+                    )
+                }
+            }
+        },
+        actions = {
+            Box {
+                IconButton(onClick = { expanded = true }) {
+                    Image(
+                        painter = selectedIcon,
+                        contentDescription = "Route Icon",
+                        colorFilter = ColorFilter.tint(Color.White)
+                    )
+                }
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    DropdownMenuItem(onClick = {
+                        selectedIcon = walkingIcon
+                        selectedRouteType = "foot"
+                        onRouteTypeSelected(selectedRouteType)
+                        expanded = false
+                    }, text = {Text("Walking Route")}
+                    )
+                    DropdownMenuItem(onClick = {
+                        selectedIcon = cyclingIcon
+                        selectedRouteType = "bicycle"
+                        onRouteTypeSelected(selectedRouteType)
+                        expanded = false
+                    }, text = {Text("Cycling Route")}
+                    )
+                    DropdownMenuItem(onClick = {
+                        selectedIcon = carIcon
+                        selectedRouteType = "driving"
+                        onRouteTypeSelected(selectedRouteType)
+                        expanded = false
+                    }, text = {Text("Car Route")}
+                    )
+
+                    DropdownMenuItem(onClick = {
+                        selectedIcon = transitIcon
+                        selectedRouteType = "transit"
+                        onRouteTypeSelected(selectedRouteType)
+                        expanded = false
+                    },text = {Text("Transit Route")}
+                    )
+                }
+            }
+        }
+    )
+}
