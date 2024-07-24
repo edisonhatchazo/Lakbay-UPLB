@@ -1,12 +1,15 @@
 package com.example.classschedule.ui.exam
 
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.classschedule.data.BuildingRepository
+import com.example.classschedule.data.ColorSchemesRepository
 import com.example.classschedule.data.ExamScheduleRepository
 import com.example.classschedule.data.MapData
 import com.example.classschedule.data.MapDataRepository
+import com.example.classschedule.ui.theme.ColorEntry
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,12 +23,16 @@ class ExamDetailsViewModel(
     private val examScheduleRepository: ExamScheduleRepository,
     private val classroomRepository: BuildingRepository,
     private val mapDataRepository: MapDataRepository,
+    private val colorSchemesRepository: ColorSchemesRepository
 ) : ViewModel() {
     private val classScheduleId: Int = checkNotNull(savedStateHandle[ExamDetailsDestination.SCHEDULEIDARG])
 
     private val _uiState = MutableStateFlow(ExamScheduleDetailsUiState())
     val uiState: StateFlow<ExamScheduleDetailsUiState> = _uiState.asStateFlow()
 
+    private val _colorSchemes = MutableStateFlow<Map<Int, ColorEntry>>(emptyMap())
+    val colorSchemes: StateFlow<Map<Int, ColorEntry>> get() = _colorSchemes
+    private var colorId = 0
     init {
         viewModelScope.launch {
             val schedule = examScheduleRepository.getExamSchedule(classScheduleId).filterNotNull().first()
@@ -36,6 +43,15 @@ class ExamDetailsViewModel(
                 longitude = room?.longitude ?: 0.0,
                 floor = room?.floor ?: ""
             )
+            colorId = schedule.colorId
+            colorSchemesRepository.getAllColorSchemes().collect { colorSchemes ->
+                _colorSchemes.value = colorSchemes.associate { colorScheme ->
+                    colorScheme.id to ColorEntry(
+                        backgroundColor = Color(colorScheme.backgroundColor),
+                        fontColor = Color(colorScheme.fontColor)
+                    )
+                }
+            }
         }
     }
 
@@ -52,7 +68,9 @@ class ExamDetailsViewModel(
 
     suspend fun deleteExamSchedule() {
         examScheduleRepository.deleteExamSchedule(uiState.value.examScheduleDetails.toExam())
+        colorSchemesRepository.decrementIsCurrentlyUsed(colorId)
     }
+
 
 }
 

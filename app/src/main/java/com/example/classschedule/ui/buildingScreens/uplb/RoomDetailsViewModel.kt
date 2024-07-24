@@ -19,6 +19,7 @@ class RoomDetailsViewModel(
 ): ViewModel() {
     private val roomId: Int = checkNotNull(savedStateHandle[RoomDetailsDestination.ROOMIDARG])
 
+
     val uiState: StateFlow<ClassroomDetailsUiState> =
         buildingRepository.getRoom(roomId)
             .filterNotNull()
@@ -43,6 +44,8 @@ class RoomDetailsViewModel(
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
     }
+
+
 }
 
 data class ClassroomDetailsUiState(

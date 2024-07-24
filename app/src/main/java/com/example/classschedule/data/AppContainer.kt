@@ -12,6 +12,7 @@ interface AppContainer {
     val buildingRepository: BuildingRepository
     val osrmRepository: OSRMRepository
     val mapDataRepository: MapDataRepository
+    val colorSchemesRepository: ColorSchemesRepository
 }
 
 class AppDataContainer(private val context: Context): AppContainer{
@@ -38,6 +39,10 @@ class AppDataContainer(private val context: Context): AppContainer{
         OfflineMapDataRepository(db.MapDataDao())
     }
 
+    override val colorSchemesRepository: ColorSchemesRepository by lazy{
+        val db = ColorSchemesDatabase.getDatabase(context)
+        OfflineColorSchemesRepository(db.ColorSchemesDao())
+    }
 
     private fun loadAllBusRoutes(context: Context): List<BusRoute> {
         val kananRoutes = loadBusRoutes(context, "Kanan.geojson")

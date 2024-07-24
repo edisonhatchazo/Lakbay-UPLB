@@ -15,7 +15,7 @@ data class ClassSchedule (
     val time: LocalTime,
     val timeEnd: LocalTime,
     val days: String,  // Store days as a single string
-    val colorName: String
+    val colorId: Int
 ){
     override fun toString(): String {
         val formattedTime = "${time.hour}:${time.minute} ${if (time.hour < 12) "AM" else "PM"}"
@@ -34,7 +34,7 @@ data class ExamSchedule (
     val date: String,  // Store date as a string or LocalDate
     val time: LocalTime,
     val timeEnd: LocalTime,
-    val colorName: String,
+    val colorId: Int,
     val day: String
 )
 

@@ -25,6 +25,7 @@ import org.maplibre.android.geometry.LatLng
 fun MainMapScreen(
     mainNavController: NavHostController,
     modifier: Modifier = Modifier,
+    openDrawer: () -> Unit,
     viewModel: MapViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
 
@@ -40,6 +41,7 @@ fun MainMapScreen(
             MapScreenTopAppBar(
                 title = stringResource(R.string.map),
                 onGetDirectionsClick = { showMapDialog = true },
+                openDrawer = openDrawer,
                 onRouteTypeSelected = { routeType ->
                     selectedRouteType = routeType
                     if (initialLocation != null && destinationLocation != null) {

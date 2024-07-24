@@ -1,12 +1,15 @@
 package com.example.classschedule.ui.classes
 
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.classschedule.data.BuildingRepository
 import com.example.classschedule.data.ClassScheduleRepository
+import com.example.classschedule.data.ColorSchemesRepository
 import com.example.classschedule.data.MapData
 import com.example.classschedule.data.MapDataRepository
+import com.example.classschedule.ui.theme.ColorEntry
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,11 +23,14 @@ class ClassScheduleDetailsViewModel(
     private val classScheduleRepository: ClassScheduleRepository,
     private val classroomRepository: BuildingRepository,
     private val mapDataRepository: MapDataRepository,
+    private val colorSchemesRepository: ColorSchemesRepository
 ) : ViewModel() {
     private val classScheduleId: Int = checkNotNull(savedStateHandle[ClassScheduleDetailsDestination.CLASSSCHEDULEIDARG])
     private val _uiState = MutableStateFlow(ClassScheduleDetailsUiState())
     val uiState: StateFlow<ClassScheduleDetailsUiState> = _uiState.asStateFlow()
-
+    private val _colorSchemes = MutableStateFlow<Map<Int, ColorEntry>>(emptyMap())
+    val colorSchemes: StateFlow<Map<Int, ColorEntry>> get() = _colorSchemes
+    private var colorId = 0
     init {
         viewModelScope.launch {
             val schedule = classScheduleRepository.getClassSchedule(classScheduleId).filterNotNull().first()
@@ -35,11 +41,22 @@ class ClassScheduleDetailsViewModel(
                 longitude = room?.longitude ?: 0.0,
                 floor = room?.floor ?:""
             )
+            colorId = schedule.colorId
+            colorSchemesRepository.getAllColorSchemes().collect { colorSchemes ->
+                _colorSchemes.value = colorSchemes.associate { colorScheme ->
+                    colorScheme.id to ColorEntry(
+                        backgroundColor = Color(colorScheme.backgroundColor),
+                        fontColor = Color(colorScheme.fontColor)
+                    )
+                }
+            }
+
         }
     }
 
     suspend fun deleteClassSchedule() {
         classScheduleRepository.deleteClassSchedule(uiState.value.classScheduleDetails.toClass())
+        colorSchemesRepository.decrementIsCurrentlyUsed(colorId)
     }
 
     suspend fun addOrUpdateMapData(classScheduleDetails: ClassScheduleDetailsUiState) {

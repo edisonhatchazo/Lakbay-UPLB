@@ -18,8 +18,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -30,7 +32,7 @@ import com.example.classschedule.data.ExamSchedule
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.ScheduleScreenTopAppBar
-import com.example.classschedule.ui.theme.ColorPalette
+import com.example.classschedule.ui.theme.ColorEntry
 
 object ExamHomeDestination: NavigationDestination {
     override val route = "exam_home"
@@ -41,8 +43,8 @@ object ExamHomeDestination: NavigationDestination {
 fun ExamHomeScreen(
     navigateToExamScheduleEntry: () -> Unit,
     navigateToExamScheduleUpdate: (Int) -> Unit,
-    navigateToClassHomeDestination: () -> Unit,
     modifier: Modifier = Modifier,
+    openDrawer: () -> Unit,
     viewModel: ExamHomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val homeUiState by viewModel.examHomeUiState.collectAsState()
@@ -54,8 +56,7 @@ fun ExamHomeScreen(
                 title = stringResource(R.string.exams),
                 canNavigateBack = false,
                 navigateToScheduleEntry = navigateToExamScheduleEntry,
-                navigateToClassHome = navigateToClassHomeDestination,
-                navigateToExamHome = {}
+                openDrawer = openDrawer
             )
         }
     ){ innerPadding ->
@@ -63,6 +64,7 @@ fun ExamHomeScreen(
             examScheduleList = homeUiState.examScheduleList,
             onExamScheduleClick = navigateToExamScheduleUpdate,
             modifier = modifier.fillMaxSize(),
+            viewModel = viewModel,
             contentPadding = innerPadding,
         )
     }
@@ -73,6 +75,7 @@ private fun Homebody(
     examScheduleList: List<ExamSchedule>,
     onExamScheduleClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: ExamHomeViewModel,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ){
     Column(
@@ -88,6 +91,7 @@ private fun Homebody(
             )
         }else{
             ExamList(
+                viewModel = viewModel,
                 examScheduleList = examScheduleList,
                 onExamScheduleClick = {onExamScheduleClick(it.id)},
                 contentPadding = contentPadding,
@@ -102,6 +106,7 @@ private fun ExamList(
     examScheduleList: List<ExamSchedule>,
     onExamScheduleClick: (ExamSchedule) -> Unit,
     contentPadding: PaddingValues,
+    viewModel: ExamHomeViewModel,
     modifier: Modifier = Modifier
 ){
     LazyColumn(
@@ -110,6 +115,7 @@ private fun ExamList(
     ) {
         items(items = examScheduleList, key = {it.id}) { item ->
             ExamDetails(
+                viewModel = viewModel,
                 examSchedule = item,
                 modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.padding_small))
@@ -120,14 +126,21 @@ private fun ExamList(
 
 @Composable
 private fun ExamDetails(
+    viewModel: ExamHomeViewModel,
     examSchedule: ExamSchedule,
     modifier: Modifier = Modifier
 ){
-    val colorEntry = ColorPalette.getColorEntry(examSchedule.colorName)
+    val colorSchemes by viewModel.colorSchemes.collectAsState()
+
+    val colorEntry = remember(examSchedule.colorId) {
+        colorSchemes[examSchedule.colorId] ?: ColorEntry(Color.Transparent, Color.Black)
+    }
+    val fontColor = colorEntry.fontColor
+    val backgroundColor = colorEntry.backgroundColor
     Card(
         modifier = modifier,
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = colorEntry.backgroundColor)
+        colors = CardDefaults.cardColors(containerColor = backgroundColor)
     ) {
         Column(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large)),
@@ -139,7 +152,7 @@ private fun ExamDetails(
                 Text(
                     text = examSchedule.title,
                     style = MaterialTheme.typography.titleLarge,
-                    color = colorEntry.fontColor
+                    color = fontColor
                 )
             }
         }

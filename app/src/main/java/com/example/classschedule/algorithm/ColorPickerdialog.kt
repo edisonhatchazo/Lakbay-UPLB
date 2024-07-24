@@ -13,17 +13,25 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.classschedule.ui.theme.ColorPalette
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.classschedule.ui.navigation.AppViewModelProvider
+import com.example.classschedule.ui.settings.colors.ColorSchemeHomeViewModel
 
 @Composable
 fun ColorPickerDialog(
-    onColorSelected: (String) -> Unit,
-    onDismiss: () -> Unit
+    onColorSelected: (Int) -> Unit,
+    onDismiss: () -> Unit,
+    viewModel: ColorSchemeHomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val colors by viewModel.existingColors.collectAsState()
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = "Select Color") },
@@ -32,20 +40,26 @@ fun ColorPickerDialog(
                 columns = GridCells.Fixed(3),
                 contentPadding = PaddingValues(8.dp)
             ) {
-                items(ColorPalette.colors.entries.toList()) { (colorName, colorEntry) ->
-                    Box(
-                        modifier = Modifier
-                            .height(60.dp)
-                            .background(color = colorEntry.backgroundColor)
-                            .clickable { onColorSelected(colorName) }
-                            .padding(8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(colorName,
-                            color = colorEntry.fontColor,
-                            fontSize = 14.sp)
-                    }
+
+                items(colors) { colorScheme ->
+                Box(
+                    modifier = Modifier
+                        .height(60.dp)
+                        .background(color = Color(colorScheme.backgroundColor))
+                        .clickable {onColorSelected(colorScheme.id)}
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center,
+
+
+                ) {
+                    Text(
+                        colorScheme.name,
+                        color = Color(colorScheme.fontColor),
+                        fontSize = 14.sp
+                    )
                 }
+            }
+
             }
         },
         confirmButton = {

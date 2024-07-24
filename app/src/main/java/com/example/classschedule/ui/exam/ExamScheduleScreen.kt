@@ -37,7 +37,6 @@ import com.example.classschedule.R
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.ExamScheduleScreenTopAppBar
-import com.example.classschedule.ui.theme.ColorPalette
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
@@ -55,7 +54,7 @@ fun ExamScheduleScreen(
     examScheduleViewModel: ExamHomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navigateToScheduleEntry: () -> Unit,
     navigateToScheduleUpdate: (Int) -> Unit,
-    navigateToScheduleHomeDestination: () -> Unit
+    openDrawer: () -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
@@ -69,10 +68,9 @@ fun ExamScheduleScreen(
                 title = stringResource(R.string.exam_schedule),
                 canNavigateBack = false,
                 navigateToScheduleEntry = navigateToScheduleEntry,
-                navigateToClassHome = navigateToScheduleHomeDestination,
-                navigateToExamHome = {},
                 examDates = examDates,
                 selectedDate = selectedDate,
+                openDrawer = openDrawer,
                 onDateSelected = { date -> selectedDate = date }
             )
         }
@@ -95,6 +93,7 @@ fun ExamScheduleScreenBody(
 ) {
     val examHomeUiState by examScheduleViewModel.examHomeUiState.collectAsState()
     val startOfWeek = selectedDate.with(DayOfWeek.MONDAY)
+    val colorSchemes by examScheduleViewModel.colorSchemes.collectAsState()
 
     Column(
         modifier = Modifier
@@ -156,18 +155,16 @@ fun ExamScheduleScreenBody(
                                     LocalDate.parse(it.date, DateTimeFormatter.ofPattern("MMM dd, yyyy")) == currentDay && // Check if the date matches
                                     (it.time.isBefore(timeSlotEnd) && it.timeEnd.isAfter(timeSlotStart))
                         }
-                        val borderColor = examForThisTime?.let { ColorPalette.getColorEntry(it.colorName).backgroundColor } ?: Color.Black
+                        val borderColor = examForThisTime?.let { colorSchemes[it.colorId]?.backgroundColor } ?: Color.Black
+                        val backgroundColor = examForThisTime?.let { colorSchemes[it.colorId]?.backgroundColor } ?: Color.Transparent
+                        val fontColor = examForThisTime?.let { colorSchemes[it.colorId]?.fontColor } ?: Color.White
+
                         Box(
                             modifier = Modifier
                                 .weight(1f)
                                 .height(19.dp)
-                                .border(0.5.dp, borderColor, RectangleShape
-                                ) // Set border color dynamically
-                                .background(color = examForThisTime?.let {
-                                    ColorPalette.getColorEntry(
-                                        it.colorName
-                                    ).backgroundColor
-                                } ?: Color.Transparent)
+                                .border(0.5.dp, borderColor, RectangleShape) // Set border color dynamically
+                                .background(color = backgroundColor)
                                 .padding(2.dp)
                                 .clickable {
                                     examForThisTime?.let { navigateToScheduleUpdate(it.id) }
@@ -178,7 +175,7 @@ fun ExamScheduleScreenBody(
                             if (examForThisTime != null && examForThisTime.time == timeSlotStart) {
                                 Text(
                                     text = examForThisTime.title,
-                                    color = ColorPalette.getColorEntry(examForThisTime.colorName).fontColor,
+                                    color = fontColor,
                                     fontSize = 12.sp,
                                     textAlign = TextAlign.Center,
                                 )

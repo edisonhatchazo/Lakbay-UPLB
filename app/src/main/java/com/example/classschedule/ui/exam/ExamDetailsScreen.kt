@@ -1,6 +1,5 @@
 package com.example.classschedule.ui.exam
 
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -43,7 +43,7 @@ import com.example.classschedule.data.ExamSchedule
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.DetailsScreenTopAppBar
-import com.example.classschedule.ui.theme.ColorPalette
+import com.example.classschedule.ui.theme.ColorEntry
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 
@@ -113,7 +113,6 @@ private fun ExamScheduleDetailsBody(
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Log.d("MapScreen","From Exams")
     val coroutineScope = rememberCoroutineScope()
     Column(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
@@ -123,7 +122,8 @@ private fun ExamScheduleDetailsBody(
 
         ExamScheduleDetails(
             examSchedule = examScheduleDetailsUiState.examScheduleDetails.toExam(),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            viewModel = viewModel
         )
 
         Button(
@@ -160,15 +160,22 @@ private fun ExamScheduleDetailsBody(
 
 @Composable
 fun ExamScheduleDetails(
-    examSchedule: ExamSchedule, modifier: Modifier = Modifier
+    examSchedule: ExamSchedule, modifier: Modifier = Modifier, viewModel: ExamDetailsViewModel
 ) {
     val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-    val colorEntry = ColorPalette.getColorEntry(examSchedule.colorName)
+
+    val colorSchemes by viewModel.colorSchemes.collectAsState()
+
+    // Get the appropriate color entry for the class schedule
+    val colorEntry = colorSchemes[examSchedule.colorId] ?: ColorEntry(Color.Transparent, Color.Black)
+
+    val fontColor = colorEntry.fontColor
+    val backgroundColor = colorEntry.backgroundColor
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = colorEntry.backgroundColor,
-            contentColor = colorEntry.fontColor
+            containerColor = backgroundColor,
+            contentColor = fontColor
         )
     ) {
         Column(

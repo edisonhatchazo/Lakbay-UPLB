@@ -11,7 +11,8 @@ data class BuildingDetails(
     val abbreviation: String = "",
     val college: String = "",
     val latitude: Double = 14.16747822735461,
-    val longitude: Double = 121.24338486047947
+    val longitude: Double = 121.24338486047947,
+    val colorId: Int = 0
 )
 
 
@@ -22,7 +23,8 @@ fun Building.toBuildingDetails(): BuildingDetails = BuildingDetails(
     name = name,
     otherName = otherName,
     latitude = latitude,
-    longitude = longitude
+    longitude = longitude,
+    colorId = colorId
 )
 
 fun BuildingDetails.toBuilding(): Building = Building(
@@ -32,7 +34,8 @@ fun BuildingDetails.toBuilding(): Building = Building(
     name = name,
     otherName = otherName,
     latitude = latitude,
-    longitude = longitude
+    longitude = longitude,
+    colorId = colorId
 )
 
 
@@ -47,7 +50,8 @@ data class ClassroomDetails(
     val college: String = "",
     val latitude: Double = 14.16747822735461,
     val longitude: Double = 121.24338486047947,
-    val buildingId: Int = 0
+    val buildingId: Int = 0,
+    val colorId: Int = 0
 )
 
 
@@ -60,7 +64,8 @@ fun Classroom.toClassroomDetails(): ClassroomDetails = ClassroomDetails(
     latitude = latitude,
     longitude = longitude,
     buildingId = buildingId,
-    college = college
+    college = college,
+    colorId = colorId
 )
 
 fun ClassroomDetails.toClassroom(): Classroom = Classroom(
@@ -72,5 +77,6 @@ fun ClassroomDetails.toClassroom(): Classroom = Classroom(
     latitude = latitude,
     longitude = longitude,
     buildingId = buildingId,
-    college = college
+    college = college,
+    colorId = colorId
 )

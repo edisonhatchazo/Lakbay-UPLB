@@ -1,4 +1,4 @@
-package com.example.classschedule.ui.home
+package com.example.classschedule.ui.classes
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -31,22 +32,27 @@ import com.example.classschedule.R
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.ScheduleScreenTopAppBar
-import com.example.classschedule.ui.theme.ColorPalette.getColorEntry
+import com.example.classschedule.ui.theme.ColorPaletteViewModel
 import java.time.LocalTime
 
-object ScheduleHomeDestination: NavigationDestination {
+object ClassHomeScheduleDestination: NavigationDestination {
     override val route = "schedule_home"
     override val titleRes = R.string.app_name
 }
 
 @Composable
-fun ScheduleScreen(
+fun ClassScheduleHomeScreen(
     modifier: Modifier = Modifier,
-    scheduleViewModel: ScheduleViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    scheduleViewModel: ClassHomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navigateToScheduleEntry: () -> Unit,
     navigateToScheduleUpdate: (Int) -> Unit,
-    navigateToExamHomeDestination: () -> Unit
+    openDrawer: () -> Unit,
+    colorPaletteViewModel: ColorPaletteViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ){
+
+    LaunchedEffect(Unit){
+        colorPaletteViewModel.observeColorSchemes()
+    }
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -54,8 +60,8 @@ fun ScheduleScreen(
                 title = stringResource(R.string.app_name),
                 canNavigateBack = false,
                 navigateToScheduleEntry = navigateToScheduleEntry,
-                navigateToClassHome = {},
-                navigateToExamHome = navigateToExamHomeDestination
+                openDrawer = openDrawer
+
             )
         }
     ){ innerPadding ->
@@ -70,11 +76,11 @@ fun ScheduleScreen(
 @Composable
 fun ScheduleScreenBody(
     navigateToScheduleUpdate: (Int) -> Unit,
-    scheduleViewModel: ScheduleViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    scheduleViewModel: ClassHomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
     val classHomeUiState by scheduleViewModel.classHomeUiState.collectAsState()
-
+    val colorSchemes by scheduleViewModel.colorSchemes.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -122,13 +128,16 @@ fun ScheduleScreenBody(
                             it.days.split(", ").contains(day) && // Check if the day is in the days list
                                     (it.time.isBefore(timeSlotEnd) && it.timeEnd.isAfter(timeSlotStart))
                         }
-                        val borderColor = classForThisTime?.let { getColorEntry(it.colorName).backgroundColor } ?: Color.Black
+                        val borderColor = classForThisTime?.let { colorSchemes[it.colorId]?.backgroundColor } ?: Color.Black
+                        val backgroundColor = classForThisTime?.let { colorSchemes[it.colorId]?.backgroundColor } ?: Color.Transparent
+                        val fontColor = classForThisTime?.let { colorSchemes[it.colorId]?.fontColor } ?: Color.White
+
                         Box(
                             modifier = Modifier
                                 .weight(1f)
                                 .height(20.dp)
                                 .border(0.5.dp, borderColor, RectangleShape) // Set border color dynamically
-                                .background(color = classForThisTime?.let { getColorEntry(it.colorName).backgroundColor } ?: Color.Transparent)
+                                .background(color = backgroundColor)
                                 .padding(2.dp)
                                 .clickable {
                                     classForThisTime?.let { navigateToScheduleUpdate(it.id) }
@@ -139,7 +148,7 @@ fun ScheduleScreenBody(
                             if (classForThisTime != null && classForThisTime.time == timeSlotStart) {
                                 Text(
                                     text = classForThisTime.title,
-                                    color = getColorEntry(classForThisTime.colorName).fontColor,
+                                    color = fontColor,
                                     fontSize = 12.sp,
                                     textAlign = TextAlign.Center,
                                 )

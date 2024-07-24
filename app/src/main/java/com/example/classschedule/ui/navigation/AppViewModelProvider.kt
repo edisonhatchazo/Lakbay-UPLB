@@ -22,24 +22,32 @@ import com.example.classschedule.ui.exam.ExamDetailsViewModel
 import com.example.classschedule.ui.exam.ExamEditViewModel
 import com.example.classschedule.ui.exam.ExamEntryViewModel
 import com.example.classschedule.ui.exam.ExamHomeViewModel
-import com.example.classschedule.ui.home.ScheduleDetailsViewModel
-import com.example.classschedule.ui.home.ScheduleEditViewModel
-import com.example.classschedule.ui.home.ScheduleEntryViewModel
-import com.example.classschedule.ui.home.ScheduleViewModel
 import com.example.classschedule.ui.map.LocationViewModel
 import com.example.classschedule.ui.map.MapViewModel
+import com.example.classschedule.ui.settings.colors.ColorSchemeDetailsViewModel
+import com.example.classschedule.ui.settings.colors.ColorSchemeEditViewModel
+import com.example.classschedule.ui.settings.colors.ColorSchemeEntryViewModel
+import com.example.classschedule.ui.settings.colors.ColorSchemeHomeViewModel
+import com.example.classschedule.ui.settings.global.CollegeDirectoryViewModel
+import com.example.classschedule.ui.settings.global.DirectoryColorViewModel
+import com.example.classschedule.ui.theme.ColorPaletteViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory{
         //Initializers for the Class View Models
         initializer{
-            ClassHomeViewModel(classScheduleApplication().container.classScheduleRepository)
+            ClassHomeViewModel(
+                classScheduleApplication().container.classScheduleRepository,
+                classScheduleApplication().container.colorSchemesRepository,
+            )
+
         }
 
         initializer{
             ClassScheduleEditViewModel(
                 this.createSavedStateHandle(),
-                classScheduleApplication().container.classScheduleRepository
+                classScheduleApplication().container.classScheduleRepository,
+                classScheduleApplication().container.colorSchemesRepository
             )
         }
         initializer{
@@ -47,45 +55,32 @@ object AppViewModelProvider {
                 this.createSavedStateHandle(),
                 classScheduleApplication().container.classScheduleRepository,
                 classScheduleApplication().container.buildingRepository,
-                classScheduleApplication().container.mapDataRepository
+                classScheduleApplication().container.mapDataRepository,
+                classScheduleApplication().container.colorSchemesRepository,
             )
         }
         initializer{
-            ClassScheduleEntryViewModel(classScheduleApplication().container.classScheduleRepository)
-        }
-
-        //Initializers for Schedule View Models
-        initializer {
-            ScheduleViewModel(classScheduleApplication().container.classScheduleRepository)
-        }
-        initializer{
-            ScheduleEditViewModel(
-                this.createSavedStateHandle(),
-                classScheduleApplication().container.classScheduleRepository
-            )
-        }
-        initializer{
-            ScheduleDetailsViewModel(
+            ClassScheduleEntryViewModel(
                 this.createSavedStateHandle(),
                 classScheduleApplication().container.classScheduleRepository,
-                classScheduleApplication().container.buildingRepository,
-                classScheduleApplication().container.mapDataRepository,
+                classScheduleApplication().container.colorSchemesRepository,
             )
-        }
-        initializer{
-            ScheduleEntryViewModel(classScheduleApplication().container.classScheduleRepository)
         }
 
         //Initializers for Exam View Models
         initializer{
-            ExamHomeViewModel(classScheduleApplication().container.examScheduleRepository)
+            ExamHomeViewModel(
+                classScheduleApplication().container.examScheduleRepository,
+                classScheduleApplication().container.colorSchemesRepository,
+            )
         }
 
 
         initializer{
             ExamEditViewModel(
                 this.createSavedStateHandle(),
-                classScheduleApplication().container.examScheduleRepository
+                classScheduleApplication().container.examScheduleRepository,
+                classScheduleApplication().container.colorSchemesRepository,
             )
         }
 
@@ -95,11 +90,16 @@ object AppViewModelProvider {
                 classScheduleApplication().container.examScheduleRepository,
                 classScheduleApplication().container.buildingRepository,
                 classScheduleApplication().container.mapDataRepository,
+                classScheduleApplication().container.colorSchemesRepository,
             )
         }
 
         initializer{
-            ExamEntryViewModel(classScheduleApplication().container.examScheduleRepository)
+            ExamEntryViewModel(
+                this.createSavedStateHandle(),
+                classScheduleApplication().container.examScheduleRepository,
+                classScheduleApplication().container.colorSchemesRepository,
+            )
         }
 
         //Initializers for Pins View Models
@@ -127,21 +127,26 @@ object AppViewModelProvider {
         }
 
         initializer{
-            BuildingHomeViewModel(classScheduleApplication().container.buildingRepository)
+            BuildingHomeViewModel(
+                classScheduleApplication().container.buildingRepository,
+                classScheduleApplication().container.colorSchemesRepository,
+                )
         }
 
         initializer {
             BuildingDetailsViewModel(
                 this.createSavedStateHandle(),
                 classScheduleApplication().container.buildingRepository,
-                classScheduleApplication().container.mapDataRepository
+                classScheduleApplication().container.mapDataRepository,
+
             )
         }
         initializer{
             RoomDetailsViewModel(
                 this.createSavedStateHandle(),
                 classScheduleApplication().container.buildingRepository,
-                classScheduleApplication().container.mapDataRepository
+                classScheduleApplication().container.mapDataRepository,
+
             )
         }
 
@@ -161,6 +166,50 @@ object AppViewModelProvider {
             LocationViewModel(
                 classScheduleApplication(),
                 classScheduleApplication().container.mapDataRepository
+            )
+        }
+
+        initializer{
+            ColorSchemeHomeViewModel(
+                classScheduleApplication().container.colorSchemesRepository
+            )
+        }
+
+        initializer{
+            ColorSchemeEntryViewModel(
+                classScheduleApplication().container.colorSchemesRepository
+            )
+        }
+
+        initializer {
+            ColorSchemeDetailsViewModel(
+                this.createSavedStateHandle(),
+                classScheduleApplication().container.colorSchemesRepository
+            )
+        }
+        initializer {
+            ColorSchemeEditViewModel(
+                this.createSavedStateHandle(),
+                classScheduleApplication().container.colorSchemesRepository
+            )
+        }
+
+        initializer{
+            ColorPaletteViewModel(
+                classScheduleApplication().container.colorSchemesRepository
+            )
+        }
+
+        initializer{
+            CollegeDirectoryViewModel(
+                classScheduleApplication().container.colorSchemesRepository
+            )
+        }
+
+        initializer{
+            DirectoryColorViewModel(
+                this.createSavedStateHandle(),
+                classScheduleApplication().container.colorSchemesRepository
             )
         }
 

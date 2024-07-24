@@ -50,7 +50,6 @@ import com.example.classschedule.algorithm.calculateExamAvailableStartTimes
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.ScheduleEntryScreenTopAppBar
-import com.example.classschedule.ui.theme.ColorPalette
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -148,6 +147,7 @@ fun ExamInputForm(
     availableEndTimes: List<LocalTime>,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    scheduleViewModel: ExamEntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
     viewModel: SearchViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     var showColorPicker by remember { mutableStateOf(false) }
@@ -156,6 +156,8 @@ fun ExamInputForm(
     var showRoomSuggestions by remember { mutableStateOf(false) }
     val roomSuggestions by viewModel.roomSuggestions.collectAsState()
     val isLocationValid = remember { mutableStateOf(false) }
+    val colorEntry = scheduleViewModel.colorSchemesUiState
+    val coroutineScope = rememberCoroutineScope()
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
@@ -277,9 +279,9 @@ fun ExamInputForm(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
-                .background(color = ColorPalette.getColorEntry(examDetails.colorName).backgroundColor)
+                .background(color = Color(colorEntry.colorSchemeDetails.backgroundColor))
         ) {
-            Text("Select Color", color = ColorPalette.getColorEntry(examDetails.colorName).fontColor)
+            Text("Select Color", color = Color(colorEntry.colorSchemeDetails.fontColor))
         }
         if (enabled) {
             Text(
@@ -291,8 +293,11 @@ fun ExamInputForm(
 
     if (showColorPicker) {
         ColorPickerDialog(
-            onColorSelected = { colorName ->
-                onValueChange(examDetails.copy(colorName = colorName))
+            onColorSelected = { colorId ->
+                onValueChange(examDetails.copy(colorId = colorId))
+                coroutineScope.launch{
+                    scheduleViewModel.getColor(colorId)
+                }
                 showColorPicker = false
             },
             onDismiss = { showColorPicker = false }

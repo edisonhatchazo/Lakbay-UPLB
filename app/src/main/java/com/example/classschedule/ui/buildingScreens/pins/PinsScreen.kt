@@ -40,7 +40,7 @@ object PinsHomeDestination: NavigationDestination {
 fun PinsScreen(
     navigateToPinsEntry: () -> Unit,
     navigateToPinsUpdate: (Int) -> Unit,
-    navigateToBuildingHomeDestination: () -> Unit,
+    openDrawer: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PinsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -52,7 +52,7 @@ fun PinsScreen(
                 title = stringResource(R.string.my_pins),
                 canNavigateBack = false,
                 navigateToPinEntry = navigateToPinsEntry,
-                navigateToBuildingHome = navigateToBuildingHomeDestination
+                openDrawer = openDrawer
             )
         }
     ){ innerPadding ->

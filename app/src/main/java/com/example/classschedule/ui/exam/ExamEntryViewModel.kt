@@ -3,19 +3,32 @@ package com.example.classschedule.ui.exam
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.classschedule.data.ColorSchemesRepository
 import com.example.classschedule.data.ExamSchedule
 import com.example.classschedule.data.ExamScheduleRepository
+import com.example.classschedule.ui.settings.colors.ColorSchemesUiState
+import com.example.classschedule.ui.settings.colors.toColorSchemeUiState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.time.LocalTime
 
-class ExamEntryViewModel(private val examScheduleRepository: ExamScheduleRepository) : ViewModel()  {
+class ExamEntryViewModel(
+    savedStateHandle: SavedStateHandle,
+    private val examScheduleRepository: ExamScheduleRepository,
+    private val colorSchemesRepository: ColorSchemesRepository
+) : ViewModel()  {
     var examScheduleUiState by mutableStateOf(ExamScheduleUiState())
         private set
-
+    var colorSchemesUiState by mutableStateOf(
+        savedStateHandle.get<ColorSchemesUiState>("colorSchemeUiState") ?: ColorSchemesUiState()
+    )
     val existingSchedules: StateFlow<List<ExamSchedule>> = examScheduleRepository.getAllExamsSchedules()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     fun updateUiState(examScheduleDetails: ExamScheduleDetails) {
@@ -34,7 +47,16 @@ class ExamEntryViewModel(private val examScheduleRepository: ExamScheduleReposit
     suspend fun saveSchedule() {
         if (validateInput()) {
             examScheduleRepository.insertExamSchedule(examScheduleUiState.examScheduleDetails.toExam())
+            colorSchemesRepository.incrementIsCurrentlyUsed(examScheduleUiState.examScheduleDetails.colorId)
+        }
+    }
 
+    suspend fun getColor(id: Int){
+        viewModelScope.launch{
+            val colorScheme = colorSchemesRepository.getColorSchemeById(id)
+                .filterNotNull()
+                .first()
+            colorSchemesUiState = colorScheme.toColorSchemeUiState()
         }
     }
 }
@@ -52,7 +74,7 @@ data class ExamScheduleDetails(
     val day: String = "",
     val time: LocalTime = LocalTime.of(0, 0),
     val timeEnd: LocalTime = LocalTime.of(0, 0),
-    val colorName: String = "",
+    val colorId: Int = 0,
     val date: String = "",
     val roomId: Int = 0
 
@@ -66,9 +88,9 @@ fun ExamScheduleDetails.toExam(): ExamSchedule = ExamSchedule(
     date = date,
     time = time,
     timeEnd = timeEnd,
-    colorName = colorName,
     day = day,
-    roomId = roomId
+    roomId = roomId,
+    colorId = colorId
 )
 
 fun ExamSchedule.toExamScheduleDetails(): ExamScheduleDetails = ExamScheduleDetails(
@@ -79,9 +101,9 @@ fun ExamSchedule.toExamScheduleDetails(): ExamScheduleDetails = ExamScheduleDeta
     date = date,
     time = time,
     timeEnd = timeEnd,
-    colorName = colorName,
     day = day,
-    roomId = roomId
+    roomId = roomId,
+    colorId = colorId
 )
 
 fun ExamSchedule.toExamScheduleUiState(isEntryValid: Boolean = false): ExamScheduleUiState = ExamScheduleUiState(

@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.classschedule.data.ColorSchemesRepository
 import com.example.classschedule.data.ExamSchedule
 import com.example.classschedule.data.ExamScheduleRepository
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,7 +19,8 @@ import java.time.LocalTime
 
 class ExamEditViewModel(
     savedStateHandle: SavedStateHandle,
-    private val examScheduleRepository: ExamScheduleRepository
+    private val examScheduleRepository: ExamScheduleRepository,
+    private val colorSchemesRepository: ColorSchemesRepository
 ) : ViewModel() {
     private val scheduleId: Int = checkNotNull(savedStateHandle[ExamEditDestination.SCHEDULEIDARG])
     val existingSchedules: StateFlow<List<ExamSchedule>> = examScheduleRepository.getAllExamsSchedules()
@@ -27,13 +29,14 @@ class ExamEditViewModel(
         savedStateHandle.get<ExamScheduleUiState>("examScheduleUiState") ?: ExamScheduleUiState()
     )
         private set
-
+    private var previousColor = 1
     init {
         viewModelScope.launch {
             val schedule = examScheduleRepository.getExamSchedule(scheduleId)
                 .filterNotNull()
                 .first()
             examScheduleUiState = schedule.toExamScheduleUiState(true)
+            previousColor = examScheduleUiState.examScheduleDetails.colorId
         }
     }
 
@@ -53,6 +56,8 @@ class ExamEditViewModel(
     suspend fun updateSchedule() {
         if (validateInput()) {
             examScheduleRepository.updateExamSchedule(examScheduleUiState.examScheduleDetails.toExam())
+            colorSchemesRepository.decrementIsCurrentlyUsed(previousColor)
+            colorSchemesRepository.incrementIsCurrentlyUsed(examScheduleUiState.examScheduleDetails.colorId)
         }
     }
 }

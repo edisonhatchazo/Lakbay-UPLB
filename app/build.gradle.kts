@@ -100,4 +100,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
     implementation(libs.room.ktx)
+
+    //Color Picker
+    implementation("com.github.skydoves:colorpicker-compose:1.1.2")
 }

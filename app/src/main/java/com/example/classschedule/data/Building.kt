@@ -11,7 +11,8 @@ data class Pins(
     val title: String,
     val floor: String,
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
+    val colorId: Int
 )
 
 @Entity(tableName = "Buildings")
@@ -23,7 +24,8 @@ data class Building(
     val abbreviation: String,
     val college: String,
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
+    val colorId: Int,
 )
 
 @Entity(tableName = "Rooms")
@@ -38,6 +40,7 @@ data class Classroom(
     val longitude: Double,
     val college: String,
     @ColumnInfo(name = "building_id")
-    val buildingId: Int
+    val buildingId: Int,
+    val colorId: Int
 )
 

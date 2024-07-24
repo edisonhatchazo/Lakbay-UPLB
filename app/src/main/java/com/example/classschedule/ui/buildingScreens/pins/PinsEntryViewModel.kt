@@ -44,7 +44,8 @@ data class PinsDetails(
     val title: String = "",
     val floor: String = "",
     val latitude: Double = 14.16747822735461,
-    val longitude: Double = 121.24338486047947
+    val longitude: Double = 121.24338486047947,
+    val colorId: Int = 0
 )
 
 fun PinsDetails.toPins(): Pins = Pins(
@@ -52,7 +53,8 @@ fun PinsDetails.toPins(): Pins = Pins(
     title = title,
     floor = floor,
     latitude = latitude,
-    longitude = longitude
+    longitude = longitude,
+    colorId = colorId
 )
 
 fun Pins.toPinsDetails(): PinsDetails = PinsDetails(
@@ -60,7 +62,8 @@ fun Pins.toPinsDetails(): PinsDetails = PinsDetails(
     title = title,
     floor = floor,
     latitude = latitude,
-    longitude = longitude
+    longitude = longitude,
+    colorId = colorId
 )
 
 fun Pins.toPinsUiState(isEntryValid: Boolean = false): PinsUiState = PinsUiState(

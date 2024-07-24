@@ -1,6 +1,11 @@
 package com.example.classschedule.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.classschedule.data.ColorSchemes
+import com.example.classschedule.data.ColorSchemesRepository
+import kotlinx.coroutines.launch
 
 data class ColorEntry(
     val backgroundColor: Color,
@@ -8,59 +13,78 @@ data class ColorEntry(
 )
 
 object ColorPalette {
-    val colors = mapOf(
-        "Black" to ColorEntry(Color.Black, Color.White),
-        "Blue" to ColorEntry(Color.Blue, Color.White),
-        "Green" to ColorEntry(Color.Green, Color.Black),
-        "Purple" to ColorEntry(Color(0xFF800080), Color.White), // Purple
-        "Dark Yellow" to ColorEntry(Color(0xFF808000), Color.White), // Dark Yellow
-        "Magenta" to ColorEntry(Color.Magenta, Color.Black),
-        "Cyan" to ColorEntry(Color.Cyan, Color.Black),
-        "Orange" to ColorEntry(Color(0xFFFFA500), Color.Black), // Orange
-        "Yellow" to ColorEntry(Color.Yellow, Color.Black),
-        "Gray" to ColorEntry(Color.Gray, Color.Black),
-        "Brown" to ColorEntry(Color(0xFFA52A2A), Color.White), // Brown
-        "Pink" to ColorEntry(Color(0xFFFFC0CB), Color.Black), // Pink
-        "Indigo" to ColorEntry(Color(0xFF4B0082), Color.White), // Indigo
-        "Navy Blue" to ColorEntry(Color(0xFF000080), Color.White), // Navy Blue
-        "Bronze" to ColorEntry(Color(0xFFCD7F32), Color.Black), // Bronze
-        "Silver" to ColorEntry(Color(0xFFC0C0C0), Color.Black), // Silver
-        "Gold" to ColorEntry(Color(0xFFFFD700), Color.Black), // Gold
-        "Copper Rose" to ColorEntry(Color(0xFF996666), Color.White), // Copper Rose
-        "Turquoise" to ColorEntry(Color(0xFF40E0D0), Color.Black), // Turquoise
-        "Pearl" to ColorEntry(Color(0xFFF0EAD6), Color.Black), // Pearl
-        "Lemon" to ColorEntry(Color(0xFFFFE700), Color.Black), // Lemon
-        "Lavender" to ColorEntry(Color(0xFFE6E6FA), Color.Black), // Lavender
-        "Mustard" to ColorEntry(Color(0xFFFFDB58), Color.Black), // Mustard
-        "Emerald" to ColorEntry(Color(0xFF50C878), Color.Black), // Emerald
-        "Chocolate" to ColorEntry(Color(0xFF7B3F00), Color.White), // Chocolate
-        "Red" to ColorEntry(Color.Red, Color.White) //Red
-    )
-    fun getColorEntry(colorName: String): ColorEntry {
-        return colors[colorName] ?: ColorEntry(Color.Transparent, Color.Black)
+    val colors = mutableMapOf<Int, ColorEntry>()
+
+
+    fun getColorEntry(colorId: Int): ColorEntry {
+        return colors[colorId] ?: ColorEntry(Color.Transparent, Color.Black)
     }
+    fun getColorId(colorEntry: ColorEntry): Int? {
+        return colors.entries.find { it.value == colorEntry }?.key
+    }
+
 }
 
 object CollegeColorPalette {
-    val colors = mapOf(
-        "College of Agriculture" to ColorPalette.getColorEntry("Brown"),
-        "College of Arts and Sciences" to ColorPalette.getColorEntry("Yellow"),
-        "College of Development Communication" to ColorPalette.getColorEntry("Pearl"),
-        "School of Environmental Science and Management" to ColorPalette.getColorEntry("Lemon"),
-        "Graduate School" to ColorPalette.getColorEntry("Blue"),
-        "College of Veterinary Medicine" to ColorPalette.getColorEntry("Red"),
-        "College of Human Ecology" to ColorPalette.getColorEntry("Orange"),
-        "College of Public Affairs and Development" to ColorPalette.getColorEntry("Emerald"),
-        "College of Forestry and Natural Resources" to ColorPalette.getColorEntry("Green"),
-        "College of Economics and Management" to ColorPalette.getColorEntry("Gold"),
-        "College of Engineering and Agro-industrial Technology" to ColorPalette.getColorEntry("Silver"),
-        "UP Unit" to ColorPalette.getColorEntry("Lavender"),
-        "Dormitory" to ColorPalette.getColorEntry("Copper Rose"),
-        "Landmark" to ColorPalette.getColorEntry("Pink"),
-        "UP College" to ColorPalette.getColorEntry("Dark Yellow")
+    val colors = mutableMapOf(
+        "College of Arts and Sciences" to Pair("CAS", ColorPalette.getColorEntry(9)),
+        "College of Development Communication" to Pair("CDC", ColorPalette.getColorEntry(20)),
+        "College of Agriculture" to Pair("CA", ColorPalette.getColorEntry(11)),
+        "College of Veterinary Medicine" to Pair("CVM", ColorPalette.getColorEntry(26)),
+        "College of Human Ecology" to Pair("CHE", ColorPalette.getColorEntry(8)),
+        "College of Public Affairs and Development" to Pair("CPAf", ColorPalette.getColorEntry(24)),
+        "College of Forestry and Natural Resources" to Pair("CFNR", ColorPalette.getColorEntry(2)),
+        "College of Economics and Management" to Pair("CEM", ColorPalette.getColorEntry(17)),
+        "College of Engineering and Agro-industrial Technology" to Pair("CEAT", ColorPalette.getColorEntry(16)),
+        "Graduate School" to Pair("GS", ColorPalette.getColorEntry(1)),
+        "UP Unit" to Pair("UP Unit", ColorPalette.getColorEntry(22)),
+        "Dormitory" to Pair("Dormitory", ColorPalette.getColorEntry(18)),
+        "Landmark" to Pair("Landmark", ColorPalette.getColorEntry(12))
     )
 
     fun getColorEntry(college: String): ColorEntry {
-        return colors[college] ?: ColorEntry(Color.Transparent, Color.Black)
+        return colors[college]?.second ?: ColorEntry(Color.Transparent, Color.Black)
+    }
+
+    fun updateColorEntry(college: String, newColorId: Int) {
+        colors[college] = colors[college]?.copy(second = ColorPalette.getColorEntry(newColorId))
+            ?: Pair(college, ColorPalette.getColorEntry(newColorId))
+    }
+
+
+    fun getPreviousColorId(college: String): Int? {
+        return colors[college]?.second?.let { ColorPalette.getColorId(it) }
+    }
+}
+
+
+class ColorPaletteViewModel(
+    private val colorSchemesRepository: ColorSchemesRepository
+) : ViewModel() {
+
+    init {
+        viewModelScope.launch {
+            observeColorSchemes()
+        }
+    }
+
+    suspend fun observeColorSchemes() {
+        colorSchemesRepository.getAllColorSchemes().collect { colorSchemes ->
+            updateColorPalette(colorSchemes)
+        }
+    }
+
+    private fun updateColorPalette(colorSchemes: List<ColorSchemes>) {
+        // Clear existing entries to avoid stale data
+        ColorPalette.colors.clear()
+
+        // Populate with new/updated entries
+        colorSchemes.forEach { colorScheme ->
+            val colorEntry = ColorEntry(
+                backgroundColor = Color(colorScheme.backgroundColor),
+                fontColor = Color(colorScheme.fontColor)
+            )
+            ColorPalette.colors[colorScheme.id] = colorEntry
+        }
     }
 }

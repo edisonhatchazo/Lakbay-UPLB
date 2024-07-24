@@ -1,6 +1,5 @@
 package com.example.classschedule.ui.classes
 
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -43,7 +43,7 @@ import com.example.classschedule.data.ClassSchedule
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.DetailsScreenTopAppBar
-import com.example.classschedule.ui.theme.ColorPalette
+import com.example.classschedule.ui.theme.ColorEntry
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 
@@ -120,9 +120,9 @@ private fun ClassScheduleDetailsBody(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
     ) {
         var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
-        Log.d("MapScreen","From Classes")
         ClassScheduleDetails(
             classSchedule = classScheduleDetailsUiState.classScheduleDetails.toClass(),
+            viewModel = viewModel,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -159,15 +159,22 @@ private fun ClassScheduleDetailsBody(
 
 @Composable
 fun ClassScheduleDetails(
-    classSchedule: ClassSchedule, modifier: Modifier = Modifier
+    classSchedule: ClassSchedule, modifier: Modifier = Modifier, viewModel: ClassScheduleDetailsViewModel
 ) {
     val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-    val colorEntry = ColorPalette.getColorEntry(classSchedule.colorName)
+
+    val colorSchemes by viewModel.colorSchemes.collectAsState()
+
+    // Get the appropriate color entry for the class schedule
+    val colorEntry = colorSchemes[classSchedule.colorId] ?: ColorEntry(Color.Transparent, Color.Black)
+
+    val fontColor = colorEntry.fontColor
+    val backgroundColor = colorEntry.backgroundColor
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = colorEntry.backgroundColor,
-            contentColor = colorEntry.fontColor
+            containerColor = backgroundColor,
+            contentColor = fontColor
         )
     ) {
         Column(

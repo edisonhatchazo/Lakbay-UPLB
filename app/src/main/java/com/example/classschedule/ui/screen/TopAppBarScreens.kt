@@ -12,10 +12,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenu
@@ -90,72 +90,45 @@ fun ScheduleEntryScreenTopAppBar(
 fun ScheduleScreenTopAppBar(
     title: String,
     canNavigateBack: Boolean,
-    navigateToScheduleEntry: () -> Unit,
-    navigateToClassHome: () -> Unit,
-    navigateToExamHome: () -> Unit,
     navigateUp: () -> Unit = {},
-
-    ){
+    navigateToScheduleEntry: () -> Unit,
+    openDrawer: () -> Unit,
+) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    var showMenu  by remember { mutableStateOf(false) }
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
-        title = { Text( title,color = Color.White)},
+        title = { Text(title, color = Color.White) },
         scrollBehavior = scrollBehavior,
         navigationIcon = {
-            if(canNavigateBack){
+            if (canNavigateBack) {
                 IconButton(onClick = navigateUp) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
-                        contentDescription  = stringResource(R.string.back_button),
+                        contentDescription = stringResource(R.string.back_button),
+                        tint = Color.White
+                    )
+                }
+            } else {
+                IconButton(onClick = openDrawer) {
+                    Icon(
+                        imageVector = Icons.Default.Menu,
+                        contentDescription = stringResource(R.string.menu),
                         tint = Color.White
                     )
                 }
             }
         },
         actions = {
-            IconButton(
-                onClick = { showMenu = !showMenu}
-            ){
-                Icon(
-                    imageVector = Icons.Filled.ArrowDropDown,
-                    contentDescription = "Menu",
-                    tint = Color.White
-                )
-            }
-            DropdownMenu(
-                expanded = showMenu,
-                onDismissRequest = { showMenu = false }
-            ) {
-                DropdownMenuItem(
-                    onClick = {
-                        navigateToClassHome()
-                        showMenu = false
-                    },
-                    text = {Text("Class")}
-                )
-                DropdownMenuItem(
-                    onClick = {
-                        navigateToExamHome()
-                        showMenu = false
-                    },
-                    text = {Text("Exam")}
-                )
-            }
 
-            IconButton(
-                onClick = navigateToScheduleEntry
-            ) {
+            IconButton(onClick = navigateToScheduleEntry) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription =  stringResource(R.string.class_entry_title),
+                    contentDescription = stringResource(R.string.class_entry_title),
                     tint = Color.Yellow
                 )
             }
 
-            IconButton(
-                onClick = { /*TODO*/ }
-            ) {
+            IconButton(onClick = { /*TODO*/ }) {
                 Icon(
                     imageVector = Icons.Filled.Info,
                     contentDescription = stringResource(R.string.about),
@@ -172,60 +145,39 @@ fun ExamScheduleScreenTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     navigateToScheduleEntry: () -> Unit,
-    navigateToClassHome: () -> Unit,
-    navigateToExamHome: () -> Unit,
     navigateUp: () -> Unit = {},
     examDates: List<LocalDate>,
+    openDrawer: () -> Unit,
     selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit
 ){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    var showMenu  by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
         title = { Text( title,color = Color.White)},
         scrollBehavior = scrollBehavior,
         navigationIcon = {
-            if(canNavigateBack){
+            if (canNavigateBack) {
                 IconButton(onClick = navigateUp) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
-                        contentDescription  = stringResource(R.string.back_button),
+                        contentDescription = stringResource(R.string.back_button),
+                        tint = Color.White
+                    )
+                }
+            } else {
+                IconButton(onClick = openDrawer) {
+                    Icon(
+                        imageVector = Icons.Default.Menu,
+                        contentDescription = stringResource(R.string.menu),
                         tint = Color.White
                     )
                 }
             }
         },
         actions = {
-            IconButton(
-                onClick = { showMenu = !showMenu}
-            ){
-                Icon(
-                    imageVector = Icons.Filled.ArrowDropDown,
-                    contentDescription = "Menu",
-                    tint = Color.White
-                )
-            }
-            DropdownMenu(
-                expanded = showMenu,
-                onDismissRequest = { showMenu = false }
-            ) {
-                DropdownMenuItem(
-                    onClick = {
-                        navigateToClassHome()
-                        showMenu = false
-                    },
-                    text = {Text("Class")}
-                )
-                DropdownMenuItem(
-                    onClick = {
-                        navigateToExamHome()
-                        showMenu = false
-                    },
-                    text = {Text("Exam")}
-                )
-            }
+
 
             IconButton(
                 onClick = navigateToScheduleEntry
@@ -305,14 +257,13 @@ fun BuildingsScreenTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     modifier: Modifier = Modifier,
-    navigateToPinsHome: () -> Unit,
     navigateToRoomDetails: (Int) -> Unit,
+    openDrawer: () -> Unit,
     navigateToBuildingDetails: (Int) -> Unit,
     navigateUp: () -> Unit = {},
     searchViewModel: SearchViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    var showMenu by remember { mutableStateOf(false) }
     var showSearchBar by remember { mutableStateOf(false) }
     val buildingSuggestions by searchViewModel.buildingSuggestions.collectAsState()
     val roomSuggestions by searchViewModel.roomSuggestions.collectAsState()
@@ -343,6 +294,14 @@ fun BuildingsScreenTopAppBar(
                             tint = Color.White
                         )
                     }
+                } else {
+                    IconButton(onClick = openDrawer) {
+                        Icon(
+                            imageVector = Icons.Default.Menu,
+                            contentDescription = stringResource(R.string.menu),
+                            tint = Color.White
+                        )
+                    }
                 }
             },
             actions = {
@@ -362,33 +321,6 @@ fun BuildingsScreenTopAppBar(
                             tint = Color.White
                         )
                     }
-                }
-                IconButton(
-                    onClick = { showMenu = !showMenu }
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowDropDown,
-                        contentDescription = "Menu",
-                        tint = Color.White
-                    )
-                }
-                DropdownMenu(
-                    expanded = showMenu,
-                    onDismissRequest = { showMenu = false }
-                ) {
-                    DropdownMenuItem(
-                        onClick = {
-                            showMenu = false
-                        },
-                        text = { Text("UPLB Buildings") }
-                    )
-                    DropdownMenuItem(
-                        onClick = {
-                            navigateToPinsHome()
-                            showMenu = false
-                        },
-                        text = { Text("My Pins") }
-                    )
                 }
                 IconButton(
                     onClick = { /*TODO*/ }
@@ -456,7 +388,7 @@ fun PinsScreenTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     navigateToPinEntry: () -> Unit,
-    navigateToBuildingHome: () -> Unit,
+    openDrawer: () -> Unit,
     navigateUp: () -> Unit = {},
     ){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -465,46 +397,25 @@ fun PinsScreenTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
         title = { Text( title,color = Color.White)},
         scrollBehavior = scrollBehavior,
-        navigationIcon = {
-            if(canNavigateBack){
-                IconButton(onClick = navigateUp) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription  = stringResource(R.string.back_button),
-                        tint = Color.White
-                    )
-                }
-            }
-        },
-        actions = {
-            IconButton(
-                onClick = { showMenu = !showMenu}
-            ){
+        navigationIcon = {if (canNavigateBack) {
+            IconButton(onClick = navigateUp) {
                 Icon(
-                    imageVector = Icons.Filled.ArrowDropDown,
-                    contentDescription = "Menu",
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.back_button),
                     tint = Color.White
                 )
             }
-            DropdownMenu(
-                expanded = showMenu,
-                onDismissRequest = { showMenu = false }
-            ) {
-                DropdownMenuItem(
-                    onClick = {
-                        navigateToBuildingHome()
-                        showMenu = false
-                    },
-                    text = {Text("UPLB Buildings")}
-                )
-                DropdownMenuItem(
-                    onClick = {
-                        showMenu = false
-                    },
-                    text = {Text("My Pins")}
+        } else {
+            IconButton(onClick = openDrawer) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = stringResource(R.string.menu),
+                    tint = Color.White
                 )
             }
-
+        }
+        },
+        actions = {
             IconButton(
                 onClick = navigateToPinEntry
             ) {
@@ -573,6 +484,7 @@ fun CoordinateEntryScreenTopAppBar(
 fun MapScreenTopAppBar(
     title: String,
     onGetDirectionsClick: () -> Unit,
+    openDrawer: () -> Unit,
     onRouteTypeSelected: (String) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -587,6 +499,15 @@ fun MapScreenTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
         title = { Text(title, color = Color.White) },
         scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            IconButton(onClick = openDrawer) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = stringResource(R.string.menu),
+                    tint = Color.White
+                )
+            }
+        },
         actions = {
             IconButton(onClick = onGetDirectionsClick) {
                 Icon(
@@ -714,6 +635,32 @@ fun GuideScreenTopAppBar(
                         onRouteTypeSelected(selectedRouteType)
                         expanded = false
                     },text = {Text("Transit Route")}
+                    )
+                }
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ColorScreenDetailTopAppBar(
+    title: String,
+    canNavigateBack: Boolean,
+    onNavigateUp: () -> Unit = {},
+){
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
+        title = { Text( title,color = Color.White) },
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            if (canNavigateBack) {
+                IconButton(onClick = onNavigateUp) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.back_button),
+                        tint = Color.White
                     )
                 }
             }

@@ -18,8 +18,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -30,7 +32,7 @@ import com.example.classschedule.data.ClassSchedule
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.ScheduleScreenTopAppBar
-import com.example.classschedule.ui.theme.ColorPalette.getColorEntry
+import com.example.classschedule.ui.theme.ColorEntry
 
 object ClassHomeDestination: NavigationDestination {
     override val route = "class_home"
@@ -41,8 +43,8 @@ object ClassHomeDestination: NavigationDestination {
 fun ClassHomeScreen(
     navigateToClassScheduleEntry: () -> Unit,
     navigateToClassScheduleUpdate: (Int) -> Unit,
-    navigateToExamHomeDestination: () -> Unit,
     modifier: Modifier = Modifier,
+    openDrawer: () -> Unit,
     viewModel: ClassHomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val homeUiState by viewModel.classHomeUiState.collectAsState()
@@ -54,12 +56,12 @@ fun ClassHomeScreen(
                 title = stringResource(R.string.classes),
                 canNavigateBack = false,
                 navigateToScheduleEntry = navigateToClassScheduleEntry,
-                navigateToClassHome = {},
-                navigateToExamHome = navigateToExamHomeDestination
+                openDrawer = openDrawer
             )
         }
     ){ innerPadding ->
         HomeBody(
+            viewModel = viewModel,
             classScheduleList = homeUiState.classScheduleList,
             onClassScheduleClick = navigateToClassScheduleUpdate,
             modifier = modifier.fillMaxSize(),
@@ -73,6 +75,7 @@ private fun HomeBody(
     classScheduleList: List<ClassSchedule>,
     onClassScheduleClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: ClassHomeViewModel,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ){
     Column(
@@ -88,6 +91,7 @@ private fun HomeBody(
             )
         }else{
             ClassList(
+                viewModel = viewModel,
                 classScheduleList = classScheduleList,
                 onClassScheduleClick = {onClassScheduleClick(it.id)},
                 contentPadding = contentPadding,
@@ -102,6 +106,7 @@ private fun ClassList(
     classScheduleList: List<ClassSchedule>,
     onClassScheduleClick: (ClassSchedule) -> Unit,
     contentPadding: PaddingValues,
+    viewModel: ClassHomeViewModel,
     modifier: Modifier = Modifier
 ){
     LazyColumn(
@@ -111,6 +116,7 @@ private fun ClassList(
         items(items = classScheduleList, key = {it.id}) { item ->
             ClassDetails(
                 classSchedule = item,
+                viewModel = viewModel,
                 modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.padding_small))
                     .clickable { onClassScheduleClick(item) })
@@ -121,13 +127,20 @@ private fun ClassList(
 @Composable
 private fun ClassDetails(
     classSchedule: ClassSchedule,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: ClassHomeViewModel
 ){
-    val colorEntry = getColorEntry(classSchedule.colorName)
+    val colorSchemes by viewModel.colorSchemes.collectAsState()
+
+    val colorEntry = remember(classSchedule.colorId) {
+        colorSchemes[classSchedule.colorId] ?: ColorEntry(Color.Transparent, Color.Black)
+    }
+    val fontColor = colorEntry.fontColor
+    val backgroundColor = colorEntry.backgroundColor
     Card(
         modifier = modifier,
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = colorEntry.backgroundColor)
+        colors = CardDefaults.cardColors(containerColor = backgroundColor)
     ) {
         Column(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large)),
@@ -139,7 +152,7 @@ private fun ClassDetails(
                 Text(
                     text = classSchedule.title,
                     style = MaterialTheme.typography.titleLarge,
-                    color = colorEntry.fontColor
+                    color = fontColor
                 )
             }
         }

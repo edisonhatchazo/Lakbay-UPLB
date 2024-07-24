@@ -1,6 +1,5 @@
 package com.example.classschedule.ui.buildingScreens.uplb
 
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,15 +25,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.example.classschedule.R
 import com.example.classschedule.data.Classroom
 import com.example.classschedule.ui.map.OSMCustomMapType
@@ -43,7 +43,6 @@ import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.CoordinateEntryScreenTopAppBar
 import com.example.classschedule.ui.theme.CollegeColorPalette
-import com.example.classschedule.ui.theme.ColorEntry
 import kotlinx.coroutines.launch
 
 object RoomDetailsDestination : NavigationDestination {
@@ -59,7 +58,6 @@ fun RoomDetailsScreen(
     navigateToMap: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RoomDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    mainNavController: NavHostController
 ) {
 
     val roomUiState = viewModel.uiState.collectAsState()
@@ -78,7 +76,6 @@ fun RoomDetailsScreen(
         }, modifier = modifier
     ){innerPadding ->
         ClassroomDetailsBody(
-            navController = mainNavController,
             mapType = mapType,
             navigateToMap = navigateToMap,
             classroomDetailsUiState = roomUiState.value,
@@ -100,22 +97,24 @@ fun RoomDetailsScreen(
 @Composable
 private fun ClassroomDetailsBody(
     classroomDetailsUiState: ClassroomDetailsUiState,
-    buildingCollege: String,
     mapType: OSMCustomMapType,
+    buildingCollege:String,
     navigateToMap: (Int) -> Unit,
     viewModel: RoomDetailsViewModel,
-    navController: NavHostController,
     modifier: Modifier = Modifier
 ){
     val classroom = classroomDetailsUiState.classroomDetails.toClassroom()
-    val colorEntry = CollegeColorPalette.getColorEntry(buildingCollege)
+
+    val colorEntry = rememberUpdatedState(CollegeColorPalette.getColorEntry(buildingCollege))
+    val fontColor = colorEntry.value.fontColor
+    val backgroundColor = colorEntry.value.backgroundColor
     Column(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
     ) {
         ClassroomDetailed(
-            colorEntry = colorEntry,
-            navController = navController,
+            fontColor = fontColor,
+            backgroundColor = backgroundColor,
             classroom = classroom,
             viewModel = viewModel,
             navigateToMap = navigateToMap,
@@ -133,14 +132,13 @@ fun ClassroomDetailed(
     mapType: OSMCustomMapType,
     navigateToMap: (Int) -> Unit,
     viewModel: RoomDetailsViewModel,
-    navController: NavHostController,
-    colorEntry: ColorEntry
+    fontColor: Color,
+    backgroundColor: Color
 ){
     val coroutineScope = rememberCoroutineScope()
-    Log.d("MapScreen","From Rooms")
     Card(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = colorEntry.backgroundColor)
+        colors = CardDefaults.cardColors(containerColor = backgroundColor)
     ) {
         Column(
             modifier = Modifier
@@ -152,7 +150,7 @@ fun ClassroomDetailed(
         ) {
             ClassroomDetailsRow(
                 labelResID = R.string.title,
-                colorEntry = colorEntry,
+                fontColor = fontColor,
                 classroomDetail = classroom.title,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
@@ -160,7 +158,7 @@ fun ClassroomDetailed(
             )
             ClassroomDetailsRow(
                 labelResID = R.string.floor,
-                colorEntry = colorEntry,
+                fontColor = fontColor,
                 classroomDetail = classroom.floor,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)
@@ -199,13 +197,13 @@ fun ClassroomDetailed(
 private fun ClassroomDetailsRow(
     @StringRes labelResID: Int,
     classroomDetail: String,
-    colorEntry: ColorEntry,
+    fontColor: Color,
     modifier: Modifier = Modifier,
 ){
     Row(modifier = modifier) {
-        Text(text = stringResource(labelResID), color = colorEntry.fontColor)
+        Text(text = stringResource(labelResID), color = fontColor)
         Spacer(modifier = Modifier.weight(1f))
-        Text(text = classroomDetail, fontWeight = FontWeight.Bold, color = colorEntry.fontColor)
+        Text(text = classroomDetail, fontWeight = FontWeight.Bold, color = fontColor)
     }
 }
 

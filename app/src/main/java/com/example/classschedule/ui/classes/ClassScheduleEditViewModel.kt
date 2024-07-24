@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.classschedule.data.ClassSchedule
 import com.example.classschedule.data.ClassScheduleRepository
+import com.example.classschedule.data.ColorSchemesRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -19,7 +20,8 @@ import java.time.LocalTime
 
 class ClassScheduleEditViewModel(
     savedStateHandle: SavedStateHandle,
-    private val classScheduleRepository: ClassScheduleRepository
+    private val classScheduleRepository: ClassScheduleRepository,
+    private val colorSchemesRepository: ColorSchemesRepository
 ) : ViewModel() {
 
     private val classScheduleId: Int = checkNotNull(savedStateHandle[ClassScheduleEditDestination.CLASSSCHEDULEIDARG])
@@ -27,6 +29,7 @@ class ClassScheduleEditViewModel(
     val selectedDays: State<List<String>> = _selectedDays
     val existingSchedules: StateFlow<List<ClassSchedule>> = classScheduleRepository.getAllClassSchedules()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    private var previousColor = 1
     var classScheduleUiState by mutableStateOf(
         savedStateHandle.get<ClassScheduleUiState>("classScheduleUiState") ?: ClassScheduleUiState()
     )
@@ -39,6 +42,7 @@ class ClassScheduleEditViewModel(
                 .first()
             _selectedDays.value = schedule.days.split(", ").map { it.trim() }
             classScheduleUiState = schedule.toClassScheduleUiState(true)
+            previousColor = classScheduleUiState.classScheduleDetails.colorId
         }
     }
 
@@ -66,6 +70,8 @@ class ClassScheduleEditViewModel(
     suspend fun updateClassSchedule() {
         if (validateInput()) {
             classScheduleRepository.updateClassSchedule(classScheduleUiState.classScheduleDetails.toClass())
+            colorSchemesRepository.decrementIsCurrentlyUsed(previousColor)
+            colorSchemesRepository.incrementIsCurrentlyUsed(classScheduleUiState.classScheduleDetails.colorId)
         }
     }
 }

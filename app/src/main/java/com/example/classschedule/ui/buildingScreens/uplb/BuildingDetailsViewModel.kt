@@ -20,6 +20,7 @@ class BuildingDetailsViewModel(
 ): ViewModel() {
     private val buildingId: Int = checkNotNull(savedStateHandle[BuildingDetailsDestination.BUILDINGIDARG])
 
+
     val uiState: StateFlow<BuildingDetailsUiState> =
         buildingRepository.getBuilding(buildingId)
             .filterNotNull()
@@ -48,6 +49,7 @@ class BuildingDetailsViewModel(
         )
         mapDataRepository.insertOrUpdateMapData(mapData)
     }
+
 
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
