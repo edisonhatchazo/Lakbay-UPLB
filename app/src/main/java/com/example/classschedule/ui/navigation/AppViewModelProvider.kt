@@ -11,9 +11,13 @@ import com.example.classschedule.ui.buildingScreens.pins.PinsDetailsViewModel
 import com.example.classschedule.ui.buildingScreens.pins.PinsEditViewModel
 import com.example.classschedule.ui.buildingScreens.pins.PinsEntryViewModel
 import com.example.classschedule.ui.buildingScreens.pins.PinsViewModel
-import com.example.classschedule.ui.buildingScreens.uplb.BuildingDetailsViewModel
-import com.example.classschedule.ui.buildingScreens.uplb.BuildingHomeViewModel
-import com.example.classschedule.ui.buildingScreens.uplb.RoomDetailsViewModel
+import com.example.classschedule.ui.buildingScreens.uplb.buildings.BuildingDetailsViewModel
+import com.example.classschedule.ui.buildingScreens.uplb.buildings.BuildingEditViewModel
+import com.example.classschedule.ui.buildingScreens.uplb.buildings.BuildingEntryViewModel
+import com.example.classschedule.ui.buildingScreens.uplb.buildings.BuildingHomeViewModel
+import com.example.classschedule.ui.buildingScreens.uplb.rooms.RoomDetailsViewModel
+import com.example.classschedule.ui.buildingScreens.uplb.rooms.RoomEditViewModel
+import com.example.classschedule.ui.buildingScreens.uplb.rooms.RoomEntryViewModel
 import com.example.classschedule.ui.classes.ClassHomeViewModel
 import com.example.classschedule.ui.classes.ClassScheduleDetailsViewModel
 import com.example.classschedule.ui.classes.ClassScheduleEditViewModel
@@ -126,6 +130,8 @@ object AppViewModelProvider {
             PinsEntryViewModel(classScheduleApplication().container.pinsRepository)
         }
 
+        //Initializers for the Building ViewModels
+
         initializer{
             BuildingHomeViewModel(
                 classScheduleApplication().container.buildingRepository,
@@ -141,12 +147,42 @@ object AppViewModelProvider {
 
             )
         }
+
+        initializer{
+            BuildingEditViewModel(
+                this.createSavedStateHandle(),
+                classScheduleApplication().container.buildingRepository
+            )
+        }
+
+        initializer{
+            BuildingEntryViewModel(
+                classScheduleApplication().container.buildingRepository,
+
+            )
+        }
+
+        //initializers for the Room View Models
         initializer{
             RoomDetailsViewModel(
                 this.createSavedStateHandle(),
                 classScheduleApplication().container.buildingRepository,
                 classScheduleApplication().container.mapDataRepository,
 
+            )
+        }
+
+        initializer{
+            RoomEntryViewModel(
+                this.createSavedStateHandle(),
+                classScheduleApplication().container.buildingRepository
+            )
+        }
+
+        initializer{
+            RoomEditViewModel(
+                this.createSavedStateHandle(),
+                classScheduleApplication().container.buildingRepository
             )
         }
 
@@ -201,10 +237,10 @@ object AppViewModelProvider {
         }
 
         initializer{
-            CollegeDirectoryViewModel(
-                classScheduleApplication().container.colorSchemesRepository
-            )
+            CollegeDirectoryViewModel()
         }
+
+
 
         initializer{
             DirectoryColorViewModel(

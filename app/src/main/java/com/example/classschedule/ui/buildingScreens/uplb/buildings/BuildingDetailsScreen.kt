@@ -1,4 +1,4 @@
-package com.example.classschedule.ui.buildingScreens.uplb
+package com.example.classschedule.ui.buildingScreens.uplb.buildings
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
@@ -15,12 +15,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,12 +44,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
 import com.example.classschedule.data.Building
 import com.example.classschedule.data.Classroom
+import com.example.classschedule.ui.buildingScreens.uplb.toBuilding
+import com.example.classschedule.ui.buildingScreens.uplb.toBuildingDetails
 import com.example.classschedule.ui.map.OSMCustomMapType
 import com.example.classschedule.ui.map.OSMMapping
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
-import com.example.classschedule.ui.screen.CoordinateEntryScreenTopAppBar
-import com.example.classschedule.ui.screen.DetailsScreenTopAppBar
+import com.example.classschedule.ui.screen.EditScreenTopAppBar
+import com.example.classschedule.ui.screen.LocationScreenTopAppBar
 import com.example.classschedule.ui.theme.CollegeColorPalette
 import kotlinx.coroutines.launch
 
@@ -60,6 +66,8 @@ object BuildingDetailsDestination : NavigationDestination {
 fun BuildingDetailsScreen (
     navigateToRoomDetails: (Int) -> Unit,
     navigateBack: () -> Unit,
+    navigateToBuildingEdit: (Int) -> Unit,
+    navigateToClassroomEntry: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: BuildingDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navigateToMap: (Int) -> Unit,
@@ -69,21 +77,26 @@ fun BuildingDetailsScreen (
     val room = roomUiState.roomList
     val uiState = viewModel.uiState.collectAsState()
     val build = uiState.value.buildingDetails.toBuilding()
-
+    val coroutineScope = rememberCoroutineScope()
     Scaffold(
         topBar = {
-            if(build.college == "Landmark" || build.college == "Dormitory" || build.college == "UP unit"){
-                CoordinateEntryScreenTopAppBar(
+            if(build.college == "Landmark" || build.college == "Dormitory"){
+                EditScreenTopAppBar(
                     title = build.name,
                     canNavigateBack = true,
-                    navigateUp = navigateBack
+                    navigateUp = navigateBack,
+                    id = build.buildingId,
+                    navigateToEdit = navigateToBuildingEdit,
                 )
             }
             else {
-                DetailsScreenTopAppBar(
+                LocationScreenTopAppBar(
                     title = build.name,
                     canNavigateBack = true,
-                    navigateUp = navigateBack
+                    navigateUp = navigateBack,
+                    id = build.buildingId,
+                    navigateToEdit = navigateToBuildingEdit,
+                    navigateToRoomEntry = navigateToClassroomEntry,
                 )
             }
         }, modifier = modifier
@@ -94,6 +107,12 @@ fun BuildingDetailsScreen (
             buildingDetailsUiState = uiState.value,
             navigateToMap = navigateToMap,
             viewModel = viewModel,
+            onDelete = {
+                coroutineScope.launch {
+                    viewModel.deleteBuilding()
+                    navigateBack()
+                }
+            },
             classRoomList = room,
             modifier = Modifier
                 .padding(
@@ -114,6 +133,7 @@ private fun BuildingDetailsBody(
     navigateToRoomDetails: (Int) -> Unit,
     buildingDetailsUiState: BuildingDetailsUiState,
     classRoomList: List<Classroom>,
+    onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ){
     val coroutineScope = rememberCoroutineScope()
@@ -125,12 +145,14 @@ private fun BuildingDetailsBody(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
     ){
+        var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
         if(building.college == "Landmark" || building.college == "Dormitory" || building.college == "UP unit"){
             LocationDetail(
                 mapType = mapType,
                 building = building,
                 viewModel = viewModel,
                 fontColor = fontColor,
+                onDelete =  onDelete,
                 backgroundColor = backgroundColor,
                 navigateToMap = navigateToMap,
                 modifier = Modifier.fillMaxWidth(),
@@ -153,19 +175,40 @@ private fun BuildingDetailsBody(
             ) {
                 Text(text = stringResource(R.string.guide))
             }
-            Text(text = stringResource(R.string.rooms), fontWeight = FontWeight.Bold)
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                items(classRoomList) { classroom ->
-                    RoomDetails(
-                        classroom = classroom,
-                        fontColor = fontColor,
-                        backgroundColor = backgroundColor,
-                        modifier = Modifier
-                            .padding(dimensionResource(id = R.dimen.padding_small))
-                            .clickable { navigateToRoomDetails(classroom.roomId) }
+            if(building.roomCount!=0) {
+                Text(text = stringResource(R.string.rooms), fontWeight = FontWeight.Bold)
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    items(classRoomList) { classroom ->
+                        RoomDetails(
+                            classroom = classroom,
+                            fontColor = fontColor,
+                            backgroundColor = backgroundColor,
+                            modifier = Modifier
+                                .padding(dimensionResource(id = R.dimen.padding_small))
+                                .clickable { navigateToRoomDetails(classroom.roomId) }
+                        )
+                    }
+                }
+            }
+            else{
+                OutlinedButton(
+                    onClick = { deleteConfirmationRequired = true },
+                    shape = MaterialTheme.shapes.small,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(stringResource(R.string.delete))
+                }
+                if (deleteConfirmationRequired) {
+                    DeleteConfirmationDialog(
+                        onDeleteConfirm = {
+                            deleteConfirmationRequired = false
+                            onDelete()
+                        },
+                        onDeleteCancel = { deleteConfirmationRequired = false },
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
                     )
                 }
             }
@@ -180,12 +223,13 @@ fun LocationDetail(
     modifier: Modifier = Modifier,
     viewModel: BuildingDetailsViewModel,
     fontColor: Color,
+    onDelete: () -> Unit,
     backgroundColor: Color,
     navigateToMap: (Int) -> Unit,
     mapType: OSMCustomMapType
 ){
     val coroutineScope = rememberCoroutineScope()
-
+    var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = backgroundColor)
@@ -238,6 +282,24 @@ fun LocationDetail(
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(text = stringResource(R.string.guide))
+    }
+
+    OutlinedButton(
+        onClick = { deleteConfirmationRequired = true },
+        shape = MaterialTheme.shapes.small,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(stringResource(R.string.delete))
+    }
+    if (deleteConfirmationRequired) {
+        DeleteConfirmationDialog(
+            onDeleteConfirm = {
+                deleteConfirmationRequired = false
+                onDelete()
+            },
+            onDeleteCancel = { deleteConfirmationRequired = false },
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+        )
     }
 }
 
@@ -319,3 +381,27 @@ private fun RoomDetails(
         }
     }
 }
+
+@Composable
+private fun DeleteConfirmationDialog(
+    onDeleteConfirm: () -> Unit,
+    onDeleteCancel: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AlertDialog(
+        onDismissRequest = { /*Do Nothing*/ },
+        title = { Text(stringResource(R.string.delete_question)) },
+        modifier = modifier,
+        dismissButton = {
+            TextButton(onClick = onDeleteCancel) {
+                Text(stringResource(R.string.no))
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDeleteConfirm) {
+                Text(stringResource(R.string.yes))
+            }
+        }
+    )
+}
+

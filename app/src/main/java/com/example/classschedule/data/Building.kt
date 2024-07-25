@@ -17,7 +17,7 @@ data class Pins(
 
 @Entity(tableName = "Buildings")
 data class Building(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "building_id") val buildingId: Int,
     val name: String,
     @ColumnInfo(name = "other_name") val otherName: String?,
@@ -25,12 +25,12 @@ data class Building(
     val college: String,
     val latitude: Double,
     val longitude: Double,
-    val colorId: Int,
+    @ColumnInfo(name = "room_count")  val roomCount: Int,
 )
 
 @Entity(tableName = "Rooms")
 data class Classroom(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "room_id")val roomId: Int,
     val title: String,
     val abbreviation: String,
@@ -40,7 +40,6 @@ data class Classroom(
     val longitude: Double,
     val college: String,
     @ColumnInfo(name = "building_id")
-    val buildingId: Int,
-    val colorId: Int
+    val buildingId: Int
 )
 

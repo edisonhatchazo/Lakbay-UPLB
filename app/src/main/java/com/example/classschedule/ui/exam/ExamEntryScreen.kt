@@ -49,7 +49,7 @@ import com.example.classschedule.algorithm.calculateExamAvailableEndTimes
 import com.example.classschedule.algorithm.calculateExamAvailableStartTimes
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
-import com.example.classschedule.ui.screen.ScheduleEntryScreenTopAppBar
+import com.example.classschedule.ui.screen.EntryScreenTopAppBar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -75,7 +75,7 @@ fun ExamEntryScreen(
     val availableEndTimes = calculateExamAvailableEndTimes(existingSchedules, selectedDay,selectedDate, examScheduleUiState.examScheduleDetails.time)
     Scaffold(
         topBar = {
-            ScheduleEntryScreenTopAppBar(
+            EntryScreenTopAppBar(
                 title = stringResource(ExamEntryDestination.titleRes),
                 canNavigateBack = canNavigateBack,
                 navigateUp = onNavigateUp

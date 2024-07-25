@@ -1,4 +1,4 @@
-package com.example.classschedule.ui.buildingScreens.uplb
+package com.example.classschedule.ui.buildingScreens.uplb.buildings
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -7,6 +7,9 @@ import com.example.classschedule.data.BuildingRepository
 import com.example.classschedule.data.Classroom
 import com.example.classschedule.data.MapData
 import com.example.classschedule.data.MapDataRepository
+import com.example.classschedule.ui.buildingScreens.uplb.BuildingDetails
+import com.example.classschedule.ui.buildingScreens.uplb.toBuilding
+import com.example.classschedule.ui.buildingScreens.uplb.toBuildingDetails
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -15,7 +18,7 @@ import kotlinx.coroutines.flow.stateIn
 
 class BuildingDetailsViewModel(
     savedStateHandle: SavedStateHandle,
-    buildingRepository: BuildingRepository,
+    private val buildingRepository: BuildingRepository,
     private val mapDataRepository: MapDataRepository,
 ): ViewModel() {
     private val buildingId: Int = checkNotNull(savedStateHandle[BuildingDetailsDestination.BUILDINGIDARG])
@@ -33,7 +36,7 @@ class BuildingDetailsViewModel(
             )
 
     val buildingRoomUiState: StateFlow<BuildingRoomUiState> =
-        buildingRepository.getRoomsByBuildingId(buildingId).map{ BuildingRoomUiState(it)}
+        buildingRepository.getRoomsByBuildingId(buildingId).map{ BuildingRoomUiState(it) }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
@@ -49,7 +52,9 @@ class BuildingDetailsViewModel(
         )
         mapDataRepository.insertOrUpdateMapData(mapData)
     }
-
+    suspend fun deleteBuilding() {
+        buildingRepository.delete(uiState.value.buildingDetails.toBuilding())
+    }
 
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L

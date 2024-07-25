@@ -1,4 +1,4 @@
-package com.example.classschedule.ui.buildingScreens.uplb
+package com.example.classschedule.ui.buildingScreens.uplb.buildings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,7 +16,7 @@ class BuildingHomeViewModel(
 ) : ViewModel() {
 
     val buildingHomeUiState: StateFlow<BuildingHomeUiState> =
-        buildingRepository.getAllBuildings().map{ BuildingHomeUiState(it)}
+        buildingRepository.getAllBuildings().map{ BuildingHomeUiState(it) }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),

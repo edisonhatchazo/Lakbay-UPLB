@@ -31,7 +31,7 @@ class ClassScheduleEntryViewModel(
     )
     var classScheduleUiState by mutableStateOf(
         ClassScheduleUiState(
-            classScheduleDetails = ClassScheduleDetails(type = "Class"),
+            classScheduleDetails = ClassScheduleDetails(),
             isEntryValid = false
         )
     )

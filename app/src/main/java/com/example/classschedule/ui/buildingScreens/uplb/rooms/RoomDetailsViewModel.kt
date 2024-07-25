@@ -1,4 +1,4 @@
-package com.example.classschedule.ui.buildingScreens.uplb
+package com.example.classschedule.ui.buildingScreens.uplb.rooms
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -6,6 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.classschedule.data.BuildingRepository
 import com.example.classschedule.data.MapData
 import com.example.classschedule.data.MapDataRepository
+import com.example.classschedule.ui.buildingScreens.uplb.ClassroomDetails
+import com.example.classschedule.ui.buildingScreens.uplb.toClassroom
+import com.example.classschedule.ui.buildingScreens.uplb.toClassroomDetails
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -14,7 +17,7 @@ import kotlinx.coroutines.flow.stateIn
 
 class RoomDetailsViewModel(
     savedStateHandle: SavedStateHandle,
-    buildingRepository: BuildingRepository,
+    private val buildingRepository: BuildingRepository,
     private val mapDataRepository: MapDataRepository
 ): ViewModel() {
     private val roomId: Int = checkNotNull(savedStateHandle[RoomDetailsDestination.ROOMIDARG])
@@ -44,7 +47,10 @@ class RoomDetailsViewModel(
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
     }
-
+    suspend fun deleteClassroom() {
+        buildingRepository.delete(uiState.value.classroomDetails.toClassroom())
+        buildingRepository.decrementRoomCount(uiState.value.classroomDetails.buildingId)
+    }
 
 }
 

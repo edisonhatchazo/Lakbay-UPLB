@@ -2,6 +2,8 @@ package com.example.classschedule.ui.buildingScreens.uplb
 
 import com.example.classschedule.data.Building
 import com.example.classschedule.data.Classroom
+import com.example.classschedule.ui.buildingScreens.uplb.buildings.BuildingUiState
+import com.example.classschedule.ui.buildingScreens.uplb.rooms.ClassroomUiState
 
 
 data class BuildingDetails(
@@ -12,7 +14,7 @@ data class BuildingDetails(
     val college: String = "",
     val latitude: Double = 14.16747822735461,
     val longitude: Double = 121.24338486047947,
-    val colorId: Int = 0
+    val roomCount: Int = 0
 )
 
 
@@ -24,8 +26,15 @@ fun Building.toBuildingDetails(): BuildingDetails = BuildingDetails(
     otherName = otherName,
     latitude = latitude,
     longitude = longitude,
-    colorId = colorId
+    roomCount = roomCount
 )
+
+fun Building.toBuildingUiState(isEntryValid: Boolean = false): BuildingUiState = BuildingUiState(
+    buildingDetails = this.toBuildingDetails(),
+    isEntryValid = isEntryValid
+)
+
+
 
 fun BuildingDetails.toBuilding(): Building = Building(
     buildingId = buildingId,
@@ -35,7 +44,7 @@ fun BuildingDetails.toBuilding(): Building = Building(
     otherName = otherName,
     latitude = latitude,
     longitude = longitude,
-    colorId = colorId
+    roomCount = roomCount
 )
 
 
@@ -51,7 +60,6 @@ data class ClassroomDetails(
     val latitude: Double = 14.16747822735461,
     val longitude: Double = 121.24338486047947,
     val buildingId: Int = 0,
-    val colorId: Int = 0
 )
 
 
@@ -65,8 +73,13 @@ fun Classroom.toClassroomDetails(): ClassroomDetails = ClassroomDetails(
     longitude = longitude,
     buildingId = buildingId,
     college = college,
-    colorId = colorId
 )
+
+fun Classroom.toClassroomUiState(isEntryValid: Boolean = false): ClassroomUiState = ClassroomUiState(
+    classroomDetails = this.toClassroomDetails(),
+    isEntryValid = isEntryValid
+)
+
 
 fun ClassroomDetails.toClassroom(): Classroom = Classroom(
     roomId = roomId,
@@ -78,5 +91,4 @@ fun ClassroomDetails.toClassroom(): Classroom = Classroom(
     longitude = longitude,
     buildingId = buildingId,
     college = college,
-    colorId = colorId
 )

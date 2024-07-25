@@ -19,7 +19,7 @@ import com.example.classschedule.algorithm.calculateAvailableEndTimes
 import com.example.classschedule.algorithm.calculateAvailableStartTimes
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
-import com.example.classschedule.ui.screen.ScheduleEntryScreenTopAppBar
+import com.example.classschedule.ui.screen.EntryScreenTopAppBar
 import kotlinx.coroutines.launch
 
 object ClassScheduleEditDestination: NavigationDestination {
@@ -46,7 +46,7 @@ fun ClassScheduleEditScreen(
 
     Scaffold(
         topBar = {
-            ScheduleEntryScreenTopAppBar(
+            EntryScreenTopAppBar(
                 title = stringResource(ClassScheduleEditDestination.titleRes),
                 canNavigateBack = true,
                 navigateUp = onNavigateUp

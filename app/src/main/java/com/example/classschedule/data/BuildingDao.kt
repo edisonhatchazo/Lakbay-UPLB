@@ -26,6 +26,19 @@ interface BuildingDao {
     @Query("SELECT * FROM Buildings WHERE building_id = :id")
     fun getBuilding(id: Int): Flow<Building>
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(building: Building)
+
+    @Update
+    suspend fun update(building: Building)
+
+    @Delete
+    suspend fun delete(building: Building)
+    @Query("UPDATE Buildings SET room_count = room_count + 1 WHERE building_id = :id")
+    suspend fun incrementRoomCount(id: Int)
+    @Query("UPDATE Buildings SET room_count = room_count - 1 WHERE building_id = :id")
+    suspend fun decrementRoomCount(id: Int)
+
 }
 
 @Dao
@@ -44,6 +57,15 @@ interface ClassroomDao {
 
     @Query("SELECT * FROM Rooms WHERE building_Id = :buildingId")
     fun getRoomsByBuildingId(buildingId: Int): Flow<List<Classroom>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(classroom: Classroom)
+
+    @Update
+    suspend fun update(classroom: Classroom)
+
+    @Delete
+    suspend fun delete(classroom: Classroom)
 }
 
 @Dao

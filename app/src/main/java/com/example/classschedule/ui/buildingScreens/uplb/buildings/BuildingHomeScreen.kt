@@ -1,4 +1,4 @@
-package com.example.classschedule.ui.buildingScreens.uplb
+package com.example.classschedule.ui.buildingScreens.uplb.buildings
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -48,6 +48,7 @@ fun BuildingHomeScreen(
     modifier: Modifier = Modifier,
     openDrawer: () -> Unit,
     navigateToRoomDetails: (Int) -> Unit,
+    navigateToBuildingEntry: () -> Unit,
     navigateToBuildingDetails: (Int) -> Unit,
     viewModel: BuildingHomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
@@ -78,6 +79,7 @@ fun BuildingHomeScreen(
                 title = stringResource(BuildingHomeDestination.titleRes),
                 canNavigateBack = false,
                 openDrawer = openDrawer,
+                navigateToBuildingEntry = navigateToBuildingEntry,
                 navigateToRoomDetails = navigateToRoomDetails,
                 navigateToBuildingDetails = navigateToBuildingDetails
             )
@@ -91,7 +93,6 @@ fun BuildingHomeScreen(
             )
             BuildingHomeBody(
                 selectedCategory = selectedCategory,
-                viewModel = viewModel,
                 buildingList = homeUiState.buildingList.filter { it.college == selectedCategory },
                 modifier = Modifier.padding(top = 8.dp),
                 onBuildingClick = navigateToBuildingDetails
@@ -106,7 +107,6 @@ fun BuildingHomeBody(
     buildingList: List<Building>,
     modifier: Modifier = Modifier,
     onBuildingClick: (Int) -> Unit,
-    viewModel: BuildingHomeViewModel
 ){
     //val filteredBuildingList = buildingList.filterNot { it.college == "Landmark" || it.college == "Dormitory" || it.college == "UP Unit"}
     Column(
@@ -115,7 +115,6 @@ fun BuildingHomeBody(
     ){
        BuildingList(
            selectedCategory = selectedCategory,
-           viewModel = viewModel,
            buildingList = buildingList,
            onBuildingClick = {onBuildingClick(it.buildingId)},
            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
@@ -128,14 +127,12 @@ private fun BuildingList(
     selectedCategory: String,
     buildingList: List<Building>,
     onBuildingClick: (Building) -> Unit,
-    viewModel: BuildingHomeViewModel,
     modifier: Modifier = Modifier
 ){
     LazyColumn(modifier = modifier) {
         items(items = buildingList,key = {it.buildingId}){building ->
             BuildingDetails(
                 selectedCategory = selectedCategory,
-                viewModel = viewModel,
                 building = building,
                 modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.padding_small))
@@ -150,10 +147,9 @@ private fun BuildingList(
 private fun BuildingDetails(
     selectedCategory: String,
     building: Building,
-    viewModel: BuildingHomeViewModel,
     modifier: Modifier = Modifier,
 
-){
+    ){
 
     val colorEntry = rememberUpdatedState(CollegeColorPalette.getColorEntry(selectedCategory))
 

@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Place
@@ -49,7 +50,7 @@ import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScheduleEntryScreenTopAppBar(
+fun EntryScreenTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit = {},
@@ -258,6 +259,7 @@ fun BuildingsScreenTopAppBar(
     canNavigateBack: Boolean,
     modifier: Modifier = Modifier,
     navigateToRoomDetails: (Int) -> Unit,
+    navigateToBuildingEntry: () -> Unit,
     openDrawer: () -> Unit,
     navigateToBuildingDetails: (Int) -> Unit,
     navigateUp: () -> Unit = {},
@@ -322,6 +324,14 @@ fun BuildingsScreenTopAppBar(
                         )
                     }
                 }
+                IconButton(onClick = navigateToBuildingEntry) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(R.string.building_entry_title),
+                        tint = Color.Yellow
+                    )
+                }
+
                 IconButton(
                     onClick = { /*TODO*/ }
                 ) {
@@ -665,5 +675,111 @@ fun ColorScreenDetailTopAppBar(
                 }
             }
         }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LocationScreenTopAppBar(
+    title: String,
+    id: Int,
+    canNavigateBack: Boolean,
+    navigateToEdit: (Int) -> Unit,
+    navigateToRoomEntry: (Int) -> Unit,
+    navigateUp: () -> Unit = {},
+){
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
+        title = { Text( title,color = Color.White)},
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            if(canNavigateBack){
+                IconButton(onClick = navigateUp) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription  = stringResource(R.string.back_button),
+                        tint = Color.White
+                    )
+                }
+            }
+        },
+        actions = {
+            IconButton(
+                onClick = {navigateToEdit(id)}
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Edit,
+                    contentDescription = stringResource(R.string.building_edit_title),
+                    tint = Color.White
+                )
+            }
+            IconButton(
+                onClick = {navigateToRoomEntry(id)}
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = stringResource(R.string.room_entry_title),
+                    tint = Color.White
+                )
+            }
+            IconButton(
+                onClick = {/* To Do Later*/}
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Info,
+                    contentDescription = stringResource(R.string.about),
+                    tint = Color.White
+                )
+            }
+        },
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditScreenTopAppBar(
+    title: String,
+    id: Int,
+    canNavigateBack: Boolean,
+    navigateToEdit: (Int) -> Unit,
+    navigateUp: () -> Unit = {},
+){
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
+        title = { Text( title,color = Color.White)},
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            if(canNavigateBack){
+                IconButton(onClick = navigateUp) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription  = stringResource(R.string.back_button),
+                        tint = Color.White
+                    )
+                }
+            }
+        },
+        actions = {
+            IconButton(
+                onClick = {navigateToEdit(id)}
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Edit,
+                    contentDescription = stringResource(R.string.building_edit_title),
+                    tint = Color.White
+                )
+            }
+            IconButton(
+                onClick = {/* To Do Later*/}
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Info,
+                    contentDescription = stringResource(R.string.about),
+                    tint = Color.White
+                )
+            }
+        },
     )
 }
