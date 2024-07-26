@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,7 +22,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -128,9 +128,12 @@ fun ScheduleScreenBody(
                             it.days.split(", ").contains(day) && // Check if the day is in the days list
                                     (it.time.isBefore(timeSlotEnd) && it.timeEnd.isAfter(timeSlotStart))
                         }
-                        val borderColor = classForThisTime?.let { colorSchemes[it.colorId]?.backgroundColor } ?: Color.Black
-                        val backgroundColor = classForThisTime?.let { colorSchemes[it.colorId]?.backgroundColor } ?: Color.Transparent
-                        val fontColor = classForThisTime?.let { colorSchemes[it.colorId]?.fontColor } ?: Color.White
+                        val borderColor = classForThisTime?.let { colorSchemes[it.colorId]?.backgroundColor }
+                            ?: MaterialTheme.colorScheme.onSurface
+                        val backgroundColor = classForThisTime?.let { colorSchemes[it.colorId]?.backgroundColor }
+                            ?: MaterialTheme.colorScheme.background
+                        val fontColor = classForThisTime?.let { colorSchemes[it.colorId]?.fontColor }
+                            ?: MaterialTheme.colorScheme.onSurface
 
                         Box(
                             modifier = Modifier

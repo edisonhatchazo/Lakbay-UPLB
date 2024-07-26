@@ -47,7 +47,7 @@ import com.example.classschedule.data.Classroom
 import com.example.classschedule.ui.buildingScreens.uplb.toBuilding
 import com.example.classschedule.ui.buildingScreens.uplb.toBuildingDetails
 import com.example.classschedule.ui.map.OSMCustomMapType
-import com.example.classschedule.ui.map.OSMMapping
+import com.example.classschedule.ui.map.OSMDetailsMapping
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.EditScreenTopAppBar
@@ -82,7 +82,7 @@ fun BuildingDetailsScreen (
         topBar = {
             if(build.college == "Landmark" || build.college == "Dormitory"){
                 EditScreenTopAppBar(
-                    title = build.name,
+                    title = build.abbreviation,
                     canNavigateBack = true,
                     navigateUp = navigateBack,
                     id = build.buildingId,
@@ -118,7 +118,8 @@ fun BuildingDetailsScreen (
                 .padding(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
                     end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
-                    top = innerPadding.calculateTopPadding()
+                    top = innerPadding.calculateTopPadding(),
+                    bottom = innerPadding.calculateBottomPadding()
                 )
         )
 
@@ -266,7 +267,7 @@ fun LocationDetail(
             .height(300.dp)
             .fillMaxWidth()
     ) {
-        OSMMapping(
+        OSMDetailsMapping(
             title = building.name,
             latitude = building.latitude,
             longitude = building.longitude,

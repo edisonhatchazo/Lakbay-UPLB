@@ -87,7 +87,8 @@ fun RoomEntryScreen(
                 .padding(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
                     end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
-                    top = innerPadding.calculateTopPadding()
+                    top = innerPadding.calculateTopPadding(),
+                    bottom = innerPadding.calculateBottomPadding()
                 )
                 .verticalScroll(rememberScrollState())
                 .fillMaxWidth()

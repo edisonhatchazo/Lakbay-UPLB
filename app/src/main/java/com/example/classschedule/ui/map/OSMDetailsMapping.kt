@@ -29,7 +29,7 @@ import org.maplibre.android.plugins.annotation.SymbolOptions
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun OSMMapping(title: String, latitude: Double, longitude: Double, styleUrl: String) {
+fun OSMDetailsMapping(title: String, latitude: Double, longitude: Double, styleUrl: String) {
     val context = LocalContext.current
     val apiKey = context.getString(R.string.kento)
     val tileServer: WellKnownTileServer = WellKnownTileServer.MapLibre

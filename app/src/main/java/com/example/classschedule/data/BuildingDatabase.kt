@@ -22,7 +22,6 @@ abstract class BuildingDatabase : RoomDatabase() {
                     "building_database"
                 )
                     .createFromAsset("database/buildingDB.db")
-                    .fallbackToDestructiveMigration()
                     .build()
                     .also { INSTANCE = it }
             }

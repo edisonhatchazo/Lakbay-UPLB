@@ -1,7 +1,5 @@
 package com.example.classschedule.ui.map
 
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -11,22 +9,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.example.classschedule.R
 import com.example.classschedule.algorithm.osrms.RouteResponse
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.screen.MapScreenTopAppBar
+import com.example.classschedule.ui.settings.global.RouteViewModel
 import org.maplibre.android.geometry.LatLng
 
 @Composable
 fun MainMapScreen(
-    mainNavController: NavHostController,
     modifier: Modifier = Modifier,
     openDrawer: () -> Unit,
-    viewModel: MapViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: MapViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    routeViewModel: RouteViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
 
     var showMapDialog by remember { mutableStateOf(false) }
@@ -90,14 +87,11 @@ fun MainMapScreen(
 
         MapDetails(
             initialLocation = initialLocation,
+            routeType = selectedRouteType,
             destinationLocation = destinationLocation,
             routeResponse = routeResponse,
-            modifier = Modifier
-                .padding(
-                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
-                    end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
-                    top = innerPadding.calculateTopPadding()
-                )
+            routeViewModel = routeViewModel,
+            modifier = Modifier.padding(innerPadding)
         )
 
 
@@ -108,6 +102,8 @@ fun MainMapScreen(
 fun MapDetails(
     initialLocation: LatLng?,
     destinationLocation: LatLng?,
+    routeViewModel: RouteViewModel,
+    routeType: String,
     routeResponse: List<Pair<RouteResponse, String>>?,
     modifier: Modifier = Modifier
 ) {
@@ -117,6 +113,8 @@ fun MapDetails(
         title = null,
         location = coordinates,
         initialLocation = initialLocation,
+        routeType = routeType,
+        routeViewModel = routeViewModel,
         destinationLocation = destinationLocation,
         routeResponse = routeResponse,
         styleUrl = styleUrl

@@ -34,6 +34,7 @@ import com.example.classschedule.ui.settings.colors.ColorSchemeEntryViewModel
 import com.example.classschedule.ui.settings.colors.ColorSchemeHomeViewModel
 import com.example.classschedule.ui.settings.global.CollegeDirectoryViewModel
 import com.example.classschedule.ui.settings.global.DirectoryColorViewModel
+import com.example.classschedule.ui.settings.global.RouteViewModel
 import com.example.classschedule.ui.theme.ColorPaletteViewModel
 
 object AppViewModelProvider {
@@ -240,7 +241,9 @@ object AppViewModelProvider {
             CollegeDirectoryViewModel()
         }
 
-
+        initializer{
+            RouteViewModel(classScheduleApplication().applicationContext)
+        }
 
         initializer{
             DirectoryColorViewModel(

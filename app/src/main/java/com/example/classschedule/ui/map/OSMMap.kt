@@ -10,6 +10,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.classschedule.R
 import com.example.classschedule.algorithm.osrms.RouteResponse
+import com.example.classschedule.ui.settings.global.RouteViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import org.maplibre.android.MapLibre
@@ -44,6 +46,8 @@ fun OSMMap(
     title: String,
     snippet: String,
     location: LatLng,
+    routeType:String,
+    routeViewModel: RouteViewModel,
     routeResponse: List<Pair<RouteResponse, String>>?,
     destinationLocation: LatLng,
     styleUrl: String,
@@ -57,6 +61,19 @@ fun OSMMap(
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
     )
+
+    val walkingSpeed by routeViewModel.walkingSpeed.collectAsState()
+    val cyclingSpeed by routeViewModel.cyclingSpeed.collectAsState()
+    val carSpeed by routeViewModel.carSpeed.collectAsState()
+    val jeepneySpeed by routeViewModel.jeepneySpeed.collectAsState()
+    val selectedSpeed = when (routeType) {
+        "foot" -> walkingSpeed
+        "bicycle" -> cyclingSpeed
+        "car" -> carSpeed
+        "transit" -> jeepneySpeed
+        else -> carSpeed // Default to car speed if route type is unknown
+    }
+
 
     var mapViewKey by remember { mutableStateOf(0) }
     LaunchedEffect(Unit) {
@@ -169,8 +186,9 @@ fun OSMMap(
                             Point.fromLngLat(it.longitude(), it.latitude())
                         }
 
-                        val duration = route.routes.first().duration / 60 // convert to minutes
-                        val distance = route.routes.first().distance / 1000 // convert to kilometers
+                        val distance = route.routes.first().distance // in meters
+                        val duration = distance / selectedSpeed / 60 // in minutes
+
                         val midpoint = coordinates[coordinates.size / 2]
                         val adjustedMidpoint = LatLng(midpoint.latitude() + 0.0002, midpoint.longitude() - 0.0002)
 

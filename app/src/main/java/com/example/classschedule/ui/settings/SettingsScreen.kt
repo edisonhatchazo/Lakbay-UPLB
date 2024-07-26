@@ -9,22 +9,25 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,8 +35,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.example.classschedule.R
 import com.example.classschedule.ui.navigation.NavigationDestination
+import com.example.classschedule.ui.screen.SettingsScreenTopAppBar
+import com.example.classschedule.ui.theme.ThemeMode
 
 object SettingsDestination: NavigationDestination {
     override val route = "settings"
@@ -46,9 +52,9 @@ fun SettingsScreen(
     navigateToColorEntry: () -> Unit,
     navigateToCollegeColors: () -> Unit,
     navigateToRoutesColors: () -> Unit,
-    navigateToWalkingSpeed: () -> Unit,
-    navigateToCyclingSpeed: () -> Unit,
+    navigateToRoutingSettings: () -> Unit,
     openDrawer: () -> Unit,
+    onThemeChange: (ThemeMode) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -62,13 +68,14 @@ fun SettingsScreen(
             navigateToColorEntry = navigateToColorEntry,
             navigateToCollegeColors = navigateToCollegeColors,
             navigateToRoutesColors = navigateToRoutesColors,
-            navigateToWalkingSpeed = navigateToWalkingSpeed,
-            navigateToCyclingSpeed = navigateToCyclingSpeed,
+            navigateToRoutingSettings = navigateToRoutingSettings,
+            onThemeChange = onThemeChange,
             modifier = modifier
                 .padding(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
                     end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
-                    top = innerPadding.calculateTopPadding()
+                    top = innerPadding.calculateTopPadding(),
+                    bottom = innerPadding.calculateBottomPadding()
                 )
                 .verticalScroll(rememberScrollState())
                 .fillMaxWidth()
@@ -78,27 +85,73 @@ fun SettingsScreen(
 
 @Composable
 fun MainSettingsScreen(
+    onThemeChange: (ThemeMode) -> Unit,
     navigateToColorEntry: () -> Unit,
     navigateToCollegeColors: () -> Unit,
     navigateToRoutesColors: () -> Unit,
-    navigateToWalkingSpeed: () -> Unit,
-    navigateToCyclingSpeed: () -> Unit,
+    navigateToRoutingSettings: () -> Unit,
     modifier: Modifier,
 ) {
+    var selectedThemeMode by remember { mutableStateOf(ThemeMode.SYSTEM) }
     Column(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium))
     ) {
         // App Theme
-        SettingCategory(
-            header = "App Theme",
-            items = listOf(
-                SettingItem(
-                    title = "Dark Mode",
-                    onClick = { /* Handle Dark Mode Toggle */ },
-                    icon = Icons.Default.PlayArrow // Example icon, replace with actual toggle logic
-                )
+        Text(text = "App Theme", style = MaterialTheme.typography.titleMedium)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { selectedThemeMode = ThemeMode.DARK }
+                .padding(2.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RadioButton(
+                selected = selectedThemeMode == ThemeMode.DARK,
+                onClick = { selectedThemeMode = ThemeMode.DARK }
             )
-        )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = "Dark Mode")
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { selectedThemeMode = ThemeMode.LIGHT }
+                .padding(2.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RadioButton(
+                selected = selectedThemeMode == ThemeMode.LIGHT,
+                onClick = { selectedThemeMode = ThemeMode.LIGHT }
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = "Light Mode")
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { selectedThemeMode = ThemeMode.SYSTEM }
+                .padding(2.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RadioButton(
+                selected = selectedThemeMode == ThemeMode.SYSTEM,
+                onClick = { selectedThemeMode = ThemeMode.SYSTEM }
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = "Based on System Settings")
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Button(onClick = { onThemeChange(selectedThemeMode) }) {
+            Text(text = "Apply Theme")
+        }
+
+
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
         // Color Schemes
         SettingCategory(
@@ -124,18 +177,13 @@ fun MainSettingsScreen(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
         // Map Routing
         SettingCategory(
-            header = "Map Routing",
+            header = stringResource(R.string.map_routing),
             items = listOf(
                 SettingItem(
-                    title = "Walking Speed",
-                    onClick = navigateToWalkingSpeed,
+                    title = stringResource(R.string.map_routing_settings),
+                    onClick = navigateToRoutingSettings,
                     icon = Icons.Default.Edit
                 ),
-                SettingItem(
-                    title = "Cycling Speed",
-                    onClick = navigateToCyclingSpeed,
-                    icon = Icons.Default.Edit
-                )
             )
         )
     }
@@ -162,7 +210,10 @@ fun SettingItemRow(item: SettingItem) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = item.onClick)
+            .clickable(onClick = item.onClick),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Blue, contentColor = Color.White)
+
     ) {
         Row(
             modifier = Modifier
@@ -189,25 +240,3 @@ data class SettingItem(
     val icon: ImageVector
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SettingsScreenTopAppBar(
-    title: String,
-    openDrawer: () -> Unit
-){
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
-        title = { Text( title,color = Color.White) },
-        scrollBehavior = scrollBehavior,
-        navigationIcon = {
-            IconButton(onClick = openDrawer) {
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = stringResource(R.string.menu),
-                    tint = Color.White
-                )
-            }
-        }
-    )
-}

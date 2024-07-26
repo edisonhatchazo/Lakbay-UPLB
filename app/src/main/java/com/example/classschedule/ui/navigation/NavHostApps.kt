@@ -3,6 +3,7 @@ package com.example.classschedule.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.classschedule.ui.theme.ThemeMode
 
 @Composable
 fun ScheduleApp( openDrawer: () -> Unit, navController: NavHostController = rememberNavController()) {
@@ -35,6 +36,6 @@ fun PinsApp(mainNavController: NavHostController, openDrawer: () -> Unit, navCon
 }
 
 @Composable
-fun SettingsApp(openDrawer: () -> Unit, navController: NavHostController = rememberNavController()) {
-    SettingsNavHost(navController = navController, openDrawer = openDrawer)
+fun SettingsApp(openDrawer: () -> Unit, navController: NavHostController = rememberNavController(), onThemeChange: (ThemeMode) -> Unit) {
+    SettingsNavHost(navController = navController, openDrawer = openDrawer, onThemeChange = onThemeChange)
 }

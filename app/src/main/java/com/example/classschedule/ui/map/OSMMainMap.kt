@@ -3,7 +3,6 @@ package com.example.classschedule.ui.map
 import android.Manifest
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
@@ -11,6 +10,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.classschedule.R
 import com.example.classschedule.algorithm.osrms.RouteResponse
+import com.example.classschedule.ui.settings.global.RouteViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import org.maplibre.android.MapLibre
@@ -55,6 +56,8 @@ fun OSMMainMap(
     title: String?,
     location: LatLng,
     initialLocation: LatLng?,
+    routeType:String,
+    routeViewModel: RouteViewModel,
     destinationLocation: LatLng?,
     routeResponse: List<Pair<RouteResponse, String>>?,
     styleUrl: String,
@@ -68,6 +71,18 @@ fun OSMMainMap(
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
     )
+
+    val walkingSpeed by routeViewModel.walkingSpeed.collectAsState()
+    val cyclingSpeed by routeViewModel.cyclingSpeed.collectAsState()
+    val carSpeed by routeViewModel.carSpeed.collectAsState()
+    val jeepneySpeed by routeViewModel.jeepneySpeed.collectAsState()
+    val selectedSpeed = when (routeType) {
+        "foot" -> walkingSpeed
+        "bicycle" -> cyclingSpeed
+        "car" -> carSpeed
+        "transit" -> jeepneySpeed
+        else -> carSpeed // Default to car speed if route type is unknown
+    }
 
     var mapViewKey by remember { mutableIntStateOf(0) }
     LaunchedEffect(Unit) {
@@ -156,12 +171,13 @@ fun OSMMainMap(
                             Point.fromLngLat(it.longitude(), it.latitude())
                         }
 
-                        val duration = route.routes.first().duration / 60 // convert to minutes
-                        val distance = route.routes.first().distance / 1000 // convert to kilometers
+                        val distance = route.routes.first().distance // in meters
+                        val duration = distance / selectedSpeed / 60 // in minutes
+
                         val midpoint = coordinates[coordinates.size / 2]
                         val adjustedMidpoint = LatLng(midpoint.latitude() + 0.0002, midpoint.longitude() - 0.0002)
 
-                        Log.d("OSMMainMap", coordinates.toString())
+
                         val iconName = when (color) {
                             "#0000FF" -> "walking-icon" // Blue for walking
                             "#FFA500" -> "cycling-icon" // Orange for cycling
@@ -174,7 +190,7 @@ fun OSMMainMap(
                             SymbolOptions()
                                 .withLatLng(adjustedMidpoint)
                                 .withIconImage(iconName)
-                                .withTextField("${duration.toInt()} min\n${distance.format(2)} km")
+                                .withTextField("${duration.toInt()} min\n${distance.format(2)} m")
                                 .withTextOffset(arrayOf(0f, 1.5f))
                                 .withTextJustify("auto")
                                 .withTextAnchor("top")

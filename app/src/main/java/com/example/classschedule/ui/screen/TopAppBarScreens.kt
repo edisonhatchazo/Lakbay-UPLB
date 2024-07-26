@@ -783,3 +783,26 @@ fun EditScreenTopAppBar(
         },
     )
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsScreenTopAppBar(
+    title: String,
+    openDrawer: () -> Unit
+){
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
+        title = { Text( title,color = Color.White) },
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            IconButton(onClick = openDrawer) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = stringResource(R.string.menu),
+                    tint = Color.White
+                )
+            }
+        }
+    )
+}

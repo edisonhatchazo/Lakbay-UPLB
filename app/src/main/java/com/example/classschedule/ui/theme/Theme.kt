@@ -1,15 +1,17 @@
 package com.example.classschedule.ui.theme
 
 import android.app.Activity
-import android.os.Build
+import android.content.Context
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.core.content.edit
 import androidx.core.view.WindowCompat
 
 
@@ -80,7 +82,14 @@ private val DarkColorScheme = darkColorScheme(
 private val DarkColorPalette = darkColorScheme(
     primary = Purple200,
     primaryContainer = Purple700,
-    secondary = Teal200
+    secondary = Teal200,
+    background = Color.Black,
+    surface = Color.Black,
+    onPrimary = Color.Black,
+    onSecondary = Color.White,
+    onBackground = Color.White,
+    onSurface = Color.White,
+
 )
 
 private val LightColorPalette = lightColorScheme(
@@ -95,37 +104,20 @@ private val LightColorPalette = lightColorScheme(
     onSurface = Color.Black,
 )
 
-@Composable
-fun NavigationDrawerComposeTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
-) {
-    val colors = if (darkTheme) {
-        DarkColorPalette
-    } else {
-        LightColorPalette
-    }
-
-    MaterialTheme(
-        colorScheme = colors,
-        typography = Typography,
-        shapes = Shapes,
-        content = content
-    )
-}
+enum class ThemeMode { DARK, LIGHT, SYSTEM }
 
 @Composable
 fun ClassScheduleTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false,
+    themeMode: ThemeMode = ThemeMode.SYSTEM,
     content: @Composable () -> Unit
-){
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
+) {
+    val darkTheme = when (themeMode) {
+        ThemeMode.DARK -> true
+        ThemeMode.LIGHT -> false
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+    }
 
+    val colorScheme = when {
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
@@ -135,9 +127,7 @@ fun ClassScheduleTheme(
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat
-                .getInsetsController(window, view)
-                .isAppearanceLightStatusBars = darkTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
 
@@ -146,5 +136,19 @@ fun ClassScheduleTheme(
         shapes = Shapes,
         content = content
     )
+}
 
+class ThemePreferences(context: Context) {
+    private val preferences = context.getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
+
+    fun getThemeMode(): ThemeMode {
+        val modeName = preferences.getString("theme_mode", ThemeMode.SYSTEM.name)
+        return ThemeMode.valueOf(modeName!!)
+    }
+
+    fun setThemeMode(themeMode: ThemeMode) {
+        preferences.edit {
+            putString("theme_mode", themeMode.name)
+        }
+    }
 }

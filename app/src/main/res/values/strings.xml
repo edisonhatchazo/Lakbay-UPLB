@@ -35,6 +35,12 @@
     <string name="search">Search</string>
     <string name="close_search">Close Search</string>
     <string name="back_button">Back</string>
+    <string name="map_routing">Map Routing</string>
+    <string name="map_routing_settings">Map Routing Settings</string>
+    <string name="walking_speed">Walking Speed</string>
+    <string name="cycling_speed">Cycling Speed</string>
+    <string name="car_speed">Average Car Speed</string>
+    <string name="jeepney_speed">Average Jeep Speed</string>
     <string name="delete">Delete</string>
     <string name="delete_question">Are you sure you want to delete?</string>
     <string name="no_class_description">Oops!\nNo Scheduled Classes.\nTap + to add.</string>

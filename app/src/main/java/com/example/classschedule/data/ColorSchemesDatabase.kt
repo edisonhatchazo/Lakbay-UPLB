@@ -21,7 +21,6 @@ abstract class ColorSchemesDatabase : RoomDatabase(){
                     "colors_database"
                 )
                     .createFromAsset("database/colors.db")
-                    .fallbackToDestructiveMigration()
                     .build()
                     .also{Instance = it}
             }

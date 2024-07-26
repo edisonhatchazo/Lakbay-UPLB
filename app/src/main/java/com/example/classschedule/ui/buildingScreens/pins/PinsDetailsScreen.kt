@@ -45,7 +45,7 @@ import androidx.navigation.NavHostController
 import com.example.classschedule.R
 import com.example.classschedule.data.Pins
 import com.example.classschedule.ui.map.OSMCustomMapType
-import com.example.classschedule.ui.map.OSMMapping
+import com.example.classschedule.ui.map.OSMDetailsMapping
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.CoordinateEntryScreenTopAppBar
@@ -207,7 +207,7 @@ fun PinDetails(
             .height(300.dp)
             .fillMaxWidth()
     ) {
-        OSMMapping(
+        OSMDetailsMapping(
             title = pin.title,
             latitude = pin.latitude,
             longitude = pin.longitude,

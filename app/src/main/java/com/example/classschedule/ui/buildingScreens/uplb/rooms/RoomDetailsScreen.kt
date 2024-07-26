@@ -44,7 +44,7 @@ import com.example.classschedule.data.Classroom
 import com.example.classschedule.ui.buildingScreens.uplb.toClassroom
 import com.example.classschedule.ui.buildingScreens.uplb.toClassroomDetails
 import com.example.classschedule.ui.map.OSMCustomMapType
-import com.example.classschedule.ui.map.OSMMapping
+import com.example.classschedule.ui.map.OSMDetailsMapping
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.EditScreenTopAppBar
@@ -100,7 +100,8 @@ fun RoomDetailsScreen(
                 .padding(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
                     end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
-                    top = innerPadding.calculateTopPadding()
+                    top = innerPadding.calculateTopPadding(),
+                    bottom = innerPadding.calculateBottomPadding()
                 )
                 .verticalScroll(rememberScrollState())
         )
@@ -192,7 +193,7 @@ fun ClassroomDetailed(
             .fillMaxWidth()
     ) {
 
-        OSMMapping(
+        OSMDetailsMapping(
             title = classroom.title,
             latitude = classroom.latitude,
             longitude = classroom.longitude,

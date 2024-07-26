@@ -21,12 +21,16 @@ import com.example.classschedule.ui.settings.global.CollegeDirectory
 import com.example.classschedule.ui.settings.global.ColorDirectory
 import com.example.classschedule.ui.settings.global.DirectoryColorsDestination
 import com.example.classschedule.ui.settings.global.DirectoryHomeDestination
+import com.example.classschedule.ui.settings.global.RoutingDestination
+import com.example.classschedule.ui.settings.global.RoutingSettings
+import com.example.classschedule.ui.theme.ThemeMode
 
 @Composable
 fun SettingsNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     openDrawer: () -> Unit,
+    onThemeChange: (ThemeMode) -> Unit
 ) {
     NavHost(
         navController = navController,
@@ -38,9 +42,9 @@ fun SettingsNavHost(
                 navigateToColorEntry = {navController.navigate(ColorHomeDestination.route)},
                 openDrawer = openDrawer,
                 navigateToCollegeColors = {navController.navigate(DirectoryHomeDestination.route)},
-                navigateToCyclingSpeed = {},
+                navigateToRoutingSettings = {navController.navigate(RoutingDestination.route)},
                 navigateToRoutesColors = {},
-                navigateToWalkingSpeed = {}
+                onThemeChange = onThemeChange
             )
         }
         composable(route = ColorHomeDestination.route){
@@ -84,6 +88,12 @@ fun SettingsNavHost(
                 onNavigateUp = { navController.navigateUp() },
                 navigateToColorDetails = {collegeFullName, previousColorId ->
                     navController.navigate("${DirectoryColorsDestination.route}/$collegeFullName/$previousColorId")},
+            )
+        }
+
+        composable(route = RoutingDestination.route){
+            RoutingSettings(
+                onNavigateUp = { navController.navigateUp() },
             )
         }
         composable(
