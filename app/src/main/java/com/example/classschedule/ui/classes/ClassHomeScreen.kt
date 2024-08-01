@@ -24,8 +24,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
 import com.example.classschedule.data.ClassSchedule
@@ -140,7 +143,9 @@ private fun ClassDetails(
     Card(
         modifier = modifier,
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = backgroundColor)
+        colors = CardDefaults.cardColors(
+            containerColor = backgroundColor,
+            contentColor = fontColor)
     ) {
         Column(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large)),
@@ -156,5 +161,40 @@ private fun ClassDetails(
                 )
             }
         }
+    }
+}
+@Preview
+@Composable
+fun FontPreview() {
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(
+            text = "Default\nABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n0123456789\n!@#$%^&*()",
+            fontSize = 18.sp,
+            fontFamily = FontFamily.Default,
+            modifier = Modifier.padding(bottom = 16.dp),
+            color = Color.White
+        )
+        Text(
+            text = "Monospace\nABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n0123456789\n!@#$%^&*()",
+            fontSize = 18.sp,
+            fontFamily = FontFamily.Monospace,
+            modifier = Modifier.padding(bottom = 16.dp),
+            color = Color.White
+        )
+        Text(
+            text = "Serif\nABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n0123456789\n!@#$%^&*()",
+            fontSize = 18.sp,
+            fontFamily = FontFamily.Serif,
+            modifier = Modifier.padding(bottom = 16.dp),
+            color = Color.White
+        )
+        Text(
+            text = "SansSerif\nABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n0123456789\n!@#$%^&*()",
+            fontSize = 18.sp,
+            fontFamily = FontFamily.SansSerif,
+            modifier = Modifier.padding(bottom = 16.dp),
+            color = Color.White
+
+        )
     }
 }

@@ -1,5 +1,7 @@
 package com.example.classschedule.ui.map
 
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -10,12 +12,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
 import com.example.classschedule.algorithm.osrms.RouteResponse
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.screen.MapScreenTopAppBar
-import com.example.classschedule.ui.settings.global.RouteViewModel
+import com.example.classschedule.ui.settings.global.RouteSettingsViewModel
 import org.maplibre.android.geometry.LatLng
 
 @Composable
@@ -23,7 +26,7 @@ fun MainMapScreen(
     modifier: Modifier = Modifier,
     openDrawer: () -> Unit,
     viewModel: MapViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    routeViewModel: RouteViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    routeViewModel: RouteSettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
 
     var showMapDialog by remember { mutableStateOf(false) }
@@ -91,7 +94,8 @@ fun MainMapScreen(
             destinationLocation = destinationLocation,
             routeResponse = routeResponse,
             routeViewModel = routeViewModel,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(0.dp),
+            contentPadding = innerPadding
         )
 
 
@@ -102,10 +106,11 @@ fun MainMapScreen(
 fun MapDetails(
     initialLocation: LatLng?,
     destinationLocation: LatLng?,
-    routeViewModel: RouteViewModel,
+    routeViewModel: RouteSettingsViewModel,
     routeType: String,
     routeResponse: List<Pair<RouteResponse, String>>?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
     val styleUrl = OSMCustomMapType.STREET.styleUrl
     val coordinates= LatLng(14.165008914904659, 121.24150742562976)
@@ -117,7 +122,9 @@ fun MapDetails(
         routeViewModel = routeViewModel,
         destinationLocation = destinationLocation,
         routeResponse = routeResponse,
-        styleUrl = styleUrl
+        styleUrl = styleUrl,
+        modifier = modifier.fillMaxSize()
+                        .padding(contentPadding)
     )
 }
 

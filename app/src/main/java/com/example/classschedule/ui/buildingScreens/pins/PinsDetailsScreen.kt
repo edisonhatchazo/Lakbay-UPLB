@@ -1,6 +1,5 @@
 package com.example.classschedule.ui.buildingScreens.pins
 
-import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +18,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +35,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -49,6 +50,7 @@ import com.example.classschedule.ui.map.OSMDetailsMapping
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.CoordinateEntryScreenTopAppBar
+import com.example.classschedule.ui.theme.ColorEntry
 import kotlinx.coroutines.launch
 
 object PinsDetailsDestination : NavigationDestination {
@@ -126,17 +128,19 @@ private fun PinsDetailsBody(
     modifier: Modifier = Modifier
 ){
     val coroutineScope = rememberCoroutineScope()
+
+
     Column(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
     ) {
-        Log.d("MapScreen","From Pins")
         var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
         val pin = pinsDetailsUiState.pinsDetails.toPins()
         PinDetails(
             pin = pin,
             modifier = Modifier.fillMaxWidth(),
-            mapType = mapType
+            mapType = mapType,
+            viewModel = viewModel,
         )
         Button(
             onClick = {
@@ -171,11 +175,26 @@ private fun PinsDetailsBody(
 
 @Composable
 fun PinDetails(
-    pin: Pins, modifier: Modifier = Modifier, mapType: OSMCustomMapType,
+    pin: Pins,
+    modifier: Modifier = Modifier,
+    mapType: OSMCustomMapType,
+    viewModel: PinsDetailsViewModel
 ) {
+
+    val colorSchemes by viewModel.colorSchemes.collectAsState()
+
+    // Get the appropriate color entry for the class schedule
+    val colorEntry = colorSchemes[pin.colorId] ?: ColorEntry(Color.Transparent, Color.Black)
+
+    val fontColor = colorEntry.fontColor
+    val backgroundColor = colorEntry.backgroundColor
 
     Card(
         modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = backgroundColor,
+            contentColor = fontColor
+        )
     ) {
         Column(
             modifier = Modifier

@@ -28,7 +28,7 @@ import com.example.classschedule.algorithm.osrms.RouteResponse
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.GuideScreenTopAppBar
-import com.example.classschedule.ui.settings.global.RouteViewModel
+import com.example.classschedule.ui.settings.global.RouteSettingsViewModel
 import org.maplibre.android.geometry.LatLng
 
 object GuideMapDestination: NavigationDestination {
@@ -46,7 +46,7 @@ fun GuideMapScreen(
     modifier: Modifier = Modifier,
     viewModel: MapViewModel = viewModel(factory = AppViewModelProvider.Factory),
     locationViewModel: LocationViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    routeViewModel: RouteViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    routeViewModel: RouteSettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val styleUrl = OSMCustomMapType.STREET.styleUrl
     val context = LocalContext.current
@@ -150,7 +150,7 @@ fun GuideMapDetails(
     initialLocation: LatLng,
     title: String,
     snippet: String,
-    routeViewModel: RouteViewModel,
+    routeViewModel: RouteSettingsViewModel,
     routeType: String,
     destinationLocation: LatLng,
     routeResponse: List<Pair<RouteResponse, String>>?,

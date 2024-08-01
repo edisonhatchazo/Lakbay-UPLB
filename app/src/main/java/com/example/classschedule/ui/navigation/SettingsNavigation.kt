@@ -9,6 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.classschedule.ui.settings.SettingsDestination
 import com.example.classschedule.ui.settings.SettingsScreen
+import com.example.classschedule.ui.settings.TextToSpeechDestination
+import com.example.classschedule.ui.settings.TextToSpeechMainScreen
 import com.example.classschedule.ui.settings.colors.ColorHomeDestination
 import com.example.classschedule.ui.settings.colors.ColorSchemeDetails
 import com.example.classschedule.ui.settings.colors.ColorSchemeDetailsDestination
@@ -43,7 +45,7 @@ fun SettingsNavHost(
                 openDrawer = openDrawer,
                 navigateToCollegeColors = {navController.navigate(DirectoryHomeDestination.route)},
                 navigateToRoutingSettings = {navController.navigate(RoutingDestination.route)},
-                navigateToRoutesColors = {},
+                navigateToRoutesColors = {navController.navigate(TextToSpeechDestination.route)},
                 onThemeChange = onThemeChange
             )
         }
@@ -96,6 +98,15 @@ fun SettingsNavHost(
                 onNavigateUp = { navController.navigateUp() },
             )
         }
+
+        composable(route = TextToSpeechDestination.route){
+            TextToSpeechMainScreen(
+                onNavigateUp = { navController.navigateUp() }
+            )
+        }
+
+
+
         composable(
             route = DirectoryColorsDestination.routeWithArgs,
             arguments = listOf(

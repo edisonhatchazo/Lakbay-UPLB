@@ -38,6 +38,7 @@
     <string name="map_routing">Map Routing</string>
     <string name="map_routing_settings">Map Routing Settings</string>
     <string name="walking_speed">Walking Speed</string>
+    <string name="walking_distance">Walking Distance</string>
     <string name="cycling_speed">Cycling Speed</string>
     <string name="car_speed">Average Car Speed</string>
     <string name="jeepney_speed">Average Jeep Speed</string>
@@ -65,14 +66,16 @@
     <string name="room_detail_title">Room Details</string>
     <string name="color_detail_title">Color Details</string>
     <string name="class_entry_title">Add Class</string>
+    <string name="forestry_route">Forestry Route Double Ride</string>
     <string name="exam_entry_title">Add Exam</string>
     <string name="color_scheme">Color Scheme</string>
     <string name="pin_entry_title">Add a Coordinate</string>
     <string name="directory">UPLB Directory</string>
+    <string name="text_to_speech">Text to Speech</string>
     <string name="modify_directory">Tap the UPLB College/Unit to modify it\'s Color Scheme.</string>
     <string name="class_name_req">Class Title</string>
     <string name="exams_name_req">Exams Title</string>
-    <string name="modify_color">Tap the Color to Modify.</string>
+    <string name="modify_color">Tap the Color to Modify</string>
     <string name="edit_color">Modify the Color</string>
     <string name="cannot_be_deleted">Currently Used Colors cannot be deleted</string>
     <string name="confirm">Confirm</string>

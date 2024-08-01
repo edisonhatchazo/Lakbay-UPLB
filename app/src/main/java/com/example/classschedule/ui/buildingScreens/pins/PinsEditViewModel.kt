@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.classschedule.data.ColorSchemesRepository
 import com.example.classschedule.data.PinsRepository
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -14,11 +15,12 @@ import kotlinx.coroutines.launch
 
 class PinsEditViewModel(
     savedStateHandle: SavedStateHandle,
-    private val pinsRepository: PinsRepository
+    private val pinsRepository: PinsRepository,
+    private val colorSchemesRepository: ColorSchemesRepository
 ) : ViewModel() {
 
     private val pinsId: Int = checkNotNull(savedStateHandle[PinsEditDestination.PINSIDARG])
-
+    private var previousColor = 1
     var pinsUiState by mutableStateOf(
         savedStateHandle.get<PinsUiState>("pinsUiState") ?: PinsUiState()
     )
@@ -30,6 +32,7 @@ class PinsEditViewModel(
                 .filterNotNull()
                 .first()
             pinsUiState = pin.toPinsUiState(true)
+            previousColor = pinsUiState.pinsDetails.colorId
         }
     }
 
@@ -48,6 +51,8 @@ class PinsEditViewModel(
     suspend fun updatePin() {
         if (validateInput()) {
             pinsRepository.updatePin(pinsUiState.pinsDetails.toPins())
+            colorSchemesRepository.decrementIsCurrentlyUsed(previousColor)
+            colorSchemesRepository.incrementIsCurrentlyUsed(pinsUiState.pinsDetails.colorId)
         }
     }
 }

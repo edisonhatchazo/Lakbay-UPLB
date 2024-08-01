@@ -34,7 +34,7 @@ import com.example.classschedule.ui.settings.colors.ColorSchemeEntryViewModel
 import com.example.classschedule.ui.settings.colors.ColorSchemeHomeViewModel
 import com.example.classschedule.ui.settings.global.CollegeDirectoryViewModel
 import com.example.classschedule.ui.settings.global.DirectoryColorViewModel
-import com.example.classschedule.ui.settings.global.RouteViewModel
+import com.example.classschedule.ui.settings.global.RouteSettingsViewModel
 import com.example.classschedule.ui.theme.ColorPaletteViewModel
 
 object AppViewModelProvider {
@@ -109,13 +109,17 @@ object AppViewModelProvider {
 
         //Initializers for Pins View Models
         initializer{
-            PinsViewModel(classScheduleApplication().container.pinsRepository)
+            PinsViewModel(
+                classScheduleApplication().container.pinsRepository,
+                classScheduleApplication().container.colorSchemesRepository,
+            )
         }
 
         initializer{
             PinsEditViewModel(
                 this.createSavedStateHandle(),
-                classScheduleApplication().container.pinsRepository
+                classScheduleApplication().container.pinsRepository,
+                classScheduleApplication().container.colorSchemesRepository
             )
         }
 
@@ -123,12 +127,17 @@ object AppViewModelProvider {
             PinsDetailsViewModel(
                 this.createSavedStateHandle(),
                 classScheduleApplication().container.mapDataRepository,
-                classScheduleApplication().container.pinsRepository
+                classScheduleApplication().container.pinsRepository,
+                classScheduleApplication().container.colorSchemesRepository
             )
         }
 
         initializer {
-            PinsEntryViewModel(classScheduleApplication().container.pinsRepository)
+            PinsEntryViewModel(
+                this.createSavedStateHandle(),
+                classScheduleApplication().container.pinsRepository,
+                classScheduleApplication().container.colorSchemesRepository
+            )
         }
 
         //Initializers for the Building ViewModels
@@ -242,7 +251,7 @@ object AppViewModelProvider {
         }
 
         initializer{
-            RouteViewModel(classScheduleApplication().applicationContext)
+            RouteSettingsViewModel(classScheduleApplication().applicationContext)
         }
 
         initializer{

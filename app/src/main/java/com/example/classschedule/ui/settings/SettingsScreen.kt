@@ -9,14 +9,11 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
@@ -98,8 +94,6 @@ fun MainSettingsScreen(
     ) {
         // App Theme
         Text(text = "App Theme", style = MaterialTheme.typography.titleMedium)
-        Spacer(modifier = Modifier.height(8.dp))
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -111,7 +105,6 @@ fun MainSettingsScreen(
                 selected = selectedThemeMode == ThemeMode.DARK,
                 onClick = { selectedThemeMode = ThemeMode.DARK }
             )
-            Spacer(modifier = Modifier.width(8.dp))
             Text(text = "Dark Mode")
         }
 
@@ -126,7 +119,6 @@ fun MainSettingsScreen(
                 selected = selectedThemeMode == ThemeMode.LIGHT,
                 onClick = { selectedThemeMode = ThemeMode.LIGHT }
             )
-            Spacer(modifier = Modifier.width(8.dp))
             Text(text = "Light Mode")
         }
 
@@ -141,7 +133,6 @@ fun MainSettingsScreen(
                 selected = selectedThemeMode == ThemeMode.SYSTEM,
                 onClick = { selectedThemeMode = ThemeMode.SYSTEM }
             )
-            Spacer(modifier = Modifier.width(8.dp))
             Text(text = "Based on System Settings")
         }
 
@@ -174,7 +165,7 @@ fun MainSettingsScreen(
                 )
             )
         )
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+//        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
         // Map Routing
         SettingCategory(
             header = stringResource(R.string.map_routing),
@@ -201,37 +192,29 @@ fun SettingCategory(
     )
     items.forEach { item ->
         SettingItemRow(item = item)
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
     }
 }
 
 @Composable
 fun SettingItemRow(item: SettingItem) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = item.onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Blue, contentColor = Color.White)
+    val colors = MaterialTheme.colorScheme
 
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.padding_medium)),
-            verticalAlignment = Alignment.CenterVertically
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(text = item.title)
-            Spacer(modifier = Modifier.weight(1f))
-            IconButton(onClick = item.onClick) {
-                Icon(
-                    imageVector = item.icon,
-                    contentDescription = item.title,
-                    tint = Color.White
-                )
-            }
+        Text(text = "    ${item.title}",color = colors.onSurface)
+        Spacer(modifier = Modifier.weight(1f))
+        IconButton(onClick = item.onClick) {
+            Icon(
+                imageVector = item.icon,
+                contentDescription = item.title,
+                tint = colors.onSurface
+            )
         }
     }
+
 }
 
 data class SettingItem(

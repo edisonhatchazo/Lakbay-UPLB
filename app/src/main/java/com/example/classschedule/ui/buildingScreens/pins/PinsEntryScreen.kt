@@ -1,6 +1,7 @@
 package com.example.classschedule.ui.buildingScreens.pins
 
 import android.graphics.BitmapFactory
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -25,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
@@ -33,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
+import com.example.classschedule.algorithm.ColorPickerDialog
 import com.example.classschedule.ui.map.OSMCustomMapType
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
@@ -131,15 +135,17 @@ fun PinsInputForm(
     pinsDetails: PinsDetails,
     onValueChange: (PinsDetails) -> Unit,
     mapType: OSMCustomMapType,
+    viewModel:PinsEntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ){
     var selectedLocation by remember { mutableStateOf(LatLng(pinsDetails.latitude, pinsDetails.longitude)) }
-
+    var showColorPicker by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val apiKey = context.getString(R.string.kento)
     val tileServer: WellKnownTileServer = WellKnownTileServer.MapLibre
-
+    val colorEntry = viewModel.colorSchemesUiState
+    val coroutineScope = rememberCoroutineScope()
     // Update pinsDetails when selectedLocation changes
     LaunchedEffect(selectedLocation) {
         onValueChange(pinsDetails.copy(latitude = selectedLocation.latitude, longitude = selectedLocation.longitude))
@@ -172,7 +178,9 @@ fun PinsInputForm(
         )
 
         Box(
-            modifier = Modifier.height(300.dp).fillMaxWidth()
+            modifier = Modifier
+                .height(300.dp)
+                .fillMaxWidth()
         ) {
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
@@ -220,6 +228,17 @@ fun PinsInputForm(
             )
         }
 
+        OutlinedButton(
+            onClick = { showColorPicker = true },
+            shape = MaterialTheme.shapes.small,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .background(color = Color(colorEntry.colorSchemeDetails.backgroundColor))
+        ) {
+            Text("Select Color", color = Color(colorEntry.colorSchemeDetails.fontColor))
+        }
+
 
         if (enabled) {
             Text(
@@ -227,6 +246,19 @@ fun PinsInputForm(
                 modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_medium))
             )
         }
+    }
+
+    if (showColorPicker) {
+        ColorPickerDialog(
+            onColorSelected = { colorId ->
+                onValueChange(pinsDetails.copy(colorId = colorId))
+                coroutineScope.launch{
+                    viewModel.getColor(colorId)
+                }
+                showColorPicker = false
+            },
+            onDismiss = { showColorPicker = false }
+        )
     }
 
 }

@@ -18,8 +18,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -30,6 +32,7 @@ import com.example.classschedule.data.Pins
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.PinsScreenTopAppBar
+import com.example.classschedule.ui.theme.ColorEntry
 
 object PinsHomeDestination: NavigationDestination {
     override val route = "pins_home"
@@ -59,6 +62,7 @@ fun PinsScreen(
         PinsHomeBody(
             pinsList = homeUiState.pinsList,
             onPinsClick = navigateToPinsUpdate,
+            viewModel = viewModel,
             modifier = modifier.fillMaxSize(),
             contentPadding = innerPadding,
         )
@@ -69,6 +73,7 @@ fun PinsScreen(
 private fun PinsHomeBody(
     pinsList: List<Pins>,
     onPinsClick: (Int) -> Unit,
+    viewModel: PinsViewModel,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ){
@@ -85,6 +90,7 @@ private fun PinsHomeBody(
             )
         }else{
             PinsList(
+                viewModel = viewModel,
                 pinsList = pinsList,
                 onPinsClick = {onPinsClick(it.id)},
                 contentPadding = contentPadding,
@@ -97,6 +103,7 @@ private fun PinsHomeBody(
 @Composable
 private fun PinsList(
     pinsList: List<Pins>,
+    viewModel: PinsViewModel,
     onPinsClick: (Pins) -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier
@@ -108,6 +115,7 @@ private fun PinsList(
         items(items = pinsList, key = {it.id}) { item ->
             PinsDetails(
                 pin = item,
+                viewModel = viewModel,
                 modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.padding_small))
                     .clickable { onPinsClick(item) })
@@ -118,11 +126,24 @@ private fun PinsList(
 @Composable
 private fun PinsDetails(
     pin: Pins,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: PinsViewModel
+
 ){
+
+    val colorSchemes by viewModel.colorSchemes.collectAsState()
+
+    val colorEntry = remember(pin.colorId) {
+        colorSchemes[pin.colorId] ?: ColorEntry(Color.Transparent, Color.Black)
+    }
+    val fontColor = colorEntry.fontColor
+    val backgroundColor = colorEntry.backgroundColor
     Card(
         modifier = modifier,
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = backgroundColor,
+            contentColor = fontColor)
     ) {
         Column(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large)),

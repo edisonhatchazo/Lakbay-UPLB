@@ -3,11 +3,26 @@ package com.example.classschedule.ui.buildingScreens.pins
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.example.classschedule.data.ColorSchemesRepository
 import com.example.classschedule.data.Pins
 import com.example.classschedule.data.PinsRepository
+import com.example.classschedule.ui.settings.colors.ColorSchemesUiState
+import com.example.classschedule.ui.settings.colors.toColorSchemeUiState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
 
-class PinsEntryViewModel(private val pinsRepository: PinsRepository): ViewModel() {
+class PinsEntryViewModel(
+    savedStateHandle: SavedStateHandle,
+    private val pinsRepository: PinsRepository,
+    private val colorSchemesRepository: ColorSchemesRepository
+): ViewModel() {
+    var colorSchemesUiState by mutableStateOf(
+        savedStateHandle.get<ColorSchemesUiState>("colorSchemeUiState") ?: ColorSchemesUiState()
+    )
     var pinsUiState by mutableStateOf(
         PinsUiState(
             isEntryValid = false
@@ -26,10 +41,19 @@ class PinsEntryViewModel(private val pinsRepository: PinsRepository): ViewModel(
             isEntryValid = validateInput(pinsDetails)
         )
     }
-
+    suspend fun getColor(id: Int): ColorSchemesUiState {
+        return withContext(Dispatchers.IO) {
+            val colorScheme = colorSchemesRepository.getColorSchemeById(id)
+                .filterNotNull()
+                .first()
+            colorSchemesUiState = colorScheme.toColorSchemeUiState()
+            colorSchemesUiState
+        }
+    }
     suspend fun savePin(){
         if(validateInput()){
             pinsRepository.insertPin(pinsUiState.pinsDetails.toPins())
+            colorSchemesRepository.incrementIsCurrentlyUsed(pinsUiState.pinsDetails.colorId)
         }
     }
 }

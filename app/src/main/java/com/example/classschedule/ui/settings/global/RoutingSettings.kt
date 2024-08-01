@@ -11,12 +11,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -28,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -44,7 +43,7 @@ object RoutingDestination: NavigationDestination {
 }
 
 enum class SpeedType {
-    WALKING, CYCLING, CAR, JEEPNEY
+    WALKING, CYCLING, CAR, JEEPNEY, WALKING_DISTANCE
 }
 
 fun Double.roundToHundredths(): Double {
@@ -55,7 +54,7 @@ fun Double.roundToHundredths(): Double {
 fun RoutingSettings(
     onNavigateUp: () -> Unit,
     canNavigateBack: Boolean = true,
-    viewModel: RouteViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    viewModel: RouteSettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     Scaffold(
         topBar = {
@@ -77,7 +76,7 @@ fun RoutingSettings(
 
 @Composable
 fun RoutingScreen(
-    viewModel: RouteViewModel,
+    viewModel: RouteSettingsViewModel,
     modifier: Modifier = Modifier
 ) {
     var showDialog by remember { mutableStateOf(false) }
@@ -87,12 +86,13 @@ fun RoutingScreen(
     val cyclingSpeed = (viewModel.cyclingSpeed.collectAsState().value * 3.6).roundToHundredths()
     val carSpeed = (viewModel.carSpeed.collectAsState().value * 3.6).roundToHundredths()
     val jeepneySpeed = (viewModel.jeepneySpeed.collectAsState().value * 3.6).roundToHundredths()
-
+    val walkingDistance = viewModel.walkingDistance.collectAsState().value
+    val toggle = viewModel.forestryRouteDoubleRideEnabled.collectAsState().value
     Column(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium))
     ) {
         Text("Speed:",style = MaterialTheme.typography.titleMedium)
-        Spacer(modifier = Modifier.height(8.dp))
+
         RoutingDetail(
             title = stringResource(R.string.walking_speed),
             speed = "$walkingSpeed m/s",
@@ -101,7 +101,6 @@ fun RoutingScreen(
                 showDialog = true
             }
         )
-        Spacer(modifier = Modifier.height(16.dp))
         RoutingDetail(
             title = stringResource(R.string.cycling_speed),
             speed = "$cyclingSpeed km/hr",
@@ -110,28 +109,32 @@ fun RoutingScreen(
                 showDialog = true
             }
         )
-        Spacer(modifier = Modifier.height(16.dp))
-
         TransportDetail(
             title = stringResource(R.string.car_speed),
             speed = "$carSpeed km/hr")
-        Spacer(modifier = Modifier.height(16.dp))
+
         TransportDetail(
             title = stringResource(R.string.jeepney_speed),
             speed = "$jeepneySpeed km/hr")
-        Spacer(modifier = Modifier.height(16.dp))
 
-        Text("Minimum Walking Distance to nearest Jeepney Stop:",style = MaterialTheme.typography.titleMedium)
+        Spacer(modifier = Modifier.height(16.dp))
+        Text("The maximum distance you are willing to walk before considering riding a jeepney:",style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(8.dp))
-        TransportDetail(
-            title = "Minimum Walking Distance",
-            speed = "500m")
-        Spacer(modifier = Modifier.height(8.dp))
+        RoutingDetail(
+            title = stringResource(R.string.walking_distance),
+            speed = "$walkingDistance meters",
+            onEditClick = {
+                selectedSpeedType = SpeedType.WALKING_DISTANCE
+                showDialog = true
+            }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
         Text("Forestry Routes Double Ride:",style = MaterialTheme.typography.titleMedium)
-        Spacer(modifier = Modifier.height(8.dp))
-        TransportDetail(
-            title = "Forestry Route Double Ride",
-            speed = "Disabled")
+
+        ForestryRouteToggle(title = stringResource(R.string.forestry_route), initialToggleState = toggle) {
+            viewModel.setForestryRouteDoubleRideEnabled(it)
+        }
+
 
     }
 
@@ -141,18 +144,22 @@ fun RoutingScreen(
             SpeedType.CYCLING -> cyclingSpeed.toString()
             SpeedType.CAR -> carSpeed.toString()
             SpeedType.JEEPNEY ->jeepneySpeed.toString()
+            SpeedType.WALKING_DISTANCE -> walkingDistance.toString()
             null -> ""
         }
 
         SpeedInputDialog(
             title = "Set Speed",
             currentValue = currentSpeed,
+            label = if (selectedSpeedType == SpeedType.WALKING_DISTANCE) "Walking Distance (in meters)" else "Speed",
             onValueChange = { newValue ->
                 when (selectedSpeedType) {
                     SpeedType.WALKING -> viewModel.setWalkingSpeed(newValue.toDouble())
                     SpeedType.CYCLING -> viewModel.setCyclingSpeed(newValue.toDouble() / 3.6) // Convert km/h to m/s
+                    SpeedType.WALKING_DISTANCE -> viewModel.setMinimumWalkingDistance(newValue.toInt())
                     SpeedType.CAR -> { /* Car speed is fixed and not changeable */ }
                     SpeedType.JEEPNEY -> {/*Jeepney speed is fixed and not changeable*/}
+
                     null -> { /* Do nothing */ }
                 }
             },
@@ -163,39 +170,63 @@ fun RoutingScreen(
 }
 
 @Composable
+fun ForestryRouteToggle(
+    title: String,
+    initialToggleState: Boolean,
+    onToggleChanged: (Boolean) -> Unit
+) {
+    val colors = MaterialTheme.colorScheme
+    var isToggled by remember { mutableStateOf(initialToggleState) }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(dimensionResource(id = R.dimen.padding_medium)),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = title, color = colors.onSurface)
+        Spacer(modifier = Modifier.weight(0.25f))
+        Switch(
+            checked = isToggled,
+            onCheckedChange = {
+                isToggled = it
+                onToggleChanged(it)
+            },
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = colors.primary,
+                uncheckedThumbColor = colors.onSurface
+            )
+        )
+
+    }
+
+}
+
+@Composable
 fun RoutingDetail(
     title: String,
     speed: String,
     onEditClick: () -> Unit
 ) {
-    Card(
+    val colors = MaterialTheme.colorScheme
+    Row(
         modifier = Modifier
             .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Blue,
-            contentColor = Color.White
-        )
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.padding_medium)),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = title)
-            Spacer(modifier = Modifier.weight(1f))
-            Text(text = speed, color = Color.Yellow)
-            Spacer(modifier = Modifier.weight(0.25f))
-            IconButton(onClick = onEditClick) {
-                Icon(
-                    imageVector = Icons.Filled.Edit,
-                    contentDescription = null,
-                    tint = Color.White
-                )
-            }
+        Text(text = "    $title",color = colors.onSurface)
+        Spacer(modifier = Modifier.weight(1f))
+        Text(text = speed, color = colors.onSecondary)
+        Spacer(modifier = Modifier.weight(0.25f))
+        IconButton(onClick = onEditClick) {
+            Icon(
+                imageVector = Icons.Filled.Edit,
+                contentDescription = null,
+                tint = colors.onSurface
+            )
         }
     }
+
 }
 
 @Composable
@@ -203,39 +234,34 @@ fun TransportDetail(
     title: String,
     speed: String,
 ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Blue,
-            contentColor = Color.White
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.padding_medium)),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = title)
-            Spacer(modifier = Modifier.weight(0.25f))
-            Text(text = speed, color = Color.Yellow)
-            Spacer(modifier = Modifier.weight(0.25f))
+    val colors = MaterialTheme.colorScheme
 
-        }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(dimensionResource(id = R.dimen.padding_medium)),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = title,color = colors.onSurface)
+        Spacer(modifier = Modifier.weight(0.25f))
+        Text(text = speed, color = colors.onSecondary)
+        Spacer(modifier = Modifier.weight(0.25f))
+
     }
+
 }
 
 @Composable
 fun SpeedInputDialog(
     title: String,
     currentValue: String,
+    label: String,
     onValueChange: (String) -> Unit,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
     var value by remember { mutableStateOf(currentValue) }
+    var isValid by remember { mutableStateOf(true) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -244,19 +270,39 @@ fun SpeedInputDialog(
             Column {
                 TextField(
                     value = value,
-                    onValueChange = { value = it },
-                    label = { Text("Speed") },
+                    onValueChange = { newValue ->
+                        value = newValue
+                        isValid = if (label == "Walking Distance (in meters)") {
+                            newValue.toIntOrNull()?.let { it >= 500 } ?: false
+                        } else {
+                            newValue.toDoubleOrNull() != null
+                        }
+                    },
+                    label = { Text(label) },
+                    isError = !isValid,
                     keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Decimal
+                        keyboardType = if (label == "Walking Distance (in meters)") KeyboardType.Number else KeyboardType.Decimal
                     )
                 )
+                if (!isValid && label == "Walking Distance (in meters)") {
+                    Text(
+                        text = "Value must be at least 500",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
             }
         },
         confirmButton = {
-            TextButton(onClick = {
-                onValueChange(value)
-                onConfirm()
-            }) {
+            TextButton(
+                onClick = {
+                    if (isValid) {
+                        onValueChange(value)
+                        onConfirm()
+                    }
+                },
+                enabled = isValid
+            ) {
                 Text("OK")
             }
         },

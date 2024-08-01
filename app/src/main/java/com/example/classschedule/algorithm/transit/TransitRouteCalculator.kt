@@ -15,8 +15,21 @@ suspend fun calculateTransitRoute(
     busStopsForestry: List<BusStop>,
     osrmFootService: OSRMService,
     osrmCarService: OSRMService,
-    busRoutes: List<BusRoute>
+    busRoutes: List<BusRoute>,
+    minimumWalkingDistance: Int
 ): List<Pair<RouteResponse, String>> = coroutineScope {
+    val walkingRoute = osrmFootService.getRoute(
+        profile = "foot",
+        coordinates = "$startLon,$startLat;$endLon,$endLat"
+    )
+    val walkingDistance = walkingRoute.routes[0].distance
+
+    if (walkingDistance <= minimumWalkingDistance) {
+        // Returns Walking route only if the Distance Between the Initial Coordinate and the Destination
+        //Coordinate is Less than or equal to the Minimum Walking Distance
+        return@coroutineScope listOf(Pair(walkingRoute, "#0000FF"))
+    }
+
     val nearestKaliwaStartBusStops = findNearestBusStops(busStopsKaliwa, startLat, startLon, 2)
     val nearestKananStartBusStops = findNearestBusStops(busStopsKanan, startLat, startLon, 2)
     val nearestForestryStartBusStops = findNearestBusStops(busStopsForestry, startLat, startLon, 2)

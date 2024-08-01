@@ -20,7 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.classschedule.R
 import com.example.classschedule.algorithm.osrms.RouteResponse
-import com.example.classschedule.ui.settings.global.RouteViewModel
+import com.example.classschedule.ui.settings.global.RouteSettingsViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import org.maplibre.android.MapLibre
@@ -47,13 +47,12 @@ fun OSMMap(
     snippet: String,
     location: LatLng,
     routeType:String,
-    routeViewModel: RouteViewModel,
+    routeViewModel: RouteSettingsViewModel,
     routeResponse: List<Pair<RouteResponse, String>>?,
     destinationLocation: LatLng,
     styleUrl: String,
 ) {
     val context = LocalContext.current
-    val apiKey = context.getString(R.string.kento)
     val tileServer: WellKnownTileServer = WellKnownTileServer.MapLibre
     val permissionsState = rememberMultiplePermissionsState(
         listOf(
@@ -85,7 +84,7 @@ fun OSMMap(
         var symbolManager by remember { mutableStateOf<SymbolManager?>(null) }
         var symbols by remember { mutableStateOf<List<Symbol>>(emptyList()) }
 
-        MapLibre.getInstance(context, apiKey, tileServer)
+        MapLibre.getInstance(context)
 
         DisposableEffect(Unit) {
             onDispose {
@@ -137,7 +136,13 @@ fun OSMMap(
                             18.0
                         )
                     )
-
+                    location?.let {
+                        val bearing = destinationLocation?.let { dest ->
+                            calculateBearing(it, dest)
+                        }
+                        mapLibreMap.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 18.0))
+                        mapLibreMap.animateCamera(CameraUpdateFactory.bearingTo(bearing ?: 18.0))
+                    }
                     if(snippet != "") {
                         symbols = listOf(
 

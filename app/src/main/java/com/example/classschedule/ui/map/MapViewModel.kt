@@ -9,7 +9,9 @@ import com.example.classschedule.algorithm.osrms.OSRMRepository
 import com.example.classschedule.algorithm.osrms.RouteResponse
 import com.example.classschedule.algorithm.transit.BusStop
 import com.example.classschedule.algorithm.transit.loadAllBusStops
+import com.example.classschedule.ui.settings.global.RouteSettingsViewModel
 import kotlinx.coroutines.launch
+import org.maplibre.android.geometry.LatLng
 
 class MapViewModel(private val repository: OSRMRepository, application: Application) : AndroidViewModel(application) {
 
@@ -19,10 +21,21 @@ class MapViewModel(private val repository: OSRMRepository, application: Applicat
     private val _busStopsKaliwa = MutableLiveData<List<BusStop>>()
     private val _busStopsKanan = MutableLiveData<List<BusStop>>()
     private val _busStopsForestry = MutableLiveData<List<BusStop>>()
-    init{
+
+    private val _initialLocation = MutableLiveData<LatLng>()
+    val initialLocation: LiveData<LatLng> = _initialLocation
+
+    private val _destinationLocation = MutableLiveData<LatLng>()
+    val destinationLocation: LiveData<LatLng> = _destinationLocation
+
+    private val _selectedRouteType = MutableLiveData<String>()
+    val selectedRouteType: LiveData<String> = _selectedRouteType
+
+    private val routeSettingsViewModel = RouteSettingsViewModel(application)
+
+    init {
         loadAllBusStops()
     }
-
 
     fun loadAllBusStops() {
         viewModelScope.launch {
@@ -35,32 +48,45 @@ class MapViewModel(private val repository: OSRMRepository, application: Applicat
 
     private fun fetchRoute(profile: String, start: String, end: String) {
         viewModelScope.launch {
-            val routes: List<Pair<RouteResponse, String>> = when (profile) {
-                "driving", "bicycle", "foot" -> {
-                    val response = repository.getRoute(profile, start, end, emptyList(), emptyList(), emptyList())
-                    response.map { it.first to when (profile) {
-                        "foot" -> "#0000FF"
-                        "bicycle" -> "#FFA500"
-                        "driving" -> "#FF0000"
-                        else -> "#000000"
-                    }}
-                }
-                "transit" -> {
-                    val busStopsKaliwa = _busStopsKaliwa.value ?: emptyList()
-                    val busStopsKanan = _busStopsKanan.value ?: emptyList()
-                    val busStopsForestry = _busStopsForestry.value ?: emptyList()
-                    repository.getRoute(profile, start, end, busStopsKaliwa, busStopsKanan, busStopsForestry)
-                }
-                else -> throw IllegalArgumentException("Unknown profile: $profile")
-            }
+            val minimumWalkingDistance = routeSettingsViewModel.walkingDistance.value
+            val routes = repository.getRoute(
+                profile,
+                start,
+                end,
+                _busStopsKaliwa.value ?: emptyList(),
+                _busStopsKanan.value ?: emptyList(),
+                _busStopsForestry.value ?: emptyList(),
+                minimumWalkingDistance
+            )
             _routeResponse.postValue(routes)
         }
     }
 
     fun calculateRouteFromUserInput(profile: String, startLat: Double, startLng: Double, endLat: Double, endLng: Double) {
-       fetchRoute(profile, "$startLng,$startLat", "$endLng,$endLat")
+        fetchRoute(profile, "$startLng,$startLat", "$endLng,$endLat")
     }
 
-}
+    fun updateInitialLocation(newLocation: LatLng) {
+        _initialLocation.value = newLocation
+        _selectedRouteType.value?.let { routeType ->
+            _destinationLocation.value?.let { destination ->
+                calculateRouteFromUserInput(
+                    routeType,
+                    newLocation.latitude,
+                    newLocation.longitude,
+                    destination.latitude,
+                    destination.longitude
+                )
+            }
+        }
+    }
 
+    fun updateRouteType(routeType: String) {
+        _selectedRouteType.value = routeType
+    }
+
+    fun updateDestinationLocation(destination: LatLng) {
+        _destinationLocation.value = destination
+    }
+}
 

@@ -18,9 +18,20 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        val drivingApiBaseUrl = project.findProperty("DRIVING_API_BASE_URL") ?: ""
+        val walkingApiBaseUrl = project.findProperty("WALKING_API_BASE_URL") ?: ""
+        val cyclingApiBaseUrl = project.findProperty("CYCLING_API_BASE_URL") ?: ""
+        val mapApiBaseUrl = project.findProperty("MAP_API_BASE_URL") ?: ""
+        buildConfigField ("String", "DRIVING_API_BASE_URL", "\"${drivingApiBaseUrl}\"")
+        buildConfigField ("String", "WALKING_API_BASE_URL", "\"${walkingApiBaseUrl}\"")
+        buildConfigField ("String", "CYCLING_API_BASE_URL", "\"${cyclingApiBaseUrl}\"")
+        buildConfigField ("String", "MAP_API_BASE_URL", "\"${mapApiBaseUrl}\"")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+
+
         }
     }
 
@@ -42,6 +53,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -58,8 +70,7 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.3")
+
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
@@ -68,7 +79,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
-    implementation("com.google.android.gms:play-services-location:18.0.0")
+    implementation("com.google.android.gms:play-services-location:18.1.0")
     implementation(libs.places)
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.runtime.livedata)
@@ -100,6 +111,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
     implementation(libs.room.ktx)
+
 
     //Color Picker
     implementation("com.github.skydoves:colorpicker-compose:1.1.2")
