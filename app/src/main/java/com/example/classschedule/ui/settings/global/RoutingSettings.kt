@@ -43,7 +43,7 @@ object RoutingDestination: NavigationDestination {
 }
 
 enum class SpeedType {
-    WALKING, CYCLING, CAR, JEEPNEY, WALKING_DISTANCE
+    WALKING, CYCLING, CAR, JEEPNEY, WALKING_DISTANCE, PARKING_RADIUS
 }
 
 fun Double.roundToHundredths(): Double {
@@ -87,6 +87,8 @@ fun RoutingScreen(
     val carSpeed = (viewModel.carSpeed.collectAsState().value * 3.6).roundToHundredths()
     val jeepneySpeed = (viewModel.jeepneySpeed.collectAsState().value * 3.6).roundToHundredths()
     val walkingDistance = viewModel.walkingDistance.collectAsState().value
+    val parkingRadius = viewModel.parkingRadius.collectAsState().value
+
     val toggle = viewModel.forestryRouteDoubleRideEnabled.collectAsState().value
     Column(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium))
@@ -118,6 +120,18 @@ fun RoutingScreen(
             speed = "$jeepneySpeed km/hr")
 
         Spacer(modifier = Modifier.height(16.dp))
+        Text("Maximum Radius for Finding Parking (Car/Bicycle):",style = MaterialTheme.typography.titleMedium)
+        RoutingDetail(
+            title = stringResource(R.string.parking_radius),
+            speed = "$parkingRadius meters",
+            onEditClick = {
+                selectedSpeedType = SpeedType.PARKING_RADIUS
+                showDialog = true
+            }
+        )
+
+
+        Spacer(modifier = Modifier.height(16.dp))
         Text("The maximum distance you are willing to walk before considering riding a jeepney:",style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(8.dp))
         RoutingDetail(
@@ -145,11 +159,12 @@ fun RoutingScreen(
             SpeedType.CAR -> carSpeed.toString()
             SpeedType.JEEPNEY ->jeepneySpeed.toString()
             SpeedType.WALKING_DISTANCE -> walkingDistance.toString()
+            SpeedType.PARKING_RADIUS -> parkingRadius.toString()
             null -> ""
         }
 
         SpeedInputDialog(
-            title = "Set Speed",
+            title = if(selectedSpeedType == SpeedType.PARKING_RADIUS) "Set Radius" else if(selectedSpeedType == SpeedType.WALKING_DISTANCE) "Set Distance" else "Set Speed",
             currentValue = currentSpeed,
             label = if (selectedSpeedType == SpeedType.WALKING_DISTANCE) "Walking Distance (in meters)" else "Speed",
             onValueChange = { newValue ->
@@ -157,6 +172,7 @@ fun RoutingScreen(
                     SpeedType.WALKING -> viewModel.setWalkingSpeed(newValue.toDouble())
                     SpeedType.CYCLING -> viewModel.setCyclingSpeed(newValue.toDouble() / 3.6) // Convert km/h to m/s
                     SpeedType.WALKING_DISTANCE -> viewModel.setMinimumWalkingDistance(newValue.toInt())
+                    SpeedType.PARKING_RADIUS -> viewModel.setParkingRadius(newValue.toDouble())
                     SpeedType.CAR -> { /* Car speed is fixed and not changeable */ }
                     SpeedType.JEEPNEY -> {/*Jeepney speed is fixed and not changeable*/}
 

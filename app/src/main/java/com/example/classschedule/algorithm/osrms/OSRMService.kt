@@ -12,7 +12,5 @@ interface OSRMService {
         @Path("coordinates") coordinates: String,
         @Query("steps") steps: Boolean = true
     ): RouteResponse
-
-
 }
 

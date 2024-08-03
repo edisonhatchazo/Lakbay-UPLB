@@ -3,6 +3,7 @@ package com.example.classschedule.ui.map
 import android.Manifest
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
@@ -12,6 +13,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -19,14 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.classschedule.R
-import com.example.classschedule.algorithm.osrms.RouteResponse
+import com.example.classschedule.algorithm.transit.RouteWithLineString
 import com.example.classschedule.ui.settings.global.RouteSettingsViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import org.maplibre.android.MapLibre
-import org.maplibre.android.WellKnownTileServer
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
+import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.plugins.annotation.Symbol
 import org.maplibre.android.plugins.annotation.SymbolManager
@@ -44,23 +46,25 @@ import org.maplibre.geojson.utils.PolylineUtils
 @Composable
 fun OSMMap(
     title: String,
-    snippet: String,
+    snippet:String,
     location: LatLng,
+    initialLocation: LatLng?,
     routeType:String,
     routeViewModel: RouteSettingsViewModel,
-    routeResponse: List<Pair<RouteResponse, String>>?,
     destinationLocation: LatLng,
-    styleUrl: String,
+    routeResponse: List<RouteWithLineString>?,
+    osmMapType: OSMCustomMapType,
+    modifier: Modifier = Modifier
 ) {
+
     val context = LocalContext.current
-    val tileServer: WellKnownTileServer = WellKnownTileServer.MapLibre
     val permissionsState = rememberMultiplePermissionsState(
         listOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
     )
-
+    val styleUrl = osmMapType.styleUrl
     val walkingSpeed by routeViewModel.walkingSpeed.collectAsState()
     val cyclingSpeed by routeViewModel.cyclingSpeed.collectAsState()
     val carSpeed by routeViewModel.carSpeed.collectAsState()
@@ -72,9 +76,15 @@ fun OSMMap(
         "transit" -> jeepneySpeed
         else -> carSpeed // Default to car speed if route type is unknown
     }
+    Log.d("OSM Map",osmMapType.toString())
+    val minZoom = 14.0
+    val maxZoom = 19.0
+    val bounds = LatLngBounds.Builder()
+        .include(LatLng(14.116059432252356,  121.29498816252921)) // Southwest corner
+        .include(LatLng(14.18336407476095, 121.19205689274669)) // Northeast corner
+        .build()
 
-
-    var mapViewKey by remember { mutableStateOf(0) }
+    var mapViewKey by remember { mutableIntStateOf(0) }
     LaunchedEffect(Unit) {
         permissionsState.launchMultiplePermissionRequest()
     }
@@ -85,7 +95,6 @@ fun OSMMap(
         var symbols by remember { mutableStateOf<List<Symbol>>(emptyList()) }
 
         MapLibre.getInstance(context)
-
         DisposableEffect(Unit) {
             onDispose {
                 mapView?.onStop()
@@ -100,14 +109,13 @@ fun OSMMap(
             }
         }
 
-        LaunchedEffect(routeResponse) {
+        LaunchedEffect(key1 = routeResponse,key2 = styleUrl) {
             symbolManager?.let {
                 it.delete(symbols)
                 symbols = emptyList()
                 mapViewKey++ // Force map view reset
             }
         }
-
 
         LaunchedEffect(mapViewKey) {
             mapView?.getMapAsync { mapLibreMap ->
@@ -126,62 +134,50 @@ fun OSMMap(
                     style.addImage("car-icon", BitmapFactory.decodeResource(context.resources, R.drawable.car_icon))
                     style.addImage("transit-icon", BitmapFactory.decodeResource(context.resources, R.mipmap.transit))
 
-                    mapLibreMap.moveCamera(
-                        CameraUpdateFactory.newLatLngZoom(
-                            if (location.latitude == 14.165008914904659 && location.longitude == 121.24150742562976) {
-                                destinationLocation
-                            } else {
-                                location
-                            },
-                            18.0
-                        )
-                    )
-                    location?.let {
+                    mapLibreMap.setMinZoomPreference(minZoom)
+                    mapLibreMap.setMaxZoomPreference(maxZoom)
+                    mapLibreMap.setLatLngBoundsForCameraTarget(bounds)
+                    val cameraLocation = if (routeResponse.isNullOrEmpty()) {
+                        destinationLocation
+                    } else {
+                        initialLocation ?: location
+                    }
+                    mapLibreMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraLocation, 18.0))
+
+                    initialLocation?.let {
                         val bearing = destinationLocation?.let { dest ->
                             calculateBearing(it, dest)
-                        }
+                        } ?: 0f
                         mapLibreMap.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 18.0))
-                        mapLibreMap.animateCamera(CameraUpdateFactory.bearingTo(bearing ?: 18.0))
+                        mapLibreMap.animateCamera(CameraUpdateFactory.bearingTo(bearing.toDouble()))
                     }
-                    if(snippet != "") {
-                        symbols = listOf(
 
-                            manager.create(
-                                SymbolOptions()
-                                    .withLatLng(destinationLocation)
-                                    .withIconImage("destination-icon")
-                                    .withTextField(title)
-                                    .withTextField(title)
-                                    .withTextOffset(arrayOf(0f, 1.5f))
-                                    .withTextAnchor("top")
-                                    .withTextField("$title\n Floor: $snippet")
-                            ),
-                            manager.create(
-                                SymbolOptions()
-                                    .withLatLng(location)
-                                    .withIconImage("initial-icon")
-                                    .withTextField("Your Location")
-                                    .withTextOffset(arrayOf(0f, 1.5f))
-                            )
+                    symbols = listOf(
+
+                        manager.create(
+                            SymbolOptions()
+                                .withLatLng(destinationLocation)
+                                .withIconImage("destination-icon")
+                                .withTextField(if (snippet.isNotEmpty()) "$title\nFloor: $snippet" else title)
+                                .withTextOffset(arrayOf(0f, -2.5f))
+                                .withTextColor("#0000FF")
+                                .withTextAnchor("TOP")
                         )
-                    }else{
+                    )
+
+                    if(initialLocation != null) {
                         symbols = listOf(
                             manager.create(
                                 SymbolOptions()
-                                    .withLatLng(destinationLocation)
-                                    .withIconImage("destination-icon")
-                                    .withTextField(title)
-                                    .withTextOffset(arrayOf(0f, 1.5f))
-                            ),
-                            manager.create(
-                                SymbolOptions()
-                                    .withLatLng(location)
+                                    .withLatLng(initialLocation)
                                     .withIconImage("initial-icon")
                                     .withTextField("Your Location")
+                                    .withTextColor("#0000FF")
                                     .withTextOffset(arrayOf(0f, 1.5f))
                             )
                         )
                     }
+
                     routeResponse?.forEachIndexed { index, (route, color) ->
                         val coordinates = route.routes.first().legs.flatMap { leg ->
                             leg.steps.flatMap { step ->
@@ -205,12 +201,15 @@ fun OSMMap(
                             else -> "default-icon"
                         }
 
+
                         symbols += manager.create(
                             SymbolOptions()
                                 .withLatLng(adjustedMidpoint)
                                 .withIconImage(iconName)
-                                .withTextField("${duration.toInt()} min\n${distance.format(2)} km")
+                                .withTextField("${duration.toInt()} min\n${distance.format(2)} m")
                                 .withTextOffset(arrayOf(0f, 1.5f))
+                                .withTextJustify("auto")
+                                .withTextAnchor("top")
                         )
 
                         val routeFeature = Feature.fromGeometry(LineString.fromLngLats(coordinates))
@@ -224,14 +223,16 @@ fun OSMMap(
                             )
                         }
                         style.addLayer(routeLayer)
+
                     }
+
 
                 }
             }
         }
 
         AndroidView(
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
             factory = {
                 MapView(context).apply {
                     mapView = this

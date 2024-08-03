@@ -35,7 +35,6 @@ import com.example.classschedule.R
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import org.maplibre.android.MapLibre
-import org.maplibre.android.WellKnownTileServer
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.maps.MapView
@@ -52,8 +51,6 @@ fun LocationPickerMap(
     onMapClick: (Double, Double) -> Unit = { _, _ -> }
 ) {
     val context = LocalContext.current
-    val apiKey = context.getString(R.string.kento)
-    val tileServer: WellKnownTileServer = WellKnownTileServer.MapLibre
     val permissionsState = rememberMultiplePermissionsState(
         listOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -69,7 +66,7 @@ fun LocationPickerMap(
     if (permissionsState.allPermissionsGranted) {
         var mapView by remember { mutableStateOf<MapView?>(null) }
 
-        MapLibre.getInstance(context, apiKey, tileServer)
+        MapLibre.getInstance(context)
         DisposableEffect(Unit) {
             mapView = MapView(context)
 
@@ -224,7 +221,7 @@ fun MapPointPickerDialog(
                     LocationPickerMap(
                         latitude = 14.16747822735461,
                         longitude = 121.24338486047947,
-                        styleUrl = OSMCustomMapType.STREET.styleUrl,
+                        styleUrl = OSMCustomMapType.OSM_3D.styleUrl,
                         pinTitle = pinTitle,
                         onMapClick = { lat, lng ->
                             if (isSelectingStartPoint) {

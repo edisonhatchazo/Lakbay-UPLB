@@ -3,8 +3,13 @@ package com.example.classschedule.ui.map
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -15,12 +20,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
-import com.example.classschedule.algorithm.osrms.RouteResponse
+import com.example.classschedule.algorithm.transit.RouteWithLineString
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.screen.MapScreenTopAppBar
 import com.example.classschedule.ui.settings.global.RouteSettingsViewModel
 import org.maplibre.android.geometry.LatLng
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainMapScreen(
     modifier: Modifier = Modifier,
@@ -34,6 +40,9 @@ fun MainMapScreen(
     var destinationLocation by remember { mutableStateOf<LatLng?>(null) }
     val routeResponse by viewModel.routeResponse.observeAsState()
     var selectedRouteType by remember { mutableStateOf("foot") }
+    var isCalculatingRoute = viewModel.isCalculatingRoute
+    var styleUrl by remember { mutableStateOf(OSMCustomMapType.OSM_3D.styleUrl) }
+    var isDoubleTransit = routeViewModel.forestryRouteDoubleRideEnabled.collectAsState().value
 
     Scaffold(
         modifier = modifier,
@@ -53,9 +62,9 @@ fun MainMapScreen(
                             destinationLocation!!.longitude
                         )
                     }
-                    if (routeType == "transit") {
-                        viewModel.loadAllBusStops()
-                    }
+                },
+                onMapTypeSelected = {mapType ->
+                    styleUrl = mapType.styleUrl
                 }
             )
         }
@@ -87,6 +96,26 @@ fun MainMapScreen(
             )
         }
 
+        if (isCalculatingRoute) {
+            AlertDialog(
+                onDismissRequest = {},
+                title = {Text("Calculating Route")},
+                text = {
+                    Text(
+                        if (isDoubleTransit) "Calculating Double Transit Route..."
+                        else "Calculating the Transit Route..."
+                    )
+               },
+                confirmButton = {}
+            )
+        }
+
+        LaunchedEffect(key1 = routeResponse, selectedRouteType) {
+            if (routeResponse != null) {
+                isCalculatingRoute = false
+            }
+        }
+
 
         MapDetails(
             initialLocation = initialLocation,
@@ -95,7 +124,8 @@ fun MainMapScreen(
             routeResponse = routeResponse,
             routeViewModel = routeViewModel,
             modifier = Modifier.padding(0.dp),
-            contentPadding = innerPadding
+            contentPadding = innerPadding,
+            styleUrl = styleUrl
         )
 
 
@@ -108,14 +138,16 @@ fun MapDetails(
     destinationLocation: LatLng?,
     routeViewModel: RouteSettingsViewModel,
     routeType: String,
-    routeResponse: List<Pair<RouteResponse, String>>?,
+    routeResponse: List<RouteWithLineString>?,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(0.dp)
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    styleUrl: String
 ) {
-    val styleUrl = OSMCustomMapType.STREET.styleUrl
     val coordinates= LatLng(14.165008914904659, 121.24150742562976)
+
+
     OSMMainMap(
-        title = null,
+        title = "Destination",
         location = coordinates,
         initialLocation = initialLocation,
         routeType = routeType,
@@ -123,8 +155,9 @@ fun MapDetails(
         destinationLocation = destinationLocation,
         routeResponse = routeResponse,
         styleUrl = styleUrl,
-        modifier = modifier.fillMaxSize()
-                        .padding(contentPadding)
+        modifier = modifier
+            .fillMaxSize()
+            .padding(contentPadding)
     )
 }
 

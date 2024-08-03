@@ -75,6 +75,7 @@
     <string name="modify_directory">Tap the UPLB College/Unit to modify it\'s Color Scheme.</string>
     <string name="class_name_req">Class Title</string>
     <string name="exams_name_req">Exams Title</string>
+    <string name="parking_radius">Parking Radius</string>
     <string name="modify_color">Tap the Color to Modify</string>
     <string name="edit_color">Modify the Color</string>
     <string name="cannot_be_deleted">Currently Used Colors cannot be deleted</string>

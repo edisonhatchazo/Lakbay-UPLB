@@ -1,0 +1,1346 @@
+{
+  "type": "FeatureCollection",
+  "generator": "overpass-turbo",
+  "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+  "timestamp": "2024-08-03T15:25:59Z",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "relation/4171698",
+        "access": "permissive",
+        "amenity": "parking",
+        "capacity": "64",
+        "parking": "surface",
+        "type": "multipolygon",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2435922,
+          14.1663359
+        ]
+      },
+      "id": "relation/4171698"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/37195463",
+        "amenity": "parking",
+        "name": "DevCom Parking Lot",
+        "parking": "surface",
+        "surface": "concrete",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2424066,
+          14.1665536
+        ]
+      },
+      "id": "way/37195463"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/37331954",
+        "amenity": "parking",
+        "capacity": "12",
+        "fee": "no",
+        "surface": "asphalt",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2397007,
+          14.1635905
+        ]
+      },
+      "id": "way/37331954"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/37450010",
+        "amenity": "parking",
+        "capacity": "68",
+        "fee": "no",
+        "name": "SU Parking Lot",
+        "parking": "street_side",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2419353,
+          14.1621519
+        ]
+      },
+      "id": "way/37450010"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/37450272",
+        "amenity": "parking",
+        "capacity": "8",
+        "fee": "no",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.24153,
+          14.1596138
+        ]
+      },
+      "id": "way/37450272"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/38063812",
+        "access": "private",
+        "amenity": "parking",
+        "capacity": "18",
+        "name": "CEM Faculty Parking Lot",
+        "parking": "surface",
+        "surface": "concrete",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2412823,
+          14.1674113
+        ]
+      },
+      "id": "way/38063812"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/38349876",
+        "amenity": "parking",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2439648,
+          14.1626362
+        ]
+      },
+      "id": "way/38349876"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/42442542",
+        "amenity": "parking",
+        "capacity": "16",
+        "fee": "no",
+        "name": "Mathematics Building Parking Lot",
+        "parking": "surface",
+        "surface": "concrete",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2445862,
+          14.1646639
+        ]
+      },
+      "id": "way/42442542"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/45175666",
+        "amenity": "parking",
+        "capacity": "10",
+        "fee": "no",
+        "parking": "surface",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2390516,
+          14.1662029
+        ]
+      },
+      "id": "way/45175666"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/45178335",
+        "amenity": "parking",
+        "capacity": "30",
+        "surface": "concrete",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2412351,
+          14.1660804
+        ]
+      },
+      "id": "way/45178335"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/45179018",
+        "access": "private",
+        "amenity": "parking",
+        "capacity": "18",
+        "name": "Housing and Land Grant Offices Parking Lot",
+        "parking": "surface",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2421593,
+          14.1667647
+        ]
+      },
+      "id": "way/45179018"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/45846964",
+        "amenity": "parking",
+        "capacity": "10",
+        "fee": "no",
+        "name": "BioSci Parking Lot",
+        "parking": "surface",
+        "surface": "concrete",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2406931,
+          14.165515
+        ]
+      },
+      "id": "way/45846964"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/45891669",
+        "amenity": "parking",
+        "capacity": "62",
+        "name": "CEM Parking Lot",
+        "parking": "surface",
+        "surface": "concrete",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2419977,
+          14.1673874
+        ]
+      },
+      "id": "way/45891669"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/54603683",
+        "amenity": "parking",
+        "sport": "basketball",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2412657,
+          14.1558037
+        ]
+      },
+      "id": "way/54603683"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/54603687",
+        "amenity": "parking",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2411635,
+          14.1555448
+        ]
+      },
+      "id": "way/54603687"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/54604782",
+        "amenity": "parking",
+        "fee": "no",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2436701,
+          14.157785
+        ]
+      },
+      "id": "way/54604782"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/54605241",
+        "access": "private",
+        "amenity": "parking",
+        "capacity": "10",
+        "fee": "no",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2431318,
+          14.1578942
+        ]
+      },
+      "id": "way/54605241"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/54606051",
+        "amenity": "parking",
+        "fee": "no",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2435993,
+          14.158538
+        ]
+      },
+      "id": "way/54606051"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/55415804",
+        "amenity": "parking",
+        "capacity": "19",
+        "capacity:disabled": "1",
+        "fee": "no",
+        "parking": "surface",
+        "surface": "concrete",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.242603,
+          14.1586948
+        ]
+      },
+      "id": "way/55415804"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/55417497",
+        "amenity": "parking",
+        "fee": "no",
+        "operator": "ICropS ASI Parking Lot",
+        "operator:type": "ICropS_ASI",
+        "parking": "surface",
+        "surface": "asphalt",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2445264,
+          14.1597084
+        ]
+      },
+      "id": "way/55417497"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/55417821",
+        "amenity": "parking",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2445318,
+          14.1609842
+        ]
+      },
+      "id": "way/55417821"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/60862422",
+        "amenity": "parking",
+        "fee": "no",
+        "parking": "surface",
+        "surface": "asphalt",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2415437,
+          14.164065
+        ]
+      },
+      "id": "way/60862422"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/60862423",
+        "amenity": "parking",
+        "capacity": "24",
+        "fee": "no",
+        "parking": "surface",
+        "surface": "asphalt",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2417432,
+          14.1643355
+        ]
+      },
+      "id": "way/60862423"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/64056154",
+        "amenity": "parking",
+        "capacity": "20",
+        "fee": "no",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2457471,
+          14.1610789
+        ]
+      },
+      "id": "way/64056154"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/71282445",
+        "amenity": "parking",
+        "capacity": "5",
+        "fee": "no",
+        "parking": "surface",
+        "surface": "concrete",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2409648,
+          14.1653839
+        ]
+      },
+      "id": "way/71282445"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/74458366",
+        "amenity": "parking",
+        "capacity": "7",
+        "fee": "no",
+        "parking": "surface",
+        "surface": "concrete",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.240937,
+          14.1656558
+        ]
+      },
+      "id": "way/74458366"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/97204121",
+        "amenity": "parking",
+        "fee": "no",
+        "name": "Baker Hall Parking Area",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.242518,
+          14.1615327
+        ]
+      },
+      "id": "way/97204121"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/100009996",
+        "amenity": "parking",
+        "capacity": "4",
+        "fee": "no",
+        "source": "Bing",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.244073,
+          14.164628
+        ]
+      },
+      "id": "way/100009996"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/111294232",
+        "access": "private",
+        "amenity": "parking",
+        "capacity": "4",
+        "fee": "no",
+        "parking": "surface",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2426835,
+          14.1636856
+        ]
+      },
+      "id": "way/111294232"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/111294234",
+        "amenity": "parking",
+        "capacity": "7",
+        "fee": "no",
+        "parking": "surface",
+        "surface": "concrete",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2423973,
+          14.1640507
+        ]
+      },
+      "id": "way/111294234"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/113355848",
+        "access": "private",
+        "amenity": "parking",
+        "parking": "surface",
+        "source": "Bing",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2546142,
+          14.1701883
+        ]
+      },
+      "id": "way/113355848"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/116588585",
+        "access": "permissive",
+        "amenity": "parking",
+        "capacity": "6",
+        "fee": "no",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2433441,
+          14.1570577
+        ]
+      },
+      "id": "way/116588585"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/116894810",
+        "access": "private",
+        "amenity": "parking",
+        "capacity": "3",
+        "fee": "no",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2424637,
+          14.1582643
+        ]
+      },
+      "id": "way/116894810"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/116894817",
+        "access": "private",
+        "amenity": "parking",
+        "capacity": "3",
+        "fee": "no",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2423194,
+          14.1580484
+        ]
+      },
+      "id": "way/116894817"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/127593254",
+        "amenity": "parking",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2390631,
+          14.1627229
+        ]
+      },
+      "id": "way/127593254"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/139071747",
+        "amenity": "parking",
+        "capacity": "14",
+        "parking": "surface",
+        "source": "Bing",
+        "surface": "concrete",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2399021,
+          14.1665591
+        ]
+      },
+      "id": "way/139071747"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/139071749",
+        "amenity": "parking",
+        "source": "Bing",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2400902,
+          14.1668788
+        ]
+      },
+      "id": "way/139071749"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/197173693",
+        "amenity": "parking",
+        "capacity": "10",
+        "parking": "surface",
+        "source": "Bing",
+        "surface": "concrete",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2405242,
+          14.1647768
+        ]
+      },
+      "id": "way/197173693"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/197907542",
+        "amenity": "parking",
+        "capacity": "14",
+        "parking": "surface",
+        "source": "Bing",
+        "surface": "concrete",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2402046,
+          14.1649354
+        ]
+      },
+      "id": "way/197907542"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/201283822",
+        "amenity": "parking",
+        "fee": "no",
+        "parking": "surface",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2475816,
+          14.1616409
+        ]
+      },
+      "id": "way/201283822"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/201283823",
+        "amenity": "parking",
+        "fee": "no",
+        "parking": "surface",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2479236,
+          14.1618073
+        ]
+      },
+      "id": "way/201283823"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/207742082",
+        "amenity": "parking",
+        "capacity": "20",
+        "fee": "no",
+        "surface": "asphalt",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2398281,
+          14.1636524
+        ]
+      },
+      "id": "way/207742082"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/226495734",
+        "access": "no",
+        "amenity": "parking",
+        "parking": "surface",
+        "supervised": "no",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2555732,
+          14.1698302
+        ]
+      },
+      "id": "way/226495734"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/226495769",
+        "amenity": "parking",
+        "parking": "surface",
+        "surface": "concrete",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2546704,
+          14.1673286
+        ]
+      },
+      "id": "way/226495769"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/240592877",
+        "amenity": "parking",
+        "fee": "no",
+        "parking": "surface",
+        "surface": "asphalt",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2444143,
+          14.1594823
+        ]
+      },
+      "id": "way/240592877"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/277597699",
+        "amenity": "parking",
+        "parking": "surface",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2547096,
+          14.1695147
+        ]
+      },
+      "id": "way/277597699"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/277597702",
+        "amenity": "parking",
+        "parking": "surface",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2543527,
+          14.1696241
+        ]
+      },
+      "id": "way/277597702"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/277597703",
+        "amenity": "parking",
+        "parking": "surface",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2552371,
+          14.1698382
+        ]
+      },
+      "id": "way/277597703"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/277597704",
+        "amenity": "parking",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2555802,
+          14.170261
+        ]
+      },
+      "id": "way/277597704"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/277597706",
+        "amenity": "parking",
+        "parking": "surface",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2559629,
+          14.1696476
+        ]
+      },
+      "id": "way/277597706"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/277597707",
+        "amenity": "parking",
+        "parking": "surface",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2553866,
+          14.1689466
+        ]
+      },
+      "id": "way/277597707"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/277597708",
+        "amenity": "parking",
+        "parking": "surface",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.255173,
+          14.1686799
+        ]
+      },
+      "id": "way/277597708"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/303938371",
+        "amenity": "parking",
+        "parking": "surface",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2572385,
+          14.1704522
+        ]
+      },
+      "id": "way/303938371"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/332694097",
+        "amenity": "parking",
+        "capacity": "8",
+        "fee": "no",
+        "parking": "surface",
+        "smoothness": "intermediate",
+        "surface": "concrete",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2457134,
+          14.1565582
+        ]
+      },
+      "id": "way/332694097"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/335874350",
+        "access": "private",
+        "amenity": "parking",
+        "capacity": "5",
+        "parking": "surface",
+        "surface": "grass",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2491864,
+          14.1621293
+        ]
+      },
+      "id": "way/335874350"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/486667203",
+        "amenity": "parking",
+        "parking": "street_side",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2414297,
+          14.1653538
+        ]
+      },
+      "id": "way/486667203"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/486667204",
+        "amenity": "parking",
+        "parking": "street_side",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2412183,
+          14.1653267
+        ]
+      },
+      "id": "way/486667204"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/486765372",
+        "amenity": "parking",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.248263,
+          14.1616717
+        ]
+      },
+      "id": "way/486765372"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/572997493",
+        "amenity": "parking",
+        "capacity": "5",
+        "fee": "no"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2409673,
+          14.1645806
+        ]
+      },
+      "id": "node/572997493"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/573316588",
+        "amenity": "parking",
+        "parking": "surface",
+        "surface": "concrete"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2399793,
+          14.1665525
+        ]
+      },
+      "id": "node/573316588"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/573366210",
+        "amenity": "parking",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.24096,
+          14.1635962
+        ]
+      },
+      "id": "way/573366210"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/573413302",
+        "amenity": "parking",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2427395,
+          14.1565213
+        ]
+      },
+      "id": "way/573413302"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/777640049",
+        "access": "yes",
+        "addr:city": "Los Baños",
+        "addr:street": "Luz Oñate",
+        "amenity": "parking",
+        "fee": "no",
+        "name": "Physci Parking 1",
+        "parking": "surface",
+        "source": "survey",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2424645,
+          14.1648478
+        ]
+      },
+      "id": "way/777640049"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/822825144",
+        "amenity": "parking",
+        "parking": "surface",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2539421,
+          14.1683946
+        ]
+      },
+      "id": "way/822825144"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/954532232",
+        "access": "customers",
+        "amenity": "parking",
+        "name": "Seniors' Social Garden Parking",
+        "parking": "surface",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2435967,
+          14.1626651
+        ]
+      },
+      "id": "way/954532232"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/1224925728",
+        "amenity": "parking",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2406943,
+          14.1601067
+        ]
+      },
+      "id": "way/1224925728"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/65249944",
+        "access": "customers",
+        "amenity": "parking",
+        "name": "Makiling Botanical Gardens Bus Parking",
+        "parking": "surface",
+        "@geometry": "center"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.23554059421468,
+          14.156145400171454
+        ]
+      },
+      "id": 70
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/11747101705",
+        "amenity": "parking",
+        "capacity": "11",
+        "fee": "no",
+        "parking": "surface",
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.239343,
+          14.1654947
+        ]
+      },
+      "id": "node/11747101705"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/365619453",
+        "fee": "no",
+        "parking": "surface",
+        "operator": "Makiling Botanic Gardens",
+        "amenity": "parking"
+      },
+      "geometry": {
+        "coordinates": [
+          121.23450918414557,
+          14.15619170686709
+        ],
+        "type": "Point"
+      },
+      "id": 72
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/185063975",
+        "amenity": "parking"
+      },
+      "geometry": {
+        "coordinates": [
+          121.23524890332766,
+          14.154946921009255
+        ],
+        "type": "Point"
+      },
+      "id": 73
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/144375356",
+        "access": "private",
+        "amenity": "parking",
+        "capacity": 7
+      },
+      "geometry": {
+        "coordinates": [
+          121.2354890001161,
+          14.15419235536784
+        ],
+        "type": "Point"
+      },
+      "id": 74
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way/224225299",
+        "amenity": "parking",
+        "parking": "surface",
+        "surface": "concrete"
+      },
+      "geometry": {
+        "coordinates": [
+          121.23449667584282,
+          14.152490289561186
+        ],
+        "type": "Point"
+      },
+      "id": 75
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "way.46503570",
+        "amenity": "parking",
+        "capacity": 3
+      },
+      "geometry": {
+        "coordinates": [
+          121.23504624159824,
+          14.152509084489935
+        ],
+        "type": "Point"
+      },
+      "id": 76
+    }
+  ]
+}

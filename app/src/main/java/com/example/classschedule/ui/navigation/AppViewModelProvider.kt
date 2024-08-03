@@ -211,6 +211,7 @@ object AppViewModelProvider {
         initializer{
             LocationViewModel(
                 classScheduleApplication(),
+                this.createSavedStateHandle(),
                 classScheduleApplication().container.mapDataRepository
             )
         }

@@ -2,14 +2,12 @@ package com.example.classschedule.ui.buildingScreens.uplb.rooms
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -37,14 +35,12 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
 import com.example.classschedule.data.Classroom
 import com.example.classschedule.ui.buildingScreens.uplb.toClassroom
 import com.example.classschedule.ui.buildingScreens.uplb.toClassroomDetails
 import com.example.classschedule.ui.map.OSMCustomMapType
-import com.example.classschedule.ui.map.OSMDetailsMapping
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.EditScreenTopAppBar
@@ -186,21 +182,6 @@ fun ClassroomDetailed(
             )
         }
     }
-    Text(text = stringResource(R.string.location), fontWeight = FontWeight.Bold)
-    Box(
-        modifier = Modifier
-            .height(300.dp)
-            .fillMaxWidth()
-    ) {
-
-        OSMDetailsMapping(
-            title = classroom.title,
-            latitude = classroom.latitude,
-            longitude = classroom.longitude,
-            styleUrl = mapType.styleUrl
-        )
-    }
-
     Button(
         onClick = {
             coroutineScope.launch{ viewModel.addOrUpdateMapData(classroom.toClassroomDetails())}

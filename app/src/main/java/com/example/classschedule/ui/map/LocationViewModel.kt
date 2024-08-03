@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.classschedule.data.MapData
 import com.example.classschedule.data.MapDataRepository
@@ -18,11 +19,12 @@ import org.maplibre.android.geometry.LatLng
 
 class LocationViewModel(
     application: Application,
+    savedStateHandle: SavedStateHandle,
     private val mapDataRepository: MapDataRepository
 ) : AndroidViewModel(application) {
-
+    private val mapId: Int = checkNotNull(savedStateHandle[GuideMapDestination.MAPDATAIDARG])
     val uiState: StateFlow<MapDataUiState> =
-        mapDataRepository.getMapData(0)
+        mapDataRepository.getMapData(mapId)
             .filterNotNull()
             .map {
                 MapDataUiState(mapDataDetails = it.toMapDataDetails())

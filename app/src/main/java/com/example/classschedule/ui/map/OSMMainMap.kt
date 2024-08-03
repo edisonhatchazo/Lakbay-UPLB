@@ -3,6 +3,7 @@ package com.example.classschedule.ui.map
 import android.Manifest
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
@@ -21,7 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.classschedule.BuildConfig
 import com.example.classschedule.R
-import com.example.classschedule.algorithm.osrms.RouteResponse
+import com.example.classschedule.algorithm.transit.RouteWithLineString
 import com.example.classschedule.ui.settings.global.RouteSettingsViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -47,7 +48,10 @@ import kotlin.math.sin
 
 
 enum class OSMCustomMapType(val styleUrl: String) {
-    STREET(BuildConfig.MAP_API_BASE_URL)
+    STREET("${BuildConfig.MAP_API_BASE_URL}/styles/streets/style.json"),
+    BRIGHT("${BuildConfig.MAP_API_BASE_URL}/styles/basic/style.json"),
+    DARK_MODE("${BuildConfig.MAP_API_BASE_URL}/styles/dark_mode/style.json"),
+    OSM_3D("${BuildConfig.MAP_API_BASE_URL}/styles/3D/style.json")
 }
 
 
@@ -61,7 +65,7 @@ fun OSMMainMap(
     routeType:String,
     routeViewModel: RouteSettingsViewModel,
     destinationLocation: LatLng?,
-    routeResponse: List<Pair<RouteResponse, String>>?,
+    routeResponse: List<RouteWithLineString>?,
     styleUrl: String,
     modifier: Modifier = Modifier
 ) {
@@ -118,18 +122,18 @@ fun OSMMainMap(
             }
         }
 
-        LaunchedEffect(routeResponse) {
+        LaunchedEffect(key1 = routeResponse,key2 = styleUrl) {
             symbolManager?.let {
                 it.delete(symbols)
                 symbols = emptyList()
                 mapViewKey++ // Force map view reset
             }
+            routeResponse?.forEach { routeWithLineString ->
+                if(routeWithLineString.lineString!="") {
+                    Log.d("OSMMainMap", "Bus Route Name: ${routeWithLineString.lineString}")
+                }
+            }
         }
-
-
-
-        //, //
-        //
 
         LaunchedEffect(mapViewKey) {
             mapView?.getMapAsync { mapLibreMap ->
@@ -239,7 +243,7 @@ fun OSMMainMap(
         }
 
         AndroidView(
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
             factory = {
                 MapView(context).apply {
                     mapView = this
@@ -276,7 +280,7 @@ fun calculateBearing(start: LatLng, end: LatLng): Double {
     val dLon = lon2 - lon1
     val y = sin(dLon) * cos(lat2)
     val x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon)
-    val brng = Math.toDegrees(atan2(y, x))
+    val bearing = Math.toDegrees(atan2(y, x))
 
-    return ((brng + 360) % 360)
+    return ((bearing + 360) % 360)
 }

@@ -23,8 +23,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
-import com.example.classschedule.algorithm.osrms.LocationHelper
-import com.example.classschedule.algorithm.osrms.RouteResponse
+import com.example.classschedule.algorithm.osrms.isLocationEnabled
+import com.example.classschedule.algorithm.osrms.isOnline
+import com.example.classschedule.algorithm.transit.RouteWithLineString
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.GuideScreenTopAppBar
@@ -48,16 +49,20 @@ fun GuideMapScreen(
     locationViewModel: LocationViewModel = viewModel(factory = AppViewModelProvider.Factory),
     routeViewModel: RouteSettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    val styleUrl = OSMCustomMapType.STREET.styleUrl
     val context = LocalContext.current
     val uiState by locationViewModel.uiState.collectAsState()
     val maps = uiState.mapDataDetails
-    var showMapDialog by remember { mutableStateOf(false) }
     val currentLocation by locationViewModel.currentLocation.observeAsState(null)
-    val destinationLocation =  LatLng(maps.latitude, maps.longitude)
+    val destinationLocation = LatLng(maps.latitude, maps.longitude)
     val routeResponse by viewModel.routeResponse.observeAsState()
     var selectedRouteType by remember { mutableStateOf("foot") }
-    val locationHelper = remember { LocationHelper(context) }
+
+    var styleUrl by remember { mutableStateOf(OSMCustomMapType.OSM_3D) }
+    var isDoubleTransit = routeViewModel.forestryRouteDoubleRideEnabled.collectAsState().value
+
+    // Check network and location status
+    val isOnline = isOnline(context)
+    val isLocationEnabled = isLocationEnabled(context)
 
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -70,8 +75,6 @@ fun GuideMapScreen(
         }
     )
 
-
-
     DisposableEffect(Unit) {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED) {
             locationViewModel.getCurrentLocationOnce()
@@ -83,7 +86,13 @@ fun GuideMapScreen(
             locationViewModel.stopLocationUpdates()
         }
     }
-    val initialLocation by locationViewModel.currentLocation.observeAsState(LatLng(14.165008914904659, 121.24150742562976)) // Provide a default location if currentLocation is null
+
+    val initialLocation = when {
+        isOnline && isLocationEnabled -> currentLocation ?: LatLng(14.165008914904659, 121.24150742562976) // Default if currentLocation is null
+        isOnline && !isLocationEnabled -> LatLng(14.165008914904659, 121.24150742562976) // Set to initial location
+        !isOnline -> null // Set to null if offline
+        else -> LatLng(14.165008914904659, 121.24150742562976) // Fallback initial location
+    }
 
     LaunchedEffect(selectedRouteType, initialLocation, destinationLocation) {
         initialLocation?.let {
@@ -101,29 +110,32 @@ fun GuideMapScreen(
         modifier = modifier,
         topBar = {
             GuideScreenTopAppBar(
-                title = "Guide to ${maps.title}",
+                title = "Guide to Destination",
                 canNavigateBack = true,
                 navigateUp = navigateBack,
                 onRouteTypeSelected = { routeType ->
-                    currentLocation?.let {
-                        viewModel.calculateRouteFromUserInput(
-                            routeType,
-                            it.latitude,
-                            it.longitude,
-                            destinationLocation.latitude,
-                            destinationLocation.longitude
-                        )
+                    selectedRouteType = routeType
+                    if (isOnline) {
+                        initialLocation?.let {
+                            viewModel.calculateRouteFromUserInput(
+                                routeType,
+                                it.latitude,
+                                it.longitude,
+                                destinationLocation.latitude,
+                                destinationLocation.longitude
+                            )
+                        }
                     }
                     if (routeType == "transit") {
                         viewModel.loadAllBusStops()
                     }
-
-
+                },
+                onMapTypeSelected = { mapType ->
+                    styleUrl = mapType
                 }
             )
         }
-    ){ innerPadding ->
-
+    ) { innerPadding ->
         GuideMapDetails(
             initialLocation = initialLocation,
             destinationLocation = destinationLocation,
@@ -131,6 +143,7 @@ fun GuideMapScreen(
             routeType = selectedRouteType,
             routeViewModel = routeViewModel,
             snippet = maps.snippet,
+            styleUrl = styleUrl,
             routeResponse = routeResponse,
             modifier = Modifier
                 .padding(
@@ -140,33 +153,33 @@ fun GuideMapScreen(
                     bottom = innerPadding.calculateBottomPadding()
                 )
         )
-
-
     }
 }
 
 @Composable
 fun GuideMapDetails(
-    initialLocation: LatLng,
+    initialLocation: LatLng?,
     title: String,
     snippet: String,
     routeViewModel: RouteSettingsViewModel,
     routeType: String,
     destinationLocation: LatLng,
-    routeResponse: List<Pair<RouteResponse, String>>?,
+    styleUrl: OSMCustomMapType,
+    routeResponse: List<RouteWithLineString>?,
     modifier: Modifier = Modifier
 ) {
-    val styleUrl = OSMCustomMapType.STREET.styleUrl
-    if(title!= "") {
+    val coordinates= LatLng(14.165008914904659, 121.24150742562976)
+    if (title.isNotEmpty()) {
         OSMMap(
             title = title,
             snippet = snippet,
             routeResponse = routeResponse,
             routeType = routeType,
             routeViewModel = routeViewModel,
-            location = initialLocation,
+            location = coordinates,
+            initialLocation = initialLocation,
             destinationLocation = destinationLocation,
-            styleUrl = styleUrl
+            osmMapType = styleUrl
         )
     }
 }

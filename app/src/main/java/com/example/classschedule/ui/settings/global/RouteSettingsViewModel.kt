@@ -30,6 +30,9 @@ class RouteSettingsViewModel(context: Context) : ViewModel() {
     private val _forestryRouteDoubleRideEnabled = MutableStateFlow(speedPreferences.forestryRouteDoubleRideEnabled)
     val forestryRouteDoubleRideEnabled: StateFlow<Boolean> = _forestryRouteDoubleRideEnabled.asStateFlow()
 
+    private val _parkingRadius = MutableStateFlow(speedPreferences.parkingRadius)
+    val parkingRadius: StateFlow<Double> = _parkingRadius.asStateFlow()
+
     fun setWalkingSpeed(speed: Double) {
         viewModelScope.launch {
             _walkingSpeed.emit(speed)
@@ -41,6 +44,13 @@ class RouteSettingsViewModel(context: Context) : ViewModel() {
         viewModelScope.launch {
             _cyclingSpeed.emit(speed / 3.6) // Store in m/s
             speedPreferences.cyclingSpeed = speed * 3.6 // Convert m/s to km/h for storage
+        }
+    }
+
+    fun setParkingRadius(radius: Double){
+        viewModelScope.launch{
+            _parkingRadius.emit(radius)
+            speedPreferences.parkingRadius = radius
         }
     }
 
@@ -77,4 +87,8 @@ class SpeedPreferences(context: Context) {
     var forestryRouteDoubleRideEnabled: Boolean
         get() = preferences.getBoolean("forestry_route_double_ride_enabled", false)
         set(value) = preferences.edit { putBoolean("forestry_route_double_ride_enabled", value) }
+
+    var parkingRadius: Double
+        get() = preferences.getFloat("parking_radius",300.0f).toDouble()
+        set(value) = preferences.edit{ putFloat("parking_radius",value.toFloat())}
 }

@@ -8,6 +8,7 @@ import java.io.InputStreamReader
 
 data class BusRoute(val id: String, val name: String, val coordinates: List<LatLng>)
 
+
 fun loadBusRoutes(context: Context, fileName: String): List<BusRoute> {
     val assetManager = context.assets
     val inputStream = assetManager.open(fileName)
@@ -30,6 +31,7 @@ fun loadBusRoutes(context: Context, fileName: String): List<BusRoute> {
                 LatLng(lat, lon)
             }
 
+
             BusRoute(
                 id = properties.get("route").asString,
                 name = properties.get("route").asString,
@@ -43,7 +45,9 @@ fun loadBusRoutes(context: Context, fileName: String): List<BusRoute> {
 
 }
 
-fun findRouteCoordinates(startBusStop: BusStop, endBusStop: BusStop, busRoutes: List<BusRoute>): String {
+data class RouteCoordinates(val coordinates: String, val routeName: String)
+
+fun findRouteCoordinates(startBusStop: BusStop, endBusStop: BusStop, busRoutes: List<BusRoute>): RouteCoordinates {
     val startLatLng = LatLng(startBusStop.lat, startBusStop.lon)
     val endLatLng = LatLng(endBusStop.lat, endBusStop.lon)
 
@@ -55,7 +59,8 @@ fun findRouteCoordinates(startBusStop: BusStop, endBusStop: BusStop, busRoutes: 
         val endIndex = matchingRoute.coordinates.indexOf(endLatLng)
         val subList = matchingRoute.coordinates.subList(startIndex, endIndex + 1)
 
-        return subList.joinToString(";") { "${it.longitude},${it.latitude}" }
+        val coordinates = subList.joinToString(";") { "${it.longitude},${it.latitude}" }
+        return RouteCoordinates(coordinates, matchingRoute.name)
     } else {
         throw IllegalArgumentException("No valid route found between bus stops")
     }

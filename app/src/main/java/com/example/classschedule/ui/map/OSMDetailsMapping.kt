@@ -56,7 +56,6 @@ fun OSMDetailsMapping(title: String, latitude: Double, longitude: Double, styleU
                 mapView = null
             }
         }
-
         mapView?.let { view ->
             LaunchedEffect(view) {
                 view.getMapAsync { mapLibreMap ->

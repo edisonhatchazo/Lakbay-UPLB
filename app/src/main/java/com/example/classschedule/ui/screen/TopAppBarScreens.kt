@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Search
@@ -45,6 +46,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.classschedule.R
 import com.example.classschedule.algorithm.CustomDatePickerDialog
 import com.example.classschedule.algorithm.SearchViewModel
+import com.example.classschedule.ui.map.OSMCustomMapType
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import java.time.LocalDate
 
@@ -402,7 +404,6 @@ fun PinsScreenTopAppBar(
     navigateUp: () -> Unit = {},
     ){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    var showMenu  by remember { mutableStateOf(false) }
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
         title = { Text( title,color = Color.White)},
@@ -457,7 +458,6 @@ fun CoordinateEntryScreenTopAppBar(
     navigateUp: () -> Unit = {}
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    var expanded by remember { mutableStateOf(false) }
 
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
@@ -496,6 +496,7 @@ fun MapScreenTopAppBar(
     onGetDirectionsClick: () -> Unit,
     openDrawer: () -> Unit,
     onRouteTypeSelected: (String) -> Unit,
+    onMapTypeSelected: (OSMCustomMapType) -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val carIcon: Painter = painterResource(id = R.drawable.car_icon)
@@ -505,6 +506,11 @@ fun MapScreenTopAppBar(
     var expanded by remember { mutableStateOf(false) }
     var selectedIcon by remember { mutableStateOf(walkingIcon) }
     var selectedRouteType by remember { mutableStateOf("walking") }
+
+    var mapTypeExpanded by remember { mutableStateOf(false) }
+    val mapTypes = OSMCustomMapType.entries.toTypedArray()
+    var selectedMapType by remember { mutableStateOf(OSMCustomMapType.STREET) }
+
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
         title = { Text(title, color = Color.White) },
@@ -526,6 +532,7 @@ fun MapScreenTopAppBar(
                     tint = Color.White
                 )
             }
+            //Route Type Dropdown Menu
             Box {
                 IconButton(onClick = { expanded = true }) {
                     Image(
@@ -538,35 +545,71 @@ fun MapScreenTopAppBar(
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
                 ) {
-                    DropdownMenuItem(onClick = {
-                        selectedIcon = walkingIcon
-                        selectedRouteType = "foot"
-                        onRouteTypeSelected(selectedRouteType)
-                        expanded = false
-                    }, text = {Text("Walking Route")}
+                    DropdownMenuItem(
+                        onClick = {
+                            selectedIcon = walkingIcon
+                            selectedRouteType = "foot"
+                            onRouteTypeSelected(selectedRouteType)
+                            expanded = false
+                        },
+                        text = { Text("Walking Route") },
+                        enabled = selectedRouteType != "foot"
                     )
-                    DropdownMenuItem(onClick = {
-                        selectedIcon = cyclingIcon
-                        selectedRouteType = "bicycle"
-                        onRouteTypeSelected(selectedRouteType)
-                        expanded = false
-                    }, text = {Text("Cycling Route")}
+                    DropdownMenuItem(
+                        onClick = {
+                            selectedIcon = cyclingIcon
+                            selectedRouteType = "bicycle"
+                            onRouteTypeSelected(selectedRouteType)
+                            expanded = false
+                        },
+                        text = { Text("Cycling Route") },
+                        enabled = selectedRouteType != "bicycle"
                     )
-                    DropdownMenuItem(onClick = {
-                        selectedIcon = carIcon
-                        selectedRouteType = "driving"
-                        onRouteTypeSelected(selectedRouteType)
-                        expanded = false
-                    }, text = {Text("Car Route")}
-                        )
+                    DropdownMenuItem(
+                        onClick = {
+                            selectedIcon = carIcon
+                            selectedRouteType = "driving"
+                            onRouteTypeSelected(selectedRouteType)
+                            expanded = false
+                        },
+                        text = { Text("Car Route") },
+                        enabled = selectedRouteType != "driving"
+                    )
+                    DropdownMenuItem(
+                        onClick = {
+                            selectedIcon = transitIcon
+                            selectedRouteType = "transit"
+                            onRouteTypeSelected(selectedRouteType)
+                            expanded = false
+                        },
+                        text = { Text("Transit Route") },
+                        enabled = selectedRouteType != "transit"
+                    )
+                }
+            }
 
-                    DropdownMenuItem(onClick = {
-                        selectedIcon = transitIcon
-                        selectedRouteType = "transit"
-                        onRouteTypeSelected(selectedRouteType)
-                        expanded = false
-                    },text = {Text("Transit Route")}
+            Box {
+                IconButton(onClick = { mapTypeExpanded = true }) {
+                    Icon(
+                        imageVector = Icons.Filled.List,
+                        contentDescription = "Map Style Icon",
+                        tint = Color.White
+                    )
+                }
+                DropdownMenu(
+                    expanded = mapTypeExpanded,
+                    onDismissRequest = { mapTypeExpanded = false }
+                ) {
+                    mapTypes.forEach { mapType ->
+                        DropdownMenuItem(
+                            onClick = {
+                                selectedMapType = mapType
+                                onMapTypeSelected(mapType)
+                                mapTypeExpanded = false
+                            },
+                            text = { Text(mapType.name.replace("_", " ")) }
                         )
+                    }
                 }
             }
         }
@@ -580,6 +623,7 @@ fun GuideScreenTopAppBar(
     canNavigateBack: Boolean,
     navigateUp: () -> Unit = {},
     onRouteTypeSelected: (String) -> Unit,
+    onMapTypeSelected: (OSMCustomMapType) -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val carIcon: Painter = painterResource(id = R.drawable.car_icon)
@@ -589,6 +633,11 @@ fun GuideScreenTopAppBar(
     var expanded by remember { mutableStateOf(false) }
     var selectedIcon by remember { mutableStateOf(walkingIcon) }
     var selectedRouteType by remember { mutableStateOf("walking") }
+
+    var mapTypeExpanded by remember { mutableStateOf(false) }
+    val mapTypes = OSMCustomMapType.entries.toTypedArray()
+    var selectedMapType by remember { mutableStateOf(OSMCustomMapType.STREET) }
+
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
         title = { Text(title, color = Color.White) },
@@ -605,6 +654,7 @@ fun GuideScreenTopAppBar(
             }
         },
         actions = {
+            //Route Type Dropdown Menu
             Box {
                 IconButton(onClick = { expanded = true }) {
                     Image(
@@ -617,35 +667,72 @@ fun GuideScreenTopAppBar(
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
                 ) {
-                    DropdownMenuItem(onClick = {
-                        selectedIcon = walkingIcon
-                        selectedRouteType = "foot"
-                        onRouteTypeSelected(selectedRouteType)
-                        expanded = false
-                    }, text = {Text("Walking Route")}
+                    DropdownMenuItem(
+                        onClick = {
+                            selectedIcon = walkingIcon
+                            selectedRouteType = "foot"
+                            onRouteTypeSelected(selectedRouteType)
+                            expanded = false
+                        },
+                        text = { Text("Walking Route") },
+                        enabled = selectedRouteType != "foot"
                     )
-                    DropdownMenuItem(onClick = {
-                        selectedIcon = cyclingIcon
-                        selectedRouteType = "bicycle"
-                        onRouteTypeSelected(selectedRouteType)
-                        expanded = false
-                    }, text = {Text("Cycling Route")}
+                    DropdownMenuItem(
+                        onClick = {
+                            selectedIcon = cyclingIcon
+                            selectedRouteType = "bicycle"
+                            onRouteTypeSelected(selectedRouteType)
+                            expanded = false
+                        },
+                        text = { Text("Cycling Route") },
+                        enabled = selectedRouteType != "bicycle"
                     )
-                    DropdownMenuItem(onClick = {
-                        selectedIcon = carIcon
-                        selectedRouteType = "driving"
-                        onRouteTypeSelected(selectedRouteType)
-                        expanded = false
-                    }, text = {Text("Car Route")}
+                    DropdownMenuItem(
+                        onClick = {
+                            selectedIcon = carIcon
+                            selectedRouteType = "driving"
+                            onRouteTypeSelected(selectedRouteType)
+                            expanded = false
+                        },
+                        text = { Text("Car Route") },
+                        enabled = selectedRouteType != "driving"
                     )
+                    DropdownMenuItem(
+                        onClick = {
+                            selectedIcon = transitIcon
+                            selectedRouteType = "transit"
+                            onRouteTypeSelected(selectedRouteType)
+                            expanded = false
+                        },
+                        text = { Text("Transit Route") },
+                        enabled = selectedRouteType != "transit"
+                    )
+                }
+            }
 
-                    DropdownMenuItem(onClick = {
-                        selectedIcon = transitIcon
-                        selectedRouteType = "transit"
-                        onRouteTypeSelected(selectedRouteType)
-                        expanded = false
-                    },text = {Text("Transit Route")}
+            Box {
+                IconButton(onClick = { mapTypeExpanded = true }) {
+                    Icon(
+                        imageVector = Icons.Filled.List,
+                        contentDescription = "Map Style Icon",
+                        tint = Color.White
                     )
+                }
+                DropdownMenu(
+                    expanded = mapTypeExpanded,
+                    onDismissRequest = { mapTypeExpanded = false }
+                ) {
+                    mapTypes.forEach { mapType ->
+                        DropdownMenuItem(
+                            onClick = {
+                                selectedMapType = mapType
+                                onMapTypeSelected(mapType)
+                                mapTypeExpanded = false
+                            },
+                            text = { Text(mapType.name.replace("_", " ")) },
+                            enabled = mapType != selectedMapType
+                        )
+                    }
                 }
             }
         }
