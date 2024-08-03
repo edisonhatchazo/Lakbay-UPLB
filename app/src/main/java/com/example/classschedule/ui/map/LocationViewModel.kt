@@ -20,7 +20,7 @@ import org.maplibre.android.geometry.LatLng
 class LocationViewModel(
     application: Application,
     savedStateHandle: SavedStateHandle,
-    private val mapDataRepository: MapDataRepository
+    mapDataRepository: MapDataRepository
 ) : AndroidViewModel(application) {
     private val mapId: Int = checkNotNull(savedStateHandle[GuideMapDestination.MAPDATAIDARG])
     val uiState: StateFlow<MapDataUiState> =

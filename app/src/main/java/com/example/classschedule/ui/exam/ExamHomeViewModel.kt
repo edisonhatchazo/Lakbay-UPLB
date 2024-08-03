@@ -33,9 +33,6 @@ class ExamHomeViewModel(
         }
     }
 
-    fun getColor(colorId: Int): ColorEntry {
-        return colorSchemes.value[colorId] ?: ColorEntry(Color.Transparent, Color.Black)
-    }
     val examHomeUiState: StateFlow<ExamHomeUiState> =
         examScheduleRepository.getAllExamsSchedules().map{ ExamHomeUiState(it) }
             .stateIn(

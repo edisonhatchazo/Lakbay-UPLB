@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class CollegeDirectoryViewModel(): ViewModel() {
+class CollegeDirectoryViewModel: ViewModel() {
     private val _collegesWithColors = MutableStateFlow(CollegeColorPalette.colors)
     val collegesWithColors: StateFlow<Map<String, Pair<String, ColorEntry>>> get() = _collegesWithColors
 

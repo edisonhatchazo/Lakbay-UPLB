@@ -8,7 +8,6 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.content.edit
@@ -77,31 +76,6 @@ private val DarkColorScheme = darkColorScheme(
     surfaceTint = md_theme_dark_surfaceTint,
     outlineVariant = md_theme_dark_outlineVariant,
     scrim = md_theme_dark_scrim,
-)
-
-private val DarkColorPalette = darkColorScheme(
-    primary = Purple200,
-    primaryContainer = Purple700,
-    secondary = Teal200,
-    background = Color.Black,
-    surface = Color.Black,
-    onPrimary = Color.Black,
-    onSecondary = Color.White,
-    onBackground = Color.White,
-    onSurface = Color.White,
-
-)
-
-private val LightColorPalette = lightColorScheme(
-    primary = Purple500,
-    primaryContainer = Purple700,
-    secondary = Teal200,
-    background = Color.White,
-    surface = Color.White,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
 )
 
 enum class ThemeMode { DARK, LIGHT, SYSTEM }

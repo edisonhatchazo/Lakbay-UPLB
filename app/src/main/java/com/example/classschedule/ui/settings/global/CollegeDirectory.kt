@@ -94,7 +94,7 @@ fun DirectoryScreen(
         ) {
             items(collegesWithColors.toList()) { (collegeFullName, pair) ->
                 val (abbreviation, colorEntry) = pair
-                var colorId = CollegeColorPalette.getPreviousColorId(collegeFullName)?:0
+                val colorId = CollegeColorPalette.getPreviousColorId(collegeFullName)?:0
                 Box(
                     modifier = Modifier
                         .height(60.dp) // Ensure square items

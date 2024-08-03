@@ -67,7 +67,7 @@ fun BuildingEntryScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val buildingUiState = viewModel.buildingUiState
-    var mapType by remember { mutableStateOf(OSMCustomMapType.STREET) }
+    val mapType by remember { mutableStateOf(OSMCustomMapType.OSM_3D) }
     Scaffold(
         topBar = {
             EntryScreenTopAppBar(

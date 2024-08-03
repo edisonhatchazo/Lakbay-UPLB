@@ -24,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -40,7 +39,6 @@ import com.example.classschedule.R
 import com.example.classschedule.data.Classroom
 import com.example.classschedule.ui.buildingScreens.uplb.toClassroom
 import com.example.classschedule.ui.buildingScreens.uplb.toClassroomDetails
-import com.example.classschedule.ui.map.OSMCustomMapType
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.EditScreenTopAppBar
@@ -66,9 +64,6 @@ fun RoomDetailsScreen(
     val roomUiState = viewModel.uiState.collectAsState()
     val room = roomUiState.value.classroomDetails.toClassroom()
 
-
-    var mapType by remember { mutableStateOf(OSMCustomMapType.STREET) }
-
     Scaffold(
         topBar = {
             EditScreenTopAppBar(
@@ -81,7 +76,6 @@ fun RoomDetailsScreen(
         }, modifier = modifier
     ){innerPadding ->
         ClassroomDetailsBody(
-            mapType = mapType,
             navigateToMap = navigateToMap,
             classroomDetailsUiState = roomUiState.value,
             viewModel = viewModel,
@@ -109,7 +103,6 @@ fun RoomDetailsScreen(
 @Composable
 private fun ClassroomDetailsBody(
     classroomDetailsUiState: ClassroomDetailsUiState,
-    mapType: OSMCustomMapType,
     buildingCollege:String,
     navigateToMap: (Int) -> Unit,
     viewModel: RoomDetailsViewModel,
@@ -132,7 +125,6 @@ private fun ClassroomDetailsBody(
             viewModel = viewModel,
             navigateToMap = navigateToMap,
             modifier = Modifier.fillMaxWidth(),
-            mapType = mapType,
             onDelete = onDelete
         )
 
@@ -143,7 +135,6 @@ private fun ClassroomDetailsBody(
 fun ClassroomDetailed(
     classroom: Classroom,
     modifier: Modifier = Modifier,
-    mapType: OSMCustomMapType,
     navigateToMap: (Int) -> Unit,
     onDelete: () -> Unit,
     viewModel: RoomDetailsViewModel,

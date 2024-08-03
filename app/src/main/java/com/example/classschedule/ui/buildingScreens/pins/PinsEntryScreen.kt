@@ -64,7 +64,7 @@ fun PinsEntryScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val pinsUiState = viewModel.pinsUiState
-    var mapType by remember { mutableStateOf(OSMCustomMapType.STREET) }
+    val mapType by remember { mutableStateOf(OSMCustomMapType.OSM_3D) }
 
     Scaffold(
         topBar = {

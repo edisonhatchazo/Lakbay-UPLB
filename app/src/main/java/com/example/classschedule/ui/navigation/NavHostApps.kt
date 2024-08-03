@@ -31,8 +31,8 @@ fun ExamScheduleApp(openDrawer: () -> Unit, navController: NavHostController = r
 }
 
 @Composable
-fun PinsApp(mainNavController: NavHostController, openDrawer: () -> Unit, navController: NavHostController = rememberNavController()) {
-    PinsNavHost(navController = navController, mainNavController = mainNavController, openDrawer = openDrawer)
+fun PinsApp(openDrawer: () -> Unit, navController: NavHostController = rememberNavController()) {
+    PinsNavHost(navController = navController, openDrawer = openDrawer)
 }
 
 @Composable

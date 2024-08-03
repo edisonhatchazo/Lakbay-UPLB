@@ -1,7 +1,6 @@
 package com.example.classschedule.algorithm.transit
 
 import android.content.Context
-import com.example.classschedule.algorithm.Haversine
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import java.io.InputStreamReader
@@ -45,7 +44,7 @@ fun loadAllBusStops(context: Context): Triple<List<BusStop>, List<BusStop>, List
 fun findNearestBusStops(busStops: List<BusStop>, lat: Double, lon: Double, limit: Int, maxDistance: Double = Double.MAX_VALUE): List<BusStop> {
     return busStops
         .asSequence()
-        .map { it to Haversine(it.lat, it.lon, lat, lon) }
+        .map { it to haversine(it.lat, it.lon, lat, lon) }
         .filter { it.second <= maxDistance }
         .sortedBy { it.second }
         .take(limit)

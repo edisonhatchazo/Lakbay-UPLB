@@ -72,7 +72,7 @@ fun RoomEntryScreen(
     val coroutineScope = rememberCoroutineScope()
     val buildingUiState = viewModel.buildingUiState.collectAsState()
     val classroomUiState = viewModel.classroomUiState
-    var mapType by remember { mutableStateOf(OSMCustomMapType.STREET) }
+    val mapType by remember { mutableStateOf(OSMCustomMapType.OSM_3D) }
     Scaffold(
         topBar = {
             EntryScreenTopAppBar(
@@ -209,7 +209,7 @@ fun ClassroomInputForm(
         )
         OutlinedTextField(
             value = classroomDetails.college,
-            label = {Text(college)},
+            label = { Text("College") },
             onValueChange = {},
             modifier = Modifier.fillMaxWidth(),
             enabled = false,
@@ -258,7 +258,9 @@ fun ClassroomInputForm(
         }
 
         Box(
-            modifier = Modifier.height(300.dp).fillMaxWidth()
+            modifier = Modifier
+                .height(300.dp)
+                .fillMaxWidth()
         ) {
             AndroidView(
                 modifier = Modifier.fillMaxSize(),

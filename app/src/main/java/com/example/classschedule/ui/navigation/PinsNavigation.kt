@@ -21,7 +21,6 @@ import com.example.classschedule.ui.map.GuideMapScreen
 @Composable
 fun PinsNavHost(
     navController: NavHostController,
-    mainNavController: NavHostController,
     modifier: Modifier = Modifier,
     openDrawer: () -> Unit,
 ) {
@@ -53,7 +52,6 @@ fun PinsNavHost(
             PinsDetailsScreen(
                 navigateToEditPin = {navController.navigate("${PinsEditDestination.route}/${it}")},
                 navigateBack = { navController.navigateUp() },
-                mainNavController = mainNavController,
                 navigateToMap = {navController.navigate("${GuideMapDestination.route}/${it}")})
 
         }

@@ -145,9 +145,7 @@ fun OSMMap(
                     mapLibreMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraLocation, 18.0))
 
                     initialLocation?.let {
-                        val bearing = destinationLocation?.let { dest ->
-                            calculateBearing(it, dest)
-                        } ?: 0f
+                        val bearing = calculateBearing(it, destinationLocation) ?: 0f
                         mapLibreMap.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 18.0))
                         mapLibreMap.animateCamera(CameraUpdateFactory.bearingTo(bearing.toDouble()))
                     }

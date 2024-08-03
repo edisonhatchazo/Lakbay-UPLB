@@ -58,7 +58,6 @@ fun GuideMapScreen(
     var selectedRouteType by remember { mutableStateOf("foot") }
 
     var styleUrl by remember { mutableStateOf(OSMCustomMapType.OSM_3D) }
-    var isDoubleTransit = routeViewModel.forestryRouteDoubleRideEnabled.collectAsState().value
 
     // Check network and location status
     val isOnline = isOnline(context)

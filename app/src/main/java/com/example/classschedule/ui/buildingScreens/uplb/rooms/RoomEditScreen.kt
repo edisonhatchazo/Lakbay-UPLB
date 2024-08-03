@@ -13,7 +13,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
@@ -41,7 +40,7 @@ fun RoomEditScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val classroomUiState = viewModel.classroomUiState
-    var mapType by remember { mutableStateOf(OSMCustomMapType.STREET) }
+    val mapType by remember { mutableStateOf(OSMCustomMapType.OSM_3D) }
     Scaffold(
         topBar = {
             EntryScreenTopAppBar(

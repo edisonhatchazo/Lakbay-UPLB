@@ -69,7 +69,6 @@ fun BuildingDetailsScreen (
     viewModel: BuildingDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navigateToMap: (Int) -> Unit,
 ){
-    var mapType by remember { mutableStateOf(OSMCustomMapType.STREET) }
     val roomUiState by viewModel.buildingRoomUiState.collectAsState()
     val room = roomUiState.roomList
     val uiState = viewModel.uiState.collectAsState()
@@ -99,7 +98,6 @@ fun BuildingDetailsScreen (
         }, modifier = modifier
     ){innerPadding ->
         BuildingDetailsBody(
-            mapType = mapType,
             navigateToRoomDetails = navigateToRoomDetails,
             buildingDetailsUiState = uiState.value,
             navigateToMap = navigateToMap,
@@ -125,7 +123,6 @@ fun BuildingDetailsScreen (
 
 @Composable
 private fun BuildingDetailsBody(
-    mapType: OSMCustomMapType,
     viewModel: BuildingDetailsViewModel,
     navigateToMap: (Int) -> Unit,
     navigateToRoomDetails: (Int) -> Unit,
@@ -146,7 +143,6 @@ private fun BuildingDetailsBody(
         var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
         if(building.college == "Landmark" || building.college == "Dormitory" || building.college == "UP unit"){
             LocationDetail(
-                mapType = mapType,
                 building = building,
                 viewModel = viewModel,
                 fontColor = fontColor,
@@ -224,7 +220,6 @@ fun LocationDetail(
     onDelete: () -> Unit,
     backgroundColor: Color,
     navigateToMap: (Int) -> Unit,
-    mapType: OSMCustomMapType
 ){
     val coroutineScope = rememberCoroutineScope()
     var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }

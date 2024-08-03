@@ -1,10 +1,14 @@
 package com.example.classschedule.algorithm.transit
 
-import android.util.Log
 import com.example.classschedule.algorithm.osrms.OSRMService
 import com.example.classschedule.algorithm.osrms.RouteResponse
 import kotlinx.coroutines.coroutineScope
 import org.maplibre.android.geometry.LatLng
+import kotlin.math.asin
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 data class RouteWithLineString(
     val routeResponse: RouteResponse,
@@ -33,12 +37,10 @@ suspend fun calculateDoubleTransitRoute(
     val nearestLibraryBusStop = nearestLibraryBusStops.first()
     val nearestUPGateBusStop = nearestUPGateBusStops.first()
 
+    //Waiting Time Penalties
     val libraryWaitingTime = 120.0
     val upGateWaitingTime = 60.0
 
-
-
-    Log.d("Time Duration","Path A")
     // Calculate paths A and B
     var pathA = calculateSingleTransitRoute(
         startLat, startLon,
@@ -46,30 +48,30 @@ suspend fun calculateDoubleTransitRoute(
         busStopsKaliwa, busStopsKanan, busStopsForestry,
         osrmFootService, osrmCarService, busRoutes, minimumWalkingDistance
     )
-    Log.d("Time Duration","Path B")
+
     var pathB = calculateSingleTransitRoute(
         startLat, startLon,
         nearestUPGateBusStop.lat, nearestUPGateBusStop.lon,
         busStopsKaliwa, busStopsKanan, busStopsForestry,
         osrmFootService, osrmCarService, busRoutes, minimumWalkingDistance
     )
-    Log.d("Time Duration","Path C")
+
     // Calculate paths C and D
-    var pathC = calculateSingleTransitRoute(
+    val pathC = calculateSingleTransitRoute(
         libraryPoint.latitude, libraryPoint.longitude,
         endLat, endLon,
         busStopsKaliwa, busStopsKanan, busStopsForestry,
         osrmFootService, osrmCarService, busRoutes, minimumWalkingDistance
     )
 
-    Log.d("Time Duration","Path D")
-    var pathD = calculateSingleTransitRoute(
+
+    val pathD = calculateSingleTransitRoute(
         upGatePoint.latitude, upGatePoint.longitude,
         endLat, endLon,
         busStopsKaliwa, busStopsKanan, busStopsForestry,
         osrmFootService, osrmCarService, busRoutes, minimumWalkingDistance
     )
-    Log.d("Time Duration", "Path E")
+
     val pathE = calculateSingleTransitRoute(
         startLat, startLon,
         endLat, endLon,
@@ -184,4 +186,14 @@ suspend fun calculateSingleTransitRoute(
     }
 
     optimalRoute
+}
+
+fun haversine(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+    val r = 6372.8 // Earth radius in kilometers
+    val dLat = Math.toRadians(lat2 - lat1)
+    val dLon = Math.toRadians(lon2 - lon1)
+    val a = sin(dLat / 2).pow(2.0) + sin(dLon / 2).pow(2.0) * cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2))
+    val c = 2 * asin(sqrt(a))
+    val distance = r * c
+    return distance
 }

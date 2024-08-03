@@ -144,8 +144,7 @@ object AppViewModelProvider {
 
         initializer{
             BuildingHomeViewModel(
-                classScheduleApplication().container.buildingRepository,
-                classScheduleApplication().container.colorSchemesRepository,
+                classScheduleApplication().container.buildingRepository
                 )
         }
 

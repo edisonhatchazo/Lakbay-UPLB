@@ -163,38 +163,3 @@ private fun ClassDetails(
         }
     }
 }
-@Preview
-@Composable
-fun FontPreview() {
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text(
-            text = "Default\nABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n0123456789\n!@#$%^&*()",
-            fontSize = 18.sp,
-            fontFamily = FontFamily.Default,
-            modifier = Modifier.padding(bottom = 16.dp),
-            color = Color.White
-        )
-        Text(
-            text = "Monospace\nABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n0123456789\n!@#$%^&*()",
-            fontSize = 18.sp,
-            fontFamily = FontFamily.Monospace,
-            modifier = Modifier.padding(bottom = 16.dp),
-            color = Color.White
-        )
-        Text(
-            text = "Serif\nABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n0123456789\n!@#$%^&*()",
-            fontSize = 18.sp,
-            fontFamily = FontFamily.Serif,
-            modifier = Modifier.padding(bottom = 16.dp),
-            color = Color.White
-        )
-        Text(
-            text = "SansSerif\nABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n0123456789\n!@#$%^&*()",
-            fontSize = 18.sp,
-            fontFamily = FontFamily.SansSerif,
-            modifier = Modifier.padding(bottom = 16.dp),
-            color = Color.White
-
-        )
-    }
-}

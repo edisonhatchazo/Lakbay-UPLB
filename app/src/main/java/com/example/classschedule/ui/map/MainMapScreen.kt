@@ -26,7 +26,6 @@ import com.example.classschedule.ui.screen.MapScreenTopAppBar
 import com.example.classschedule.ui.settings.global.RouteSettingsViewModel
 import org.maplibre.android.geometry.LatLng
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainMapScreen(
     modifier: Modifier = Modifier,
@@ -42,7 +41,7 @@ fun MainMapScreen(
     var selectedRouteType by remember { mutableStateOf("foot") }
     var isCalculatingRoute = viewModel.isCalculatingRoute
     var styleUrl by remember { mutableStateOf(OSMCustomMapType.OSM_3D.styleUrl) }
-    var isDoubleTransit = routeViewModel.forestryRouteDoubleRideEnabled.collectAsState().value
+    val isDoubleTransit = routeViewModel.forestryRouteDoubleRideEnabled.collectAsState().value
 
     Scaffold(
         modifier = modifier,

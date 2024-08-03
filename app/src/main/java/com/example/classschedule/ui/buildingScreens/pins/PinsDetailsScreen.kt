@@ -2,14 +2,12 @@ package com.example.classschedule.ui.buildingScreens.pins
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -30,7 +28,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -40,13 +37,9 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.example.classschedule.R
 import com.example.classschedule.data.Pins
-import com.example.classschedule.ui.map.OSMCustomMapType
-import com.example.classschedule.ui.map.OSMDetailsMapping
 import com.example.classschedule.ui.navigation.AppViewModelProvider
 import com.example.classschedule.ui.navigation.NavigationDestination
 import com.example.classschedule.ui.screen.CoordinateEntryScreenTopAppBar
@@ -65,12 +58,10 @@ fun PinsDetailsScreen(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     navigateToMap: (Int) -> Unit,
-    mainNavController: NavHostController,
     viewModel: PinsDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
-    var mapType by remember { mutableStateOf(OSMCustomMapType.STREET) }
 
     Scaffold(
         topBar = {
@@ -104,8 +95,6 @@ fun PinsDetailsScreen(
             },
             navigateToMap = navigateToMap,
             viewModel = viewModel,
-            mapType = mapType,
-            navController = mainNavController,
             modifier = Modifier
                 .padding(
                     start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
@@ -123,8 +112,6 @@ private fun PinsDetailsBody(
     onDelete: () -> Unit,
     navigateToMap: (Int) -> Unit,
     viewModel: PinsDetailsViewModel,
-    navController: NavHostController,
-    mapType: OSMCustomMapType,
     modifier: Modifier = Modifier
 ){
     val coroutineScope = rememberCoroutineScope()
@@ -139,7 +126,6 @@ private fun PinsDetailsBody(
         PinDetails(
             pin = pin,
             modifier = Modifier.fillMaxWidth(),
-            mapType = mapType,
             viewModel = viewModel,
         )
         Button(
@@ -177,7 +163,6 @@ private fun PinsDetailsBody(
 fun PinDetails(
     pin: Pins,
     modifier: Modifier = Modifier,
-    mapType: OSMCustomMapType,
     viewModel: PinsDetailsViewModel
 ) {
 
@@ -220,18 +205,6 @@ fun PinDetails(
             )
 
         }
-    }
-    Box(
-        modifier = Modifier
-            .height(300.dp)
-            .fillMaxWidth()
-    ) {
-        OSMDetailsMapping(
-            title = pin.title,
-            latitude = pin.latitude,
-            longitude = pin.longitude,
-            styleUrl = mapType.styleUrl
-        )
     }
 }
 @Composable
