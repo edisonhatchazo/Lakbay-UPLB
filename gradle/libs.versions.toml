@@ -1,7 +1,7 @@
 [versions]
 accompanistPermissions = "0.26.5-rc"
-activityKtx = "1.9.0"
-agp = "8.4.1"
+activityKtx = "1.9.2"
+agp = "8.4.2"
 androidPluginAnnotationV9 = "3.0.0"
 androidSdkVersion = "11.0.1"
 constraintlayoutCompose = "1.0.1"
@@ -15,6 +15,8 @@ espressoCore = "3.5.1"
 lifecycleRuntimeKtx = "2.8.1"
 activityCompose = "1.9.0"
 composeBom = "2023.08.00"
+nanohttpd = "2.3.1"
+osmdroidAndroid = "6.1.20"
 retrofit = "2.9.0"
 roomKtx = "2.6.1"
 roomRuntime = "2.6.1"
@@ -25,6 +27,8 @@ runtimeLivedata = "1.6.7"
 material = "1.12.0"
 ui = "1.6.8"
 protoliteWellKnownTypes = "18.0.0"
+playServicesPhenotype = "17.0.0"
+material3Android = "1.3.0"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
@@ -51,8 +55,9 @@ androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 
+nanohttpd = { module = "org.nanohttpd:nanohttpd", version.ref = "nanohttpd" }
+osmdroid-android = { module = "org.osmdroid:osmdroid-android", version.ref = "osmdroidAndroid" }
 retrofit2-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
@@ -64,6 +69,8 @@ material = { group = "com.google.android.material", name = "material", version.r
 
 ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 protolite-well-known-types = { group = "com.google.firebase", name = "protolite-well-known-types", version.ref = "protoliteWellKnownTypes" }
+play-services-phenotype = { group = "com.google.android.gms", name = "play-services-phenotype", version.ref = "playServicesPhenotype" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 
 
 [plugins]

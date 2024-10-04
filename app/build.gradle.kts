@@ -6,34 +6,24 @@ plugins {
 
 
 android {
-    namespace = "com.example.classschedule"
+    namespace = "com.edison.lakbayuplb"
     compileSdk = 34
 
-
-
     defaultConfig {
-        applicationId = "com.example.classschedule"
+        applicationId = "com.edison.lakbayuplb"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
-        val drivingApiBaseUrl = project.findProperty("DRIVING_API_BASE_URL") ?: ""
-        val walkingApiBaseUrl = project.findProperty("WALKING_API_BASE_URL") ?: ""
-        val cyclingApiBaseUrl = project.findProperty("CYCLING_API_BASE_URL") ?: ""
-        val mapApiBaseUrl = project.findProperty("MAP_API_BASE_URL") ?: ""
-        buildConfigField ("String", "DRIVING_API_BASE_URL", "\"${drivingApiBaseUrl}\"")
-        buildConfigField ("String", "WALKING_API_BASE_URL", "\"${walkingApiBaseUrl}\"")
-        buildConfigField ("String", "CYCLING_API_BASE_URL", "\"${cyclingApiBaseUrl}\"")
-        buildConfigField ("String", "MAP_API_BASE_URL", "\"${mapApiBaseUrl}\"")
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
+        vectorDrawables.useSupportLibrary = true
 
-
-        }
     }
+
+
+
+
 
     buildTypes {
         release {
@@ -76,10 +66,9 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
-    implementation("com.google.android.gms:play-services-location:18.1.0")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
     implementation(libs.places)
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.runtime.livedata)
@@ -87,6 +76,8 @@ dependencies {
     implementation(libs.ui)
     implementation(libs.accompanist.permissions)
     implementation(libs.protolite.well.known.types)
+    implementation(libs.play.services.phenotype)
+    implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -100,6 +91,9 @@ dependencies {
     implementation(libs.android.plugin.annotation.v9)
     implementation(libs.android.sdk.v1101)
 
+    //OSMDroid
+    implementation(libs.osmdroid.android)
+
     //Retrofit
     implementation(libs.retrofit2.retrofit)
     implementation(libs.converter.gson)
@@ -112,6 +106,8 @@ dependencies {
     ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
     implementation(libs.room.ktx)
 
+    //NanoHTTPD
+    implementation(libs.nanohttpd)
 
     //Color Picker
     implementation("com.github.skydoves:colorpicker-compose:1.1.2")

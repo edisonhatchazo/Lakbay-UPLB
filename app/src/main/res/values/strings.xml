@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">Class Schedule</string>
+    <string name="app_name">Lakbay UPLB</string>
     <string name="exam_schedule">Exam Schedule</string>
     <string name="classes">Classes</string>
     <string name="exams">Exams</string>
@@ -10,6 +10,7 @@
     <string name="date_select">Select Date</string>
     <string name="location">Location</string>
     <string name="teacher">Teacher</string>
+    <string name="section">Section</string>
     <string name="college">College</string>
     <string name="college_unit">College/UP Unit</string>
     <string name="buildings_title">Buildings</string>
@@ -43,6 +44,7 @@
     <string name="car_speed">Average Car Speed</string>
     <string name="jeepney_speed">Average Jeep Speed</string>
     <string name="delete">Delete</string>
+    <string name="class_schedule">Class Schedule</string>
     <string name="delete_question">Are you sure you want to delete?</string>
     <string name="no_class_description">Oops!\nNo Scheduled Classes.\nTap + to add.</string>
     <string name="no_exams_description">No Scheduled Exams.\nTap + to add.</string>
@@ -51,6 +53,7 @@
     <string name="edit_exam_title">Edit Exam Schedule</string>
     <string name="edit_pin_title">Edit Coordinate Pin</string>
     <string name="choose_start_location">Choose Start Location</string>
+    <string name="current_location">Current Location</string>
     <string name="choose_destination_location">Choose Destination Location</string>
     <string name="start">Start</string>
     <string name="color_entry">Add Color Scheme</string>
