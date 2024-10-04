@@ -58,7 +58,7 @@ fun OSMMapView(
     var currentDestinationLocation by remember { mutableStateOf(destinationLocation) }
 
     // Update the state when locations change
-    LaunchedEffect(initialLocation, destinationLocation) {
+    LaunchedEffect(initialLocation, destinationLocation,routeResponse,routeType) {
         currentInitialLocation = initialLocation
         currentDestinationLocation = destinationLocation
         osmMainMap.updateMarkers(currentInitialLocation, currentDestinationLocation)
