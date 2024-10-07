@@ -194,7 +194,7 @@ fun ClassScheduleDetails(
             )
         ) {
             ClassDetailsRow(
-                labelResID = R.string.classes,
+                labelResID = R.string.course_number,
                 classScheduleDetail = classSchedule.title,
                 modifier = Modifier.padding(
                     horizontal = dimensionResource(id = R.dimen.padding_medium)

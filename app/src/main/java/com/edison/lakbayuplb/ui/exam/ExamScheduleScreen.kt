@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
+import com.edison.lakbayuplb.algorithm.generateScheduleSlots
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.ExamScheduleScreenTopAppBar
@@ -90,7 +91,6 @@ fun ExamScheduleScreen(
         )
     }
 }
-
 @Composable
 fun ExamScheduleScreenBody(
     navigateToScheduleUpdate: (Int) -> Unit,
@@ -101,6 +101,20 @@ fun ExamScheduleScreenBody(
     val examHomeUiState by examScheduleViewModel.examHomeUiState.collectAsState()
     val startOfWeek = selectedDate.with(DayOfWeek.MONDAY)
     val colorSchemes by examScheduleViewModel.colorSchemes.collectAsState()
+
+    val examSlotsMap = HashMap<String, MutableList<String>>()
+
+    examHomeUiState.examScheduleList.forEach { examSchedule ->
+        val key = "${examSchedule.title} ${examSchedule.section}"
+        val slots = generateScheduleSlots(//Generates the Information that will be shown in the schedule
+            examSchedule.title,
+            examSchedule.section,
+            examSchedule.time,
+            examSchedule.timeEnd,
+            examSchedule.day
+        )
+        examSlotsMap[key] = slots
+    }
 
     Column(
         modifier = Modifier
@@ -136,8 +150,8 @@ fun ExamScheduleScreenBody(
             }
         }
 
-        // Time rows in 30-minute intervals from 7 AM to 9 PM
-        for (hour in 7..20) {
+        // First loop: 7:00 AM to 12:00 PM
+        for (hour in 7..12) {  // This loop handles the morning hours from 7:00 AM to 12:00 PM
             for (half in 0..1) {
                 val timeLabel = if (half == 0) "$hour:00" else "$hour:30"
                 Row(
@@ -180,28 +194,98 @@ fun ExamScheduleScreenBody(
                                     examForThisTime?.let { navigateToScheduleUpdate(it.id) }
                                 },
                             contentAlignment = Alignment.Center // Centering the content
-
                         ) {
-                            if (examForThisTime != null && examForThisTime.time == timeSlotStart) {
-                                Text(
-                                    text = examForThisTime.title,
-                                    color = fontColor,
-                                    fontSize = 10.sp,
-                                    textAlign = TextAlign.Center,
-                                )
+
+                            if (examForThisTime != null) {
+                                val slots = examSlotsMap["${examForThisTime.title} ${examForThisTime.section}"]
+                                if (!slots.isNullOrEmpty()) {
+                                    val currentText = slots[0]
+                                    slots.removeAt(0)
+                                    Text(
+                                        text = currentText,
+                                        color = fontColor,
+                                        fontSize = 10.sp,
+                                        textAlign = TextAlign.Center,
+                                    )
+                                }
                             }
                         }
                     }
                 }
             }
         }
+
+        // Second loop: 1:00 PM to 9:00 PM
+        for (hour in 1..8) {  // This loop handles the afternoon hours from 1:00 PM to 9:00 PM
+            for (half in 0..1) {
+                val timeLabel = if (half == 0) "$hour:00" else "$hour:30"
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = timeLabel,
+                        modifier = Modifier
+                            .width(50.dp)
+                            .padding(end = 4.dp)
+                            .offset(y = (-8).dp),
+                        textAlign = TextAlign.Center,
+                        fontSize = 12.sp
+                    )
+                    for (dayOffset in 0..5) {
+                        val currentDay = startOfWeek.plusDays(dayOffset.toLong())
+                        val timeSlotStart = LocalTime.of(hour + 12, half * 30)  // Shift to PM hours
+                        val timeSlotEnd = timeSlotStart.plusMinutes(30)
+                        val examForThisTime = examHomeUiState.examScheduleList.firstOrNull {
+                            it.day == currentDay.dayOfWeek.name.take(3) && // Check if the day matches
+                                    LocalDate.parse(it.date, DateTimeFormatter.ofPattern("MMM dd, yyyy")) == currentDay && // Check if the date matches
+                                    (it.time.isBefore(timeSlotEnd) && it.timeEnd.isAfter(timeSlotStart))
+                        }
+                        val borderColor = examForThisTime?.let { colorSchemes[it.colorId]?.backgroundColor }
+                            ?: MaterialTheme.colorScheme.onSurface
+                        val backgroundColor = examForThisTime?.let { colorSchemes[it.colorId]?.backgroundColor }
+                            ?: MaterialTheme.colorScheme.background
+                        val fontColor = examForThisTime?.let { colorSchemes[it.colorId]?.fontColor }
+                            ?: MaterialTheme.colorScheme.onSurface
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(19.dp)
+                                .border(0.5.dp, borderColor, RectangleShape) // Set border color dynamically
+                                .background(color = backgroundColor)
+                                .padding(0.5.dp)
+                                .clickable {
+                                    examForThisTime?.let { navigateToScheduleUpdate(it.id) }
+                                },
+                            contentAlignment = Alignment.Center // Centering the content
+                        ) {
+                            if (examForThisTime != null) {
+                                val slots = examSlotsMap["${examForThisTime.title} ${examForThisTime.section}"]
+                                if (!slots.isNullOrEmpty()) {
+                                    val currentText = slots[0]
+                                    slots.removeAt(0)
+                                    Text(
+                                        text = currentText,
+                                        color = fontColor,
+                                        fontSize = 10.sp,
+                                        textAlign = TextAlign.Center,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(40.dp)  // Ensure the row is tall enough for the text
         ) {
             Text(
-                text = "21:00",
+                text = "9:00",
                 modifier = Modifier
                     .width(50.dp)
                     .padding(end = 4.dp)

@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
+import com.edison.lakbayuplb.algorithm.generateScheduleSlots
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.ScheduleScreenTopAppBar
@@ -79,7 +80,6 @@ fun ClassScheduleHomeScreen(
         )
     }
 }
-
 @Composable
 fun ScheduleScreenBody(
     navigateToScheduleUpdate: (Int) -> Unit,
@@ -88,6 +88,21 @@ fun ScheduleScreenBody(
 ) {
     val classHomeUiState by scheduleViewModel.classHomeUiState.collectAsState()
     val colorSchemes by scheduleViewModel.colorSchemes.collectAsState()
+
+    val classSlotsMap = HashMap<String, MutableList<String>>()
+
+    classHomeUiState.classScheduleList.forEach { classSchedule ->
+        val key = "${classSchedule.title} ${classSchedule.section}"
+        val slots = generateScheduleSlots(//Generates the Information that will be shown in the schedule
+            classSchedule.title,
+            classSchedule.section,
+            classSchedule.time,
+            classSchedule.timeEnd,
+            classSchedule.days
+        )
+        classSlotsMap[key] = slots
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -111,8 +126,8 @@ fun ScheduleScreenBody(
             }
         }
 
-        // Time rows in 30-minute intervals from 7 AM to 7 PM
-        for (hour in 7..18) {
+        // First loop: 7:00 AM to 12:00 PM
+        for (hour in 7..12) {  // This loop handles the morning hours from 7:00 AM to 12:00 PM
             for (half in 0..1) {
                 val timeLabel = if (half == 0) "$hour:00" else "$hour:30"
                 Row(
@@ -146,35 +161,110 @@ fun ScheduleScreenBody(
                             modifier = Modifier
                                 .weight(1f)
                                 .height(20.dp)
-                                .border(0.5.dp, borderColor, RectangleShape) // Set border color dynamically
+                                .border(
+                                    0.5.dp,
+                                    borderColor,
+                                    RectangleShape
+                                ) // Set border color dynamically
                                 .background(color = backgroundColor)
                                 .padding(0.5.dp)
                                 .clickable {
                                     classForThisTime?.let { navigateToScheduleUpdate(it.id) }
                                 },
                             contentAlignment = Alignment.Center // Centering the content
-
                         ) {
-                            if (classForThisTime != null && classForThisTime.time == timeSlotStart) {
-                                Text(
-                                    text = classForThisTime.title,
-                                    color = fontColor,
-                                    fontSize = 10.sp,
-                                    textAlign = TextAlign.Center,
-                                )
+                            if (classForThisTime != null) {
+                                val slots = classSlotsMap["${classForThisTime.title} ${classForThisTime.section}"]
+                                if (!slots.isNullOrEmpty()) {
+                                    val currentText = slots[0]
+                                    slots.removeAt(0)
+                                    Text(
+                                        text = currentText,
+                                        color = fontColor,
+                                        fontSize = 10.sp,
+                                        textAlign = TextAlign.Center,
+                                    )
+                                }
                             }
                         }
                     }
                 }
             }
         }
+
+        // Second loop: 1:00 PM to 7:00 PM
+        for (hour in 1..6) {  // This loop handles the afternoon hours from 1:00 PM to 7:00 PM
+            for (half in 0..1) {
+                val timeLabel = if (half == 0) "$hour:00" else "$hour:30"
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = timeLabel,
+                        modifier = Modifier
+                            .width(50.dp)
+                            .padding(end = 4.dp)
+                            .offset(y = (-8).dp),
+                        textAlign = TextAlign.Center,
+                        fontSize = 12.sp
+                    )
+                    for (day in listOf("M", "T", "W", "TH", "F", "S")) {
+                        val timeSlotStart = LocalTime.of(hour + 12, half * 30)  // Add 12 to shift the time to PM hours
+                        val timeSlotEnd = timeSlotStart.plusMinutes(30)
+                        val classForThisTime = classHomeUiState.classScheduleList.firstOrNull {
+                            it.days.split(", ").contains(day) && // Check if the day is in the days list
+                                    (it.time.isBefore(timeSlotEnd) && it.timeEnd.isAfter(timeSlotStart))
+                        }
+                        val borderColor = classForThisTime?.let { colorSchemes[it.colorId]?.backgroundColor }
+                            ?: MaterialTheme.colorScheme.onSurface
+                        val backgroundColor = classForThisTime?.let { colorSchemes[it.colorId]?.backgroundColor }
+                            ?: MaterialTheme.colorScheme.background
+                        val fontColor = classForThisTime?.let { colorSchemes[it.colorId]?.fontColor }
+                            ?: MaterialTheme.colorScheme.onSurface
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(20.dp)
+                                .border(
+                                    0.5.dp,
+                                    borderColor,
+                                    RectangleShape
+                                ) // Set border color dynamically
+                                .background(color = backgroundColor)
+                                .padding(0.5.dp)
+                                .clickable {
+                                    classForThisTime?.let { navigateToScheduleUpdate(it.id) }
+                                },
+                            contentAlignment = Alignment.Center // Centering the content
+                        ) {
+                            if (classForThisTime != null) {
+                                val slots = classSlotsMap["${classForThisTime.title} ${classForThisTime.section}"]
+                                if (!slots.isNullOrEmpty()) {
+                                    val currentText = slots[0]
+                                    slots.removeAt(0)
+                                    Text(
+                                        text = currentText,
+                                        color = fontColor,
+                                        fontSize = 10.sp,
+                                        textAlign = TextAlign.Center,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(40.dp)  // Ensure the row is tall enough for the text
         ) {
             Text(
-                text = "19:00",
+                text = "7:00",
                 modifier = Modifier
                     .width(50.dp)
                     .padding(end = 4.dp)

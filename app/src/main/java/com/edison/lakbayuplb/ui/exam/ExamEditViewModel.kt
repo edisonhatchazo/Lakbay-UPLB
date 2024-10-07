@@ -6,9 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.edison.lakbayuplb.data.colorschemes.ColorSchemesRepository
 import com.edison.lakbayuplb.data.classes.ExamSchedule
 import com.edison.lakbayuplb.data.classes.ExamScheduleRepository
+import com.edison.lakbayuplb.data.colorschemes.ColorSchemesRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -22,7 +22,7 @@ class ExamEditViewModel(
     private val examScheduleRepository: ExamScheduleRepository,
     private val colorSchemesRepository: ColorSchemesRepository
 ) : ViewModel() {
-    private val scheduleId: Int = checkNotNull(savedStateHandle[ExamEditDestination.SCHEDULEIDARG])
+    val scheduleId: Int = checkNotNull(savedStateHandle[ExamEditDestination.SCHEDULEIDARG])
     val existingSchedules: StateFlow<List<ExamSchedule>> = examScheduleRepository.getAllExamsSchedules()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     var examScheduleUiState by mutableStateOf(
@@ -30,7 +30,7 @@ class ExamEditViewModel(
     )
         private set
     private var previousColor = 1
-    init {
+    fun loadExamSchedule() {
         viewModelScope.launch {
             val schedule = examScheduleRepository.getExamSchedule(scheduleId)
                 .filterNotNull()

@@ -51,6 +51,7 @@ import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.EntryScreenTopAppBar
 import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
+import com.edison.lakbayuplb.ui.theme.ColorPalette.getColorEntry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -164,7 +165,7 @@ fun ExamInputForm(
     var showRoomSuggestions by remember { mutableStateOf(false) }
     val roomSuggestions by viewModel.roomSuggestions.collectAsState()
     val isLocationValid = remember { mutableStateOf(false) }
-    val colorEntry = scheduleViewModel.colorSchemesUiState
+    val colorEntry = getColorEntry(examDetails.colorId)
     val coroutineScope = rememberCoroutineScope()
     Column(
         modifier = modifier,
@@ -173,7 +174,7 @@ fun ExamInputForm(
         OutlinedTextField(
             value = examDetails.title,
             onValueChange = { onValueChange(examDetails.copy(title = it)) },
-            label = { Text(stringResource(R.string.class_name_req)) },
+            label = { Text("Course Number*") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true
@@ -181,7 +182,7 @@ fun ExamInputForm(
         OutlinedTextField(
             value = examDetails.section,
             onValueChange = { onValueChange(examDetails.copy(section = it)) },
-            label = { Text(stringResource(R.string.section)) },
+            label = { Text("Section*") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true
@@ -189,7 +190,7 @@ fun ExamInputForm(
         OutlinedTextField(
             value = examDetails.teacher,
             onValueChange = { onValueChange(examDetails.copy(teacher = it)) },
-            label = { Text(stringResource(R.string.teacher)) },
+            label = { Text("Teacher*") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true
@@ -203,7 +204,7 @@ fun ExamInputForm(
                         showRoomSuggestions = true
                         viewModel.updateSearchQuery(it)
                     },
-                    label = { Text(stringResource(R.string.location)) },
+                    label = { Text("Location*") },
                     modifier = Modifier.fillMaxWidth(),
                     enabled = enabled,
                     singleLine = true,
@@ -271,7 +272,7 @@ fun ExamInputForm(
             }
         }
 
-        Text(text = stringResource(R.string.time_start))
+        Text(text = "Start Time*")
         TimePickerWheel(
             initialTime = examDetails.time,
             onTimeChanged = { newTime ->
@@ -280,7 +281,7 @@ fun ExamInputForm(
             availableTimes = availableStartTimes,
             enabled = enabled
         )
-        Text(text = stringResource(R.string.time_end))
+        Text(text = "End Time*")
         TimePickerWheel(
             initialTime = examDetails.timeEnd,
             onTimeChanged = { newEndTime ->
@@ -295,9 +296,9 @@ fun ExamInputForm(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
-                .background(color = Color(colorEntry.colorSchemeDetails.backgroundColor))
+                .background(color = colorEntry.backgroundColor)
         ) {
-            Text("Select Color", color = Color(colorEntry.colorSchemeDetails.fontColor))
+            Text("Select Color*", color = colorEntry.fontColor)
         }
         if (enabled) {
             Text(

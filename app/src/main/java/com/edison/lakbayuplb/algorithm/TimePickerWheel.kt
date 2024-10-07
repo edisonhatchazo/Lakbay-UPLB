@@ -13,6 +13,10 @@ import androidx.compose.runtime.setValue
 import com.edison.lakbayuplb.data.classes.ClassSchedule
 import com.edison.lakbayuplb.data.classes.ExamSchedule
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+
+// Define the AM/PM formatter for display
+val amPmFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a")
 
 @Composable
 fun TimePickerWheel(
@@ -32,21 +36,21 @@ fun TimePickerWheel(
         },
         enabled = enabled
     )
-
 }
 
 @Composable
-fun <T> DropDownMenu(
-    items: List<T>,
-    selectedItem: T,
-    onItemSelected: (T) -> Unit,
+fun DropDownMenu(
+    items: List<LocalTime>,  // Specifically LocalTime for your case
+    selectedItem: LocalTime,
+    onItemSelected: (LocalTime) -> Unit,
     enabled: Boolean = true
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     Box {
         TextButton(onClick = { expanded = true }, enabled = enabled) {
-            Text(text = selectedItem.toString())
+            // Format the selected item for display (AM/PM format)
+            Text(text = selectedItem.format(amPmFormatter))
         }
         DropdownMenu(
             expanded = expanded,
@@ -54,9 +58,12 @@ fun <T> DropDownMenu(
         ) {
             items.forEach { item ->
                 DropdownMenuItem(
-                    text = { Text(text = item.toString()) },
+                    text = {
+                        // Display the LocalTime formatted in AM/PM
+                        Text(text = item.format(amPmFormatter))
+                    },
                     onClick = {
-                        onItemSelected(item)
+                        onItemSelected(item)  // Return the original LocalTime object when selected
                         expanded = false
                     },
                     enabled = enabled
@@ -76,7 +83,7 @@ fun calculateAvailableStartTimes(
         listOf(LocalTime.of(hour, 0), LocalTime.of(hour, 30))
     }.toMutableList()
 
-    allStartTimes.remove(LocalTime.of(18,30))
+    allStartTimes.remove(LocalTime.of(18, 30))
 
     // Filter to find occupied times, excluding the currently edited class schedule if provided
     val occupiedTimes = existingSchedules.filter { schedule ->
@@ -87,7 +94,6 @@ fun calculateAvailableStartTimes(
             .takeWhile { it.isBefore(schedule.timeEnd) }
             .toList()
     }
-
 
     // Filter out the occupied times and the 30-minute slots before any occupied times
     val availableStartTimes = allStartTimes.filterNot { time ->

@@ -157,7 +157,7 @@ private fun ExamDetails(
                 modifier = Modifier.fillMaxWidth()
             ){
                 Text(
-                    text = examSchedule.title,
+                    text = "${examSchedule.title} ${examSchedule.section}",
                     style = MaterialTheme.typography.titleLarge,
                     color = fontColor
                 )

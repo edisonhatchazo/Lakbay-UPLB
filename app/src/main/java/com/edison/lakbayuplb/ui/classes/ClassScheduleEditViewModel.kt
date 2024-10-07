@@ -24,7 +24,7 @@ class ClassScheduleEditViewModel(
     private val colorSchemesRepository: ColorSchemesRepository
 ) : ViewModel() {
 
-    private val classScheduleId: Int = checkNotNull(savedStateHandle[ClassScheduleEditDestination.CLASSSCHEDULEIDARG])
+    val classScheduleId: Int = checkNotNull(savedStateHandle[ClassScheduleEditDestination.CLASSSCHEDULEIDARG])
     private val _selectedDays = mutableStateOf<List<String>>(listOf())
     val selectedDays: State<List<String>> = _selectedDays
     val existingSchedules: StateFlow<List<ClassSchedule>> = classScheduleRepository.getAllClassSchedules()
@@ -35,8 +35,8 @@ class ClassScheduleEditViewModel(
     )
         private set
 
-    init {
-        viewModelScope.launch{
+    fun loadClassSchedule() {
+        viewModelScope.launch {
             val schedule = classScheduleRepository.getClassSchedule(classScheduleId)
                 .filterNotNull()
                 .first()

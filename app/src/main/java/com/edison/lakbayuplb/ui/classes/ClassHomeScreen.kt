@@ -159,7 +159,7 @@ private fun ClassDetails(
                 modifier = Modifier.fillMaxWidth()
             ){
                 Text(
-                    text = classSchedule.title,
+                    text = "${classSchedule.title} ${classSchedule.section}",
                     style = MaterialTheme.typography.titleLarge,
                     color = fontColor
                 )

@@ -97,9 +97,9 @@ data class ClassScheduleDetails(
     val teacher: String = "",
     val location: String = "",
     val days: List<String> = listOf(), // Changed from 'day' to 'days'
-    val time: LocalTime = LocalTime.of(0, 0),
-    val timeEnd: LocalTime = LocalTime.of(0, 0),
-    val colorId: Int = 0,
+    val time: LocalTime = LocalTime.of(7, 0),
+    val timeEnd: LocalTime = LocalTime.of(7, 0),
+    val colorId: Int = 1,
     val type: String = "",
     val roomId: Int = 0
 )

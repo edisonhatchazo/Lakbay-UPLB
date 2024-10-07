@@ -6,8 +6,9 @@
     <string name="home">Home</string>
     <string name="time_start">Start Time</string>
     <string name="time_end">End Time</string>
-    <string name="day_select">Select Days</string>
-    <string name="date_select">Select Date</string>
+    <string name="day_select">Select Days*</string>
+    <string name="date_select">Select Date*</string>
+    <string name="course_number">Course Number</string>
     <string name="location">Location</string>
     <string name="teacher">Teacher</string>
     <string name="section">Section</string>
