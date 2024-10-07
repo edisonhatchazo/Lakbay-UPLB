@@ -4,8 +4,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.edison.lakbayuplb.data.ColorSchemesRepository
-import com.edison.lakbayuplb.data.PinsRepository
+import com.edison.lakbayuplb.data.colorschemes.ColorSchemesRepository
+import com.edison.lakbayuplb.data.building.PinsRepository
 import com.edison.lakbayuplb.data.MapData
 import com.edison.lakbayuplb.data.MapDataRepository
 import com.edison.lakbayuplb.ui.theme.ColorEntry

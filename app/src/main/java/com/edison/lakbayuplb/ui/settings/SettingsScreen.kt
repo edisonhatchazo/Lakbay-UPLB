@@ -21,6 +21,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,9 +33,12 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
+import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.SettingsScreenTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import com.edison.lakbayuplb.ui.theme.ThemeMode
 
 object SettingsDestination: NavigationDestination {
@@ -49,14 +53,21 @@ fun SettingsScreen(
     navigateToCollegeColors: () -> Unit,
     navigateToRoutesColors: () -> Unit,
     navigateToRoutingSettings: () -> Unit,
+    navigateToTopAppBarColors: () -> Unit,
     openDrawer: () -> Unit,
     onThemeChange: (ThemeMode) -> Unit,
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
     Scaffold(
         topBar = {
             SettingsScreenTopAppBar(
                 title = stringResource(SettingsDestination.titleRes),
-                openDrawer = openDrawer
+                openDrawer = openDrawer,
+                topAppBarBackgroundColor = topAppBarBackgroundColor,
+                topAppBarForegroundColor = topAppBarForegroundColor
             )
         }
     ) { innerPadding ->
@@ -65,6 +76,7 @@ fun SettingsScreen(
             navigateToCollegeColors = navigateToCollegeColors,
             navigateToRoutesColors = navigateToRoutesColors,
             navigateToRoutingSettings = navigateToRoutingSettings,
+            navigateToTopAppBarColors = navigateToTopAppBarColors,
             onThemeChange = onThemeChange,
             modifier = modifier
                 .padding(
@@ -85,6 +97,7 @@ fun MainSettingsScreen(
     navigateToColorEntry: () -> Unit,
     navigateToCollegeColors: () -> Unit,
     navigateToRoutesColors: () -> Unit,
+    navigateToTopAppBarColors: () -> Unit,
     navigateToRoutingSettings: () -> Unit,
     modifier: Modifier,
 ) {
@@ -146,18 +159,23 @@ fun MainSettingsScreen(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
         // Color Schemes
         SettingCategory(
-            header = "Color Schemes",
+            header = stringResource(R.string.color_scheme),
             items = listOf(
                 SettingItem(
-                    title = "Color Schemes",
+                    title = stringResource(R.string.color_scheme),
                     onClick = navigateToColorEntry,
                     icon = Icons.Default.Edit
                 ),
                 SettingItem(
-                    title = "UPLB Colleges and Units",
+                    title = stringResource(R.string.uplb_college_units),
                     onClick = navigateToCollegeColors,
                     icon = Icons.Default.Edit
                 ),
+                SettingItem(
+                    title = stringResource(R.string.top_app_bar),
+                    onClick = navigateToTopAppBarColors,
+                    icon = Icons.Default.Edit
+                )
 //                SettingItem(
 //                    title = "Routes",
 //                    onClick = navigateToRoutesColors,

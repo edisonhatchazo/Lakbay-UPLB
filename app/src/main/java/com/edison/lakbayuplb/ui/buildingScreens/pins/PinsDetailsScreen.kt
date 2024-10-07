@@ -39,10 +39,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
-import com.edison.lakbayuplb.data.Pins
+import com.edison.lakbayuplb.data.building.Pins
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.CoordinateEntryScreenTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import com.edison.lakbayuplb.ui.theme.ColorEntry
 import kotlinx.coroutines.launch
 
@@ -58,8 +59,12 @@ fun PinsDetailsScreen(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     navigateToMap: (Int) -> Unit,
-    viewModel: PinsDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: PinsDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
     val uiState by viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -69,6 +74,8 @@ fun PinsDetailsScreen(
                 title = stringResource(PinsDetailsDestination.titleRes),
                 canNavigateBack = true,
                 navigateUp = navigateBack,
+                topAppBarBackgroundColor = topAppBarBackgroundColor,
+                topAppBarForegroundColor = topAppBarForegroundColor
             )
         },
         floatingActionButton = {

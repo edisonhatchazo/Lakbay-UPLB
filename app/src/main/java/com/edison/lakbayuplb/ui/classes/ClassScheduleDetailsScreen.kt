@@ -39,10 +39,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
-import com.edison.lakbayuplb.data.ClassSchedule
+import com.edison.lakbayuplb.data.classes.ClassSchedule
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.DetailsScreenTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import com.edison.lakbayuplb.ui.theme.ColorEntry
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
@@ -61,8 +62,12 @@ fun ClassScheduleDetailsScreen (
     navigateBack: () -> Unit,
     navigateToMap: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ClassScheduleDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
-){
+    viewModel: ClassScheduleDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
     val uiState = viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     Scaffold(
@@ -70,7 +75,9 @@ fun ClassScheduleDetailsScreen (
             DetailsScreenTopAppBar(
                 title = stringResource(ClassScheduleDetailsDestination.titleRes),
                 canNavigateBack = true,
-                navigateUp = navigateBack
+                navigateUp = navigateBack,
+                topAppBarBackgroundColor = topAppBarBackgroundColor,
+                topAppBarForegroundColor = topAppBarForegroundColor
             )
         }, floatingActionButton = {
             FloatingActionButton(

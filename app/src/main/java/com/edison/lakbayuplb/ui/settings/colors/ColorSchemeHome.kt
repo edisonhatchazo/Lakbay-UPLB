@@ -11,16 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,6 +26,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
+import com.edison.lakbayuplb.ui.screen.ColorScreenTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import com.edison.lakbayuplb.ui.theme.Typography
 
 object ColorHomeDestination: NavigationDestination {
@@ -47,15 +41,21 @@ fun ColorSchemeHome(
     navigateToColorDetails: (Int) -> Unit,
     navigateToColorEntry: () -> Unit,
     canNavigateBack: Boolean = true,
-    viewModel: ColorSchemeHomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
-){
+    viewModel: ColorSchemeHomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
     Scaffold(
         topBar = {
             ColorScreenTopAppBar(
                 title = stringResource(ColorHomeDestination.titleRes),
                 navigateToColorEntry = navigateToColorEntry,
                 canNavigateBack = canNavigateBack,
-                onNavigateUp = onNavigateUp
+                onNavigateUp = onNavigateUp,
+                topAppBarBackgroundColor = topAppBarBackgroundColor,
+                topAppBarForegroundColor = topAppBarForegroundColor
             )
         }
     ) { innerPadding ->
@@ -110,42 +110,4 @@ fun MainColorScreen(
             }
         }
     }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ColorScreenTopAppBar(
-    title: String,
-    navigateToColorEntry: () -> Unit,
-    canNavigateBack: Boolean,
-    onNavigateUp: () -> Unit = {},
-){
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
-        title = { Text( title,color = Color.White) },
-        scrollBehavior = scrollBehavior,
-        navigationIcon = {
-            if (canNavigateBack) {
-                IconButton(onClick = onNavigateUp) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.back_button),
-                        tint = Color.White
-                    )
-                }
-            }
-        },
-        actions = {
-
-            IconButton(onClick = navigateToColorEntry) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(R.string.color_entry),
-                    tint = Color.Yellow
-                )
-            }
-        }
-    )
 }

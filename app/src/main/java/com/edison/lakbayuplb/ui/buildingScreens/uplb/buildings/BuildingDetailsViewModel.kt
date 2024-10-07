@@ -3,8 +3,8 @@ package com.edison.lakbayuplb.ui.buildingScreens.uplb.buildings
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.edison.lakbayuplb.data.Classroom
-import com.edison.lakbayuplb.data.BuildingRepository
+import com.edison.lakbayuplb.data.building.Classroom
+import com.edison.lakbayuplb.data.building.BuildingRepository
 import com.edison.lakbayuplb.data.MapData
 import com.edison.lakbayuplb.data.MapDataRepository
 import com.edison.lakbayuplb.ui.buildingScreens.uplb.BuildingDetails

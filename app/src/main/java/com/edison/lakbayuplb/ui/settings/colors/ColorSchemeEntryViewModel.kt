@@ -4,8 +4,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.edison.lakbayuplb.data.ColorSchemes
-import com.edison.lakbayuplb.data.ColorSchemesRepository
+import com.edison.lakbayuplb.data.colorschemes.ColorSchemes
+import com.edison.lakbayuplb.data.colorschemes.ColorSchemesRepository
 
 class ColorSchemeEntryViewModel(private val colorSchemesRepository: ColorSchemesRepository): ViewModel() {
     var entryColorSchemeUiState by mutableStateOf(ColorSchemesUiState())

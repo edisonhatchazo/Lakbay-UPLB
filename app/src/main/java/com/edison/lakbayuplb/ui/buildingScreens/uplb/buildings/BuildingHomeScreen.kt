@@ -32,10 +32,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
-import com.edison.lakbayuplb.data.Building
+import com.edison.lakbayuplb.data.building.Building
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.BuildingsScreenTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import com.edison.lakbayuplb.ui.theme.CollegeColorPalette
 
 object BuildingHomeDestination: NavigationDestination {
@@ -51,7 +52,11 @@ fun BuildingHomeScreen(
     navigateToBuildingEntry: () -> Unit,
     navigateToBuildingDetails: (Int) -> Unit,
     viewModel: BuildingHomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
     val homeUiState by viewModel.buildingHomeUiState.collectAsState()
     val categories = listOf(
         "CAS" to "College of Arts and Sciences",
@@ -81,7 +86,9 @@ fun BuildingHomeScreen(
                 openDrawer = openDrawer,
                 navigateToBuildingEntry = navigateToBuildingEntry,
                 navigateToRoomDetails = navigateToRoomDetails,
-                navigateToBuildingDetails = navigateToBuildingDetails
+                navigateToBuildingDetails = navigateToBuildingDetails,
+                topAppBarForegroundColor = topAppBarForegroundColor,
+                topAppBarBackgroundColor = topAppBarBackgroundColor
             )
         }
     ) { innerPadding ->

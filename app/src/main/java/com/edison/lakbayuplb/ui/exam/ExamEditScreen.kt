@@ -20,6 +20,7 @@ import com.edison.lakbayuplb.algorithm.calculateExamAvailableStartTimes
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.EntryScreenTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import kotlinx.coroutines.launch
 
 object ExamEditDestination: NavigationDestination {
@@ -34,8 +35,12 @@ fun ExamEditScreen(
     navigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ExamEditViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: ExamEditViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
     val coroutineScope = rememberCoroutineScope()
     val existingSchedules by viewModel.existingSchedules.collectAsState()
 
@@ -51,7 +56,9 @@ fun ExamEditScreen(
             EntryScreenTopAppBar(
                 title = stringResource(ExamEditDestination.titleRes),
                 canNavigateBack = true,
-                navigateUp = onNavigateUp
+                navigateUp = onNavigateUp,
+                topAppBarBackgroundColor = topAppBarBackgroundColor,
+                topAppBarForegroundColor = topAppBarForegroundColor
             )
         },
         modifier = modifier

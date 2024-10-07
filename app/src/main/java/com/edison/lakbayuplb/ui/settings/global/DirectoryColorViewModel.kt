@@ -3,8 +3,8 @@ package com.edison.lakbayuplb.ui.settings.global
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.edison.lakbayuplb.data.ColorSchemes
-import com.edison.lakbayuplb.data.ColorSchemesRepository
+import com.edison.lakbayuplb.data.colorschemes.ColorSchemes
+import com.edison.lakbayuplb.data.colorschemes.ColorSchemesRepository
 import com.edison.lakbayuplb.ui.theme.CollegeColorPalette
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

@@ -1,12 +1,14 @@
 package com.edison.lakbayuplb.ui.map
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.settings.global.RouteSettingsViewModel
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 
 object GuideMapDestination: NavigationDestination {
     override val route = "guide_map"
@@ -23,8 +25,12 @@ fun GuideMapScreen(
     modifier: Modifier = Modifier,
     viewModel: MapViewModel = viewModel(factory = AppViewModelProvider.Factory),
     locationViewModel: LocationViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    routeViewModel: RouteSettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    routeViewModel: RouteSettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
 //    var showMapDialog by remember { mutableStateOf(false) }
 //    val context = LocalContext.current
 //    val uiState by locationViewModel.uiState.collectAsState()

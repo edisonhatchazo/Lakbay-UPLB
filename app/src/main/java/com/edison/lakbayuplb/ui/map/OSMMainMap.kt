@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.edison.lakbayuplb.R
-import com.edison.lakbayuplb.ui.map.routing_algorithm.RouteWithLineString
+import com.edison.lakbayuplb.algorithm.routing_algorithm.RouteWithLineString
 import org.json.JSONObject
 import org.maplibre.android.geometry.LatLng
 import org.osmdroid.config.Configuration

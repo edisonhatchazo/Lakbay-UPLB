@@ -5,9 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.edison.lakbayuplb.data.ColorSchemesRepository
-import com.edison.lakbayuplb.data.Pins
-import com.edison.lakbayuplb.data.PinsRepository
+import com.edison.lakbayuplb.data.colorschemes.ColorSchemesRepository
+import com.edison.lakbayuplb.data.building.Pins
+import com.edison.lakbayuplb.data.building.PinsRepository
 import com.edison.lakbayuplb.ui.settings.colors.ColorSchemesUiState
 import com.edison.lakbayuplb.ui.settings.colors.toColorSchemeUiState
 import kotlinx.coroutines.Dispatchers

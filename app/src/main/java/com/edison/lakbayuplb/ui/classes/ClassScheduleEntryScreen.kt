@@ -48,6 +48,7 @@ import com.edison.lakbayuplb.algorithm.calculateAvailableStartTimes
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.EntryScreenTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -63,8 +64,12 @@ fun ClassScheduleEntryScreen(
     navigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
     canNavigateBack: Boolean = true,
-    viewModel: ClassScheduleEntryViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: ClassScheduleEntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
     val coroutineScope = rememberCoroutineScope()
     val existingSchedules by viewModel.existingSchedules.collectAsState()
     val selectedDays = viewModel.selectedDays.value
@@ -78,7 +83,9 @@ fun ClassScheduleEntryScreen(
             EntryScreenTopAppBar(
                 title = stringResource(ClassScheduleEntryDestination.titleRes),
                 canNavigateBack = canNavigateBack,
-                navigateUp = onNavigateUp
+                navigateUp = onNavigateUp,
+                topAppBarBackgroundColor = topAppBarBackgroundColor,
+                topAppBarForegroundColor = topAppBarForegroundColor
             )
         }
     ) { innerPadding ->

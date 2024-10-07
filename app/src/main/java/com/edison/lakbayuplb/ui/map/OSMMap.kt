@@ -1,10 +1,5 @@
 package com.edison.lakbayuplb.ui.map
 
-enum class OSMCustomMapType(val styleUrl: String) {
-    STREET("asset://map/styles/streets.json"),
-    BRIGHT("asset://map/styles/bright.json"),
-    OSM_3D("asset://map/styles/osm_3d.json")
-}
 
 
 //

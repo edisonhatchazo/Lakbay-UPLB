@@ -39,14 +39,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
-import com.edison.lakbayuplb.data.Building
-import com.edison.lakbayuplb.data.Classroom
+import com.edison.lakbayuplb.data.building.Building
+import com.edison.lakbayuplb.data.building.Classroom
 import com.edison.lakbayuplb.ui.buildingScreens.uplb.toBuilding
 import com.edison.lakbayuplb.ui.buildingScreens.uplb.toBuildingDetails
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.EditScreenTopAppBar
 import com.edison.lakbayuplb.ui.screen.LocationScreenTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import com.edison.lakbayuplb.ui.theme.CollegeColorPalette
 import kotlinx.coroutines.launch
 
@@ -66,7 +67,11 @@ fun BuildingDetailsScreen (
     modifier: Modifier = Modifier,
     viewModel: BuildingDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navigateToMap: (Int) -> Unit,
-){
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
     val roomUiState by viewModel.buildingRoomUiState.collectAsState()
     val room = roomUiState.roomList
     val uiState = viewModel.uiState.collectAsState()
@@ -81,6 +86,8 @@ fun BuildingDetailsScreen (
                     navigateUp = navigateBack,
                     id = build.buildingId,
                     navigateToEdit = navigateToBuildingEdit,
+                    topAppBarForegroundColor = topAppBarForegroundColor,
+                    topAppBarBackgroundColor = topAppBarBackgroundColor
                 )
             }
             else {
@@ -91,6 +98,8 @@ fun BuildingDetailsScreen (
                     id = build.buildingId,
                     navigateToEdit = navigateToBuildingEdit,
                     navigateToRoomEntry = navigateToClassroomEntry,
+                    topAppBarBackgroundColor = topAppBarBackgroundColor,
+                    topAppBarForegroundColor = topAppBarForegroundColor
                 )
             }
         }, modifier = modifier

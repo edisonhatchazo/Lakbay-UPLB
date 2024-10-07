@@ -3,8 +3,8 @@ package com.edison.lakbayuplb.ui.theme
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.edison.lakbayuplb.data.ColorSchemes
-import com.edison.lakbayuplb.data.ColorSchemesRepository
+import com.edison.lakbayuplb.data.colorschemes.ColorSchemes
+import com.edison.lakbayuplb.data.colorschemes.ColorSchemesRepository
 import kotlinx.coroutines.launch
 
 data class ColorEntry(

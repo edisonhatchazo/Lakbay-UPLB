@@ -1,7 +1,7 @@
 package com.edison.lakbayuplb.ui.buildingScreens.uplb
 
-import com.edison.lakbayuplb.data.Classroom
-import com.edison.lakbayuplb.data.Building
+import com.edison.lakbayuplb.data.building.Classroom
+import com.edison.lakbayuplb.data.building.Building
 import com.edison.lakbayuplb.ui.buildingScreens.uplb.buildings.BuildingUiState
 import com.edison.lakbayuplb.ui.buildingScreens.uplb.rooms.ClassroomUiState
 

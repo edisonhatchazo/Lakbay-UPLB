@@ -10,8 +10,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.edison.lakbayuplb.data.ClassSchedule
-import com.edison.lakbayuplb.data.ExamSchedule
+import com.edison.lakbayuplb.data.classes.ClassSchedule
+import com.edison.lakbayuplb.data.classes.ExamSchedule
 import java.time.LocalTime
 
 @Composable

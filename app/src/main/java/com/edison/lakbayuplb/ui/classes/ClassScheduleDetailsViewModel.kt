@@ -4,9 +4,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.edison.lakbayuplb.data.BuildingRepository
-import com.edison.lakbayuplb.data.ClassScheduleRepository
-import com.edison.lakbayuplb.data.ColorSchemesRepository
+import com.edison.lakbayuplb.data.building.BuildingRepository
+import com.edison.lakbayuplb.data.classes.ClassScheduleRepository
+import com.edison.lakbayuplb.data.colorschemes.ColorSchemesRepository
 import com.edison.lakbayuplb.data.MapData
 import com.edison.lakbayuplb.data.MapDataRepository
 import com.edison.lakbayuplb.ui.theme.ColorEntry

@@ -36,12 +36,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
-import com.edison.lakbayuplb.data.Classroom
+import com.edison.lakbayuplb.data.building.Classroom
 import com.edison.lakbayuplb.ui.buildingScreens.uplb.toClassroom
 import com.edison.lakbayuplb.ui.buildingScreens.uplb.toClassroomDetails
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.EditScreenTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import com.edison.lakbayuplb.ui.theme.CollegeColorPalette
 import kotlinx.coroutines.launch
 
@@ -59,7 +60,11 @@ fun RoomDetailsScreen(
     modifier: Modifier = Modifier,
     navigateToClassroomEdit: (Int) -> Unit,
     viewModel: RoomDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
     val coroutineScope = rememberCoroutineScope()
     val roomUiState = viewModel.uiState.collectAsState()
     val room = roomUiState.value.classroomDetails.toClassroom()
@@ -72,6 +77,8 @@ fun RoomDetailsScreen(
                 navigateUp = navigateBack,
                 id = room.roomId,
                 navigateToEdit = navigateToClassroomEdit,
+                topAppBarBackgroundColor = topAppBarBackgroundColor,
+                topAppBarForegroundColor = topAppBarForegroundColor
             )
         }, modifier = modifier
     ){innerPadding ->

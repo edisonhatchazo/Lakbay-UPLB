@@ -36,6 +36,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
+import com.edison.lakbayuplb.ui.screen.DirectoryTopAppBar
 
 object RoutingDestination: NavigationDestination {
     override val route = "routing_home"
@@ -55,13 +56,19 @@ fun RoutingSettings(
     onNavigateUp: () -> Unit,
     canNavigateBack: Boolean = true,
     viewModel: RouteSettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
     Scaffold(
         topBar = {
             DirectoryTopAppBar(
                 title = stringResource(RoutingDestination.titleRes),
                 canNavigateBack = canNavigateBack,
-                onNavigateUp = onNavigateUp
+                onNavigateUp = onNavigateUp,
+                topAppBarBackgroundColor = topAppBarBackgroundColor,
+                topAppBarForegroundColor = topAppBarForegroundColor
             )
         }
     ) { innerPadding ->

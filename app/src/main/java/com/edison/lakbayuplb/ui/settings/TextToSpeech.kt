@@ -14,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,9 +24,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
+import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
-import com.edison.lakbayuplb.ui.settings.global.DirectoryTopAppBar
+import com.edison.lakbayuplb.ui.screen.DirectoryTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import java.util.Locale
 
 object TextToSpeechDestination: NavigationDestination {
@@ -38,13 +42,19 @@ object TextToSpeechDestination: NavigationDestination {
 fun TextToSpeechMainScreen(
     onNavigateUp: () -> Unit,
     canNavigateBack: Boolean = true,
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
     Scaffold(
         topBar = {
             DirectoryTopAppBar(
                 title = stringResource(TextToSpeechDestination.titleRes),
                 canNavigateBack = canNavigateBack,
-                onNavigateUp = onNavigateUp
+                onNavigateUp = onNavigateUp,
+                topAppBarBackgroundColor = topAppBarBackgroundColor,
+                topAppBarForegroundColor = topAppBarForegroundColor
             )
         }
     ) { innerPadding ->

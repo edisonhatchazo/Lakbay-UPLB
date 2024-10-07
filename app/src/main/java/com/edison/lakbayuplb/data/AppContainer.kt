@@ -1,9 +1,24 @@
 package com.edison.lakbayuplb.data
 
 import android.content.Context
-import com.edison.lakbayuplb.ui.map.routing_algorithm.LocalRoutingRepository
-import com.edison.lakbayuplb.ui.map.routing_algorithm.transit.BusRoute
-import com.edison.lakbayuplb.ui.map.routing_algorithm.transit.loadBusRoutes
+import com.edison.lakbayuplb.data.building.BuildingDatabase
+import com.edison.lakbayuplb.data.building.BuildingRepository
+import com.edison.lakbayuplb.data.building.OfflineBuildingRepository
+import com.edison.lakbayuplb.data.building.OfflinePinsRepository
+import com.edison.lakbayuplb.data.building.PinsDatabase
+import com.edison.lakbayuplb.data.building.PinsRepository
+import com.edison.lakbayuplb.data.classes.ClassScheduleDatabase
+import com.edison.lakbayuplb.data.classes.ClassScheduleRepository
+import com.edison.lakbayuplb.data.classes.ExamScheduleDatabase
+import com.edison.lakbayuplb.data.classes.ExamScheduleRepository
+import com.edison.lakbayuplb.data.classes.OfflineClassScheduleRepository
+import com.edison.lakbayuplb.data.classes.OfflineExamScheduleRepository
+import com.edison.lakbayuplb.data.colorschemes.ColorSchemesDatabase
+import com.edison.lakbayuplb.data.colorschemes.ColorSchemesRepository
+import com.edison.lakbayuplb.data.colorschemes.OfflineColorSchemesRepository
+import com.edison.lakbayuplb.algorithm.routing_algorithm.LocalRoutingRepository
+import com.edison.lakbayuplb.algorithm.routing_algorithm.transit.BusRoute
+import com.edison.lakbayuplb.algorithm.routing_algorithm.transit.loadBusRoutes
 
 interface AppContainer {
     val classScheduleRepository: ClassScheduleRepository

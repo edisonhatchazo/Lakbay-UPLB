@@ -19,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +39,7 @@ import com.edison.lakbayuplb.R
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.ColorScreenDetailTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import com.github.skydoves.colorpicker.compose.AlphaSlider
 import com.github.skydoves.colorpicker.compose.AlphaTile
 import com.github.skydoves.colorpicker.compose.BrightnessSlider
@@ -55,8 +57,12 @@ fun ColorSchemeEntry(
     onNavigateUp: () -> Unit,
     navigateBack: () -> Unit,
     canNavigateBack: Boolean = true,
-    viewModel: ColorSchemeEntryViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: ColorSchemeEntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
     val entryColorSchemesUiState = viewModel.entryColorSchemeUiState
     val coroutineScope = rememberCoroutineScope()
     Scaffold(
@@ -64,7 +70,10 @@ fun ColorSchemeEntry(
             ColorScreenDetailTopAppBar(
                 title = stringResource(ColorSchemeEntryDestination.titleRes),
                 canNavigateBack = canNavigateBack,
-                onNavigateUp = onNavigateUp)
+                onNavigateUp = onNavigateUp,
+                topAppBarBackgroundColor = topAppBarBackgroundColor,
+                topAppBarForegroundColor = topAppBarForegroundColor
+            )
         }
     ) { innerPadding ->
         ColorPickingScreen(

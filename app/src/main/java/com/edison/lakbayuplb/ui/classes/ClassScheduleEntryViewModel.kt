@@ -7,9 +7,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.edison.lakbayuplb.data.ClassSchedule
-import com.edison.lakbayuplb.data.ClassScheduleRepository
-import com.edison.lakbayuplb.data.ColorSchemesRepository
+import com.edison.lakbayuplb.data.classes.ClassSchedule
+import com.edison.lakbayuplb.data.classes.ClassScheduleRepository
+import com.edison.lakbayuplb.data.colorschemes.ColorSchemesRepository
 import com.edison.lakbayuplb.ui.settings.colors.ColorSchemesUiState
 import com.edison.lakbayuplb.ui.settings.colors.toColorSchemeUiState
 import kotlinx.coroutines.Dispatchers

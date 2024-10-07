@@ -25,6 +25,8 @@ import com.edison.lakbayuplb.ui.settings.global.DirectoryColorsDestination
 import com.edison.lakbayuplb.ui.settings.global.DirectoryHomeDestination
 import com.edison.lakbayuplb.ui.settings.global.RoutingDestination
 import com.edison.lakbayuplb.ui.settings.global.RoutingSettings
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemes
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorsDestination
 import com.edison.lakbayuplb.ui.theme.ThemeMode
 
 @Composable
@@ -46,6 +48,7 @@ fun SettingsNavHost(
                 navigateToCollegeColors = {navController.navigate(DirectoryHomeDestination.route)},
                 navigateToRoutingSettings = {navController.navigate(RoutingDestination.route)},
                 navigateToRoutesColors = {navController.navigate(TextToSpeechDestination.route)},
+                navigateToTopAppBarColors = {navController.navigate(TopAppBarColorsDestination.route)},
                 onThemeChange = onThemeChange
             )
         }
@@ -61,6 +64,10 @@ fun SettingsNavHost(
                 onNavigateUp = { navController.navigateUp() },
                 navigateBack = { navController.popBackStack() }
             )
+        }
+
+        composable(route = TopAppBarColorsDestination.route){
+            TopAppBarColorSchemes(onNavigateUp = {navController.navigate(SettingsDestination.route) })
         }
 
         composable(

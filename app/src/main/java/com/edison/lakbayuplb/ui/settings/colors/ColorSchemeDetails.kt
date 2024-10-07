@@ -39,6 +39,7 @@ import com.edison.lakbayuplb.R
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.ColorScreenDetailTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import com.edison.lakbayuplb.ui.theme.Typography
 import kotlinx.coroutines.launch
 
@@ -55,7 +56,11 @@ fun ColorSchemeDetails(
     navigateToEditColorScheme: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ColorSchemeDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
     val uiState = viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     Scaffold(
@@ -64,6 +69,8 @@ fun ColorSchemeDetails(
                 title = stringResource(ColorSchemeDetailsDestination.titleRes),
                 canNavigateBack = true,
                 onNavigateUp = navigateBack,
+                topAppBarForegroundColor = topAppBarForegroundColor,
+                topAppBarBackgroundColor = topAppBarBackgroundColor
             )
         }, modifier = modifier,
     ){innerPadding ->

@@ -37,6 +37,7 @@ import com.edison.lakbayuplb.R
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.ExamScheduleScreenTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
@@ -55,7 +56,11 @@ fun ExamScheduleScreen(
     navigateToScheduleEntry: () -> Unit,
     navigateToScheduleUpdate: (Int) -> Unit,
     openDrawer: () -> Unit,
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     val examDates = examScheduleViewModel.examHomeUiState.collectAsState().value.examScheduleList.map {
@@ -71,7 +76,9 @@ fun ExamScheduleScreen(
                 examDates = examDates,
                 selectedDate = selectedDate,
                 openDrawer = openDrawer,
-                onDateSelected = { date -> selectedDate = date }
+                onDateSelected = { date -> selectedDate = date },
+                topAppBarForegroundColor = topAppBarForegroundColor,
+                topAppBarBackgroundColor = topAppBarBackgroundColor
             )
         }
     ) { innerPadding ->

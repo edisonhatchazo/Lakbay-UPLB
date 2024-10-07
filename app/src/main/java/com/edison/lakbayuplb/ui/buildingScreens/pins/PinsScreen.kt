@@ -28,10 +28,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
-import com.edison.lakbayuplb.data.Pins
+import com.edison.lakbayuplb.data.building.Pins
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.PinsScreenTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import com.edison.lakbayuplb.ui.theme.ColorEntry
 
 object PinsHomeDestination: NavigationDestination {
@@ -45,8 +46,12 @@ fun PinsScreen(
     navigateToPinsUpdate: (Int) -> Unit,
     openDrawer: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: PinsViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: PinsViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
     val homeUiState by viewModel.pinsHomeUiState.collectAsState()
     Scaffold(
         modifier = modifier,
@@ -55,7 +60,9 @@ fun PinsScreen(
                 title = stringResource(R.string.my_pins),
                 canNavigateBack = false,
                 navigateToPinEntry = navigateToPinsEntry,
-                openDrawer = openDrawer
+                openDrawer = openDrawer,
+                topAppBarBackgroundColor = topAppBarBackgroundColor,
+                topAppBarForegroundColor = topAppBarForegroundColor
             )
         }
     ){ innerPadding ->

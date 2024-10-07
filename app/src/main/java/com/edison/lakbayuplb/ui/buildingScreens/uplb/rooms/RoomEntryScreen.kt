@@ -1,14 +1,11 @@
 package com.edison.lakbayuplb.ui.buildingScreens.uplb.rooms
 
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
@@ -37,23 +34,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
 import com.edison.lakbayuplb.ui.buildingScreens.uplb.ClassroomDetails
-import com.edison.lakbayuplb.ui.map.OSMCustomMapType
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.EntryScreenTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import kotlinx.coroutines.launch
-import org.maplibre.android.MapLibre
-import org.maplibre.android.WellKnownTileServer
-import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
-import org.maplibre.android.maps.MapView
-import org.maplibre.android.plugins.annotation.SymbolManager
-import org.maplibre.android.plugins.annotation.SymbolOptions
 
 object ClassroomEntryDestination : NavigationDestination {
     override val route = "classroom_entry"
@@ -67,18 +56,23 @@ fun RoomEntryScreen(
     navigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
     canNavigateBack: Boolean = true,
-    viewModel: RoomEntryViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: RoomEntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
     val coroutineScope = rememberCoroutineScope()
     val buildingUiState = viewModel.buildingUiState.collectAsState()
     val classroomUiState = viewModel.classroomUiState
-    val mapType by remember { mutableStateOf(OSMCustomMapType.OSM_3D) }
     Scaffold(
         topBar = {
             EntryScreenTopAppBar(
                 title = stringResource(ClassroomEntryDestination.titleRes),
                 canNavigateBack = canNavigateBack,
-                navigateUp = onNavigateUp
+                navigateUp = onNavigateUp,
+                topAppBarBackgroundColor = topAppBarBackgroundColor,
+                topAppBarForegroundColor = topAppBarForegroundColor
             )
         }
     ) { innerPadding ->
@@ -97,7 +91,6 @@ fun RoomEntryScreen(
                 buildingId = buildingUiState.value.buildingDetails.buildingId,
                 college = buildingUiState.value.buildingDetails.college,
                 classroomUiState = classroomUiState,
-                mapType = mapType,
                 onSaveClick = {
                     coroutineScope.launch {
                         viewModel.saveClassroom()
@@ -116,7 +109,6 @@ fun ClassroomEntryBody(
     buildingId: Int,
     college: String,
     classroomUiState: ClassroomUiState,
-    mapType: OSMCustomMapType,
     onSaveClick: () -> Unit,
     onClassroomValueChange:  (ClassroomDetails) -> Unit,
     modifier: Modifier
@@ -130,7 +122,6 @@ fun ClassroomEntryBody(
             college = college,
             classroomDetails = classroomUiState.classroomDetails,
             onValueChange = { onClassroomValueChange(it) },
-            mapType = mapType,
             modifier = Modifier.fillMaxWidth()
         )
         Button(
@@ -150,7 +141,6 @@ fun ClassroomInputForm(
     college: String,
     classroomDetails: ClassroomDetails,
     onValueChange: (ClassroomDetails)-> Unit,
-    mapType: OSMCustomMapType,
     modifier: Modifier,
     enabled: Boolean = true
 ){
@@ -161,8 +151,6 @@ fun ClassroomInputForm(
     var selectedLocation by remember { mutableStateOf(LatLng(classroomDetails.latitude, classroomDetails.longitude)) }
 
     val context = LocalContext.current
-    val apiKey = context.getString(R.string.kento)
-    val tileServer: WellKnownTileServer = WellKnownTileServer.MapLibre
 
     LaunchedEffect(selectedLocation) {
         onValueChange(classroomDetails.copy(latitude = selectedLocation.latitude, longitude = selectedLocation.longitude))
@@ -257,56 +245,56 @@ fun ClassroomInputForm(
             }
         }
 
-        Box(
-            modifier = Modifier
-                .height(300.dp)
-                .fillMaxWidth()
-        ) {
-            AndroidView(
-                modifier = Modifier.fillMaxSize(),
-                factory = { context ->
-                    MapLibre.getInstance(context, apiKey, tileServer)
-                    MapView(context).apply {
-                        getMapAsync { mapLibreMap ->
-                            mapLibreMap.setStyle(mapType.styleUrl) { style ->
-                                val location = LatLng(classroomDetails.latitude, classroomDetails.longitude)
-                                mapLibreMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 18.0))
-
-                                // Add the marker icon to the style
-                                style.addImage("marker-icon", BitmapFactory.decodeResource(context.resources, R.drawable.marker_48))
-
-                                // Initialize SymbolManager
-                                val symbolManager = SymbolManager(this, mapLibreMap, style).apply {
-                                    iconAllowOverlap = true
-                                    textAllowOverlap = true
-                                }
-
-                                // Add a marker (symbol)
-                                val symbolOptions = SymbolOptions()
-                                    .withLatLng(location)
-                                    .withIconImage("marker-icon")
-                                    .withTextField(classroomDetails.title)
-                                    .withTextOffset(arrayOf(0f, 1.5f))
-                                symbolManager.create(symbolOptions)
-
-                                mapLibreMap.addOnMapClickListener { latLng ->
-                                    selectedLocation = latLng
-                                    symbolManager.deleteAll()
-                                    symbolManager.create(
-                                        SymbolOptions()
-                                            .withLatLng(latLng)
-                                            .withIconImage("marker-icon")
-                                            .withTextField(classroomDetails.title)
-                                            .withTextOffset(arrayOf(0f, 1.5f))
-                                    )
-                                    true
-                                }
-                            }
-                        }
-                    }
-                }
-            )
-        }
+//        Box(
+//            modifier = Modifier
+//                .height(300.dp)
+//                .fillMaxWidth()
+//        ) {
+//            AndroidView(
+//                modifier = Modifier.fillMaxSize(),
+//                factory = { context ->
+//                    MapLibre.getInstance(context, apiKey, tileServer)
+//                    MapView(context).apply {
+//                        getMapAsync { mapLibreMap ->
+//                            mapLibreMap.setStyle(mapType.styleUrl) { style ->
+//                                val location = LatLng(classroomDetails.latitude, classroomDetails.longitude)
+//                                mapLibreMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 18.0))
+//
+//                                // Add the marker icon to the style
+//                                style.addImage("marker-icon", BitmapFactory.decodeResource(context.resources, R.drawable.marker_48))
+//
+//                                // Initialize SymbolManager
+//                                val symbolManager = SymbolManager(this, mapLibreMap, style).apply {
+//                                    iconAllowOverlap = true
+//                                    textAllowOverlap = true
+//                                }
+//
+//                                // Add a marker (symbol)
+//                                val symbolOptions = SymbolOptions()
+//                                    .withLatLng(location)
+//                                    .withIconImage("marker-icon")
+//                                    .withTextField(classroomDetails.title)
+//                                    .withTextOffset(arrayOf(0f, 1.5f))
+//                                symbolManager.create(symbolOptions)
+//
+//                                mapLibreMap.addOnMapClickListener { latLng ->
+//                                    selectedLocation = latLng
+//                                    symbolManager.deleteAll()
+//                                    symbolManager.create(
+//                                        SymbolOptions()
+//                                            .withLatLng(latLng)
+//                                            .withIconImage("marker-icon")
+//                                            .withTextField(classroomDetails.title)
+//                                            .withTextOffset(arrayOf(0f, 1.5f))
+//                                    )
+//                                    true
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            )
+//        }
 
     }
 }

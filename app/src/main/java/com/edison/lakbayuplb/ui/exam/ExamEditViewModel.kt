@@ -6,9 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.edison.lakbayuplb.data.ColorSchemesRepository
-import com.edison.lakbayuplb.data.ExamSchedule
-import com.edison.lakbayuplb.data.ExamScheduleRepository
+import com.edison.lakbayuplb.data.colorschemes.ColorSchemesRepository
+import com.edison.lakbayuplb.data.classes.ExamSchedule
+import com.edison.lakbayuplb.data.classes.ExamScheduleRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull

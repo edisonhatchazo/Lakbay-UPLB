@@ -20,10 +20,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
-import com.edison.lakbayuplb.ui.map.routing_algorithm.RouteWithLineString
+import com.edison.lakbayuplb.algorithm.routing_algorithm.RouteWithLineString
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.screen.MapScreenTopAppBar
 import com.edison.lakbayuplb.ui.settings.global.RouteSettingsViewModel
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import org.osmdroid.util.GeoPoint
 
 @Composable
@@ -31,8 +32,12 @@ fun MainMapScreen(
     modifier: Modifier = Modifier,
     openDrawer: () -> Unit,
     viewModel: MapViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    routeViewModel: RouteSettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    routeViewModel: RouteSettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
     var showMapDialog by remember { mutableStateOf(false) }
     var initialLocation by remember { mutableStateOf<GeoPoint?>(null) }
     var destinationLocation by remember { mutableStateOf<GeoPoint?>(null) }
@@ -66,10 +71,12 @@ fun MainMapScreen(
                             "bicycle" -> "#0000FF"  // Blue for cycling
                             "driving" -> "#FF0000"  // Red for driving
                             else -> "#000000"  // Black for any other type
-                            },
+                            }
                         )
                     }
-                }
+                },
+                topAppBarBackgroundColor = topAppBarBackgroundColor,
+                topAppBarForegroundColor = topAppBarForegroundColor
             )
         }
     ){ innerPadding ->

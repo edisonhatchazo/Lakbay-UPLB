@@ -32,6 +32,7 @@ import com.edison.lakbayuplb.R
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.ScheduleScreenTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import com.edison.lakbayuplb.ui.theme.ColorPaletteViewModel
 import java.time.LocalTime
 
@@ -47,8 +48,12 @@ fun ClassScheduleHomeScreen(
     navigateToScheduleEntry: () -> Unit,
     navigateToScheduleUpdate: (Int) -> Unit,
     openDrawer: () -> Unit,
-    colorPaletteViewModel: ColorPaletteViewModel = viewModel(factory = AppViewModelProvider.Factory)
-){
+    colorPaletteViewModel: ColorPaletteViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
 
     LaunchedEffect(Unit){
         colorPaletteViewModel.observeColorSchemes()
@@ -60,7 +65,9 @@ fun ClassScheduleHomeScreen(
                 title = stringResource(R.string.class_schedule),
                 canNavigateBack = false,
                 navigateToScheduleEntry = navigateToScheduleEntry,
-                openDrawer = openDrawer
+                openDrawer = openDrawer,
+                topAppBarBackgroundColor = topAppBarBackgroundColor,
+                topAppBarForegroundColor = topAppBarForegroundColor
 
             )
         }

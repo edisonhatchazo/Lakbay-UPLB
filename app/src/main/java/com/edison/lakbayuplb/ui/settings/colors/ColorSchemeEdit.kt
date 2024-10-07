@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -17,6 +18,7 @@ import com.edison.lakbayuplb.R
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.ColorScreenDetailTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import kotlinx.coroutines.launch
 
 object ColorSchemeEditDestination: NavigationDestination {
@@ -31,8 +33,12 @@ fun ColorSchemeEdit(
     onNavigateUp: () -> Unit,
     navigateBack: () -> Unit,
     canNavigateBack: Boolean = true,
-    viewModel: ColorSchemeEditViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: ColorSchemeEditViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
     val colorSchemesUiState = viewModel.colorSchemesUiState
     val coroutineScope = rememberCoroutineScope()
 
@@ -41,7 +47,10 @@ fun ColorSchemeEdit(
             ColorScreenDetailTopAppBar(
                 title = stringResource(ColorSchemeEditDestination.titleRes),
                 canNavigateBack = canNavigateBack,
-                onNavigateUp = onNavigateUp)
+                onNavigateUp = onNavigateUp,
+                topAppBarBackgroundColor = topAppBarBackgroundColor,
+                topAppBarForegroundColor = topAppBarForegroundColor
+            )
         }
     ) { innerPadding ->
         ColorPickingScreen(

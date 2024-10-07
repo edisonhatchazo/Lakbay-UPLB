@@ -54,37 +54,65 @@ fun EntryScreenTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit = {},
+    topAppBarBackgroundColor: Color, // Dynamic background color
+    topAppBarForegroundColor: Color  // Dynamic foreground color
 ){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
-        title = { Text( title,color = Color.White)},
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = topAppBarBackgroundColor),
+        title = { Text(title, color = topAppBarForegroundColor) },
         scrollBehavior = scrollBehavior,
         navigationIcon = {
-            if(canNavigateBack){
+            if (canNavigateBack) {
                 IconButton(onClick = navigateUp) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
-                        contentDescription  = stringResource(R.string.back_button),
-                        tint = Color.White
+                        contentDescription = stringResource(R.string.back_button),
+                        tint = topAppBarForegroundColor
                     )
                 }
             }
         },
         actions = {
-
-            IconButton(
-                onClick = { /*TODO*/ }
-            ) {
+            IconButton(onClick = { /*TODO*/ }) {
                 Icon(
                     imageVector = Icons.Filled.Info,
                     contentDescription = stringResource(R.string.about),
-                    tint = Color.White
+                    tint = topAppBarForegroundColor
                 )
             }
         },
     )
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DirectoryTopAppBar(
+    title: String,
+    canNavigateBack: Boolean,
+    onNavigateUp: () -> Unit = {},
+    topAppBarBackgroundColor: Color, // Dynamic background color
+    topAppBarForegroundColor: Color  // Dynamic foreground color
+){
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = topAppBarBackgroundColor),
+        title = { Text( title,color = topAppBarForegroundColor) },
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            if (canNavigateBack) {
+                IconButton(onClick = onNavigateUp) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.back_button),
+                        tint = topAppBarForegroundColor
+                    )
+                }
+            }
+        }
+    )
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,11 +122,13 @@ fun ScheduleScreenTopAppBar(
     navigateUp: () -> Unit = {},
     navigateToScheduleEntry: () -> Unit,
     openDrawer: () -> Unit,
-) {
+    topAppBarBackgroundColor: Color, // Dynamic background color
+    topAppBarForegroundColor: Color  // Dynamic foreground color
+){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
-        title = { Text(title, color = Color.White) },
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = topAppBarBackgroundColor),
+        title = { Text(title, color = topAppBarForegroundColor) },
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if (canNavigateBack) {
@@ -106,7 +136,7 @@ fun ScheduleScreenTopAppBar(
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.back_button),
-                        tint = Color.White
+                        tint = topAppBarForegroundColor
                     )
                 }
             } else {
@@ -114,7 +144,7 @@ fun ScheduleScreenTopAppBar(
                     Icon(
                         imageVector = Icons.Default.Menu,
                         contentDescription = stringResource(R.string.menu),
-                        tint = Color.White
+                        tint = topAppBarForegroundColor
                     )
                 }
             }
@@ -125,7 +155,7 @@ fun ScheduleScreenTopAppBar(
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = stringResource(R.string.class_entry_title),
-                    tint = Color.Yellow
+                    tint = if(topAppBarBackgroundColor == Color.Yellow) Color.Blue else Color.Yellow
                 )
             }
 
@@ -133,7 +163,7 @@ fun ScheduleScreenTopAppBar(
                 Icon(
                     imageVector = Icons.Filled.Info,
                     contentDescription = stringResource(R.string.about),
-                    tint = Color.White
+                    tint = topAppBarForegroundColor
                 )
             }
         },
@@ -150,13 +180,15 @@ fun ExamScheduleScreenTopAppBar(
     examDates: List<LocalDate>,
     openDrawer: () -> Unit,
     selectedDate: LocalDate,
-    onDateSelected: (LocalDate) -> Unit
+    onDateSelected: (LocalDate) -> Unit,
+    topAppBarBackgroundColor: Color, // Dynamic background color
+    topAppBarForegroundColor: Color  // Dynamic foreground color
 ){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var showDatePicker by remember { mutableStateOf(false) }
     TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
-        title = { Text( title,color = Color.White)},
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = topAppBarBackgroundColor),
+        title = { Text( title,color = topAppBarForegroundColor)},
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if (canNavigateBack) {
@@ -164,7 +196,7 @@ fun ExamScheduleScreenTopAppBar(
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.back_button),
-                        tint = Color.White
+                        tint = topAppBarForegroundColor
                     )
                 }
             } else {
@@ -172,7 +204,7 @@ fun ExamScheduleScreenTopAppBar(
                     Icon(
                         imageVector = Icons.Default.Menu,
                         contentDescription = stringResource(R.string.menu),
-                        tint = Color.White
+                        tint = topAppBarForegroundColor
                     )
                 }
             }
@@ -186,7 +218,7 @@ fun ExamScheduleScreenTopAppBar(
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription =  stringResource(R.string.class_entry_title),
-                    tint = Color.Yellow
+                    tint = if(topAppBarBackgroundColor == Color.Yellow) Color.Blue else Color.Yellow
                 )
             }
 
@@ -196,7 +228,7 @@ fun ExamScheduleScreenTopAppBar(
                 Icon(
                     imageVector = Icons.Filled.DateRange,
                     contentDescription = stringResource(R.string.date_select),
-                    tint = Color.White
+                    tint = topAppBarForegroundColor
                 )
             }
             if (showDatePicker) {
@@ -220,11 +252,13 @@ fun DetailsScreenTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit = {},
+    topAppBarBackgroundColor: Color, // Dynamic background color
+    topAppBarForegroundColor: Color  // Dynamic foreground color
 ){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
-        title = { Text( title,color = Color.White)},
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = topAppBarBackgroundColor),
+        title = { Text( title,color = topAppBarForegroundColor)},
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if(canNavigateBack){
@@ -232,7 +266,7 @@ fun DetailsScreenTopAppBar(
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription  = stringResource(R.string.back_button),
-                        tint = Color.White
+                        tint = topAppBarForegroundColor
                     )
                 }
             }
@@ -245,7 +279,7 @@ fun DetailsScreenTopAppBar(
                 Icon(
                     imageVector = Icons.Filled.Info,
                     contentDescription = stringResource(R.string.about),
-                    tint = Color.White
+                    tint = topAppBarForegroundColor
                 )
             }
         },
@@ -263,8 +297,10 @@ fun BuildingsScreenTopAppBar(
     openDrawer: () -> Unit,
     navigateToBuildingDetails: (Int) -> Unit,
     navigateUp: () -> Unit = {},
-    searchViewModel: SearchViewModel = viewModel(factory = AppViewModelProvider.Factory)
-) {
+    searchViewModel: SearchViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    topAppBarBackgroundColor: Color, // Dynamic background color
+    topAppBarForegroundColor: Color  // Dynamic foreground color
+){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var showSearchBar by remember { mutableStateOf(false) }
     val buildingSuggestions by searchViewModel.buildingSuggestions.collectAsState()
@@ -272,7 +308,7 @@ fun BuildingsScreenTopAppBar(
 
     Column {
         TopAppBar(
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = topAppBarBackgroundColor),
             title = {
                 if (showSearchBar) {
                     TextField(
@@ -282,7 +318,7 @@ fun BuildingsScreenTopAppBar(
                         modifier = Modifier.fillMaxWidth()
                     )
                 } else {
-                    Text(title, color = Color.White)
+                    Text(title, color = topAppBarForegroundColor)
                 }
             },
             modifier = modifier,
@@ -293,7 +329,7 @@ fun BuildingsScreenTopAppBar(
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.back_button),
-                            tint = Color.White
+                            tint = topAppBarForegroundColor
                         )
                     }
                 } else {
@@ -301,7 +337,7 @@ fun BuildingsScreenTopAppBar(
                         Icon(
                             imageVector = Icons.Default.Menu,
                             contentDescription = stringResource(R.string.menu),
-                            tint = Color.White
+                            tint = topAppBarForegroundColor
                         )
                     }
                 }
@@ -312,7 +348,7 @@ fun BuildingsScreenTopAppBar(
                         Icon(
                             imageVector = Icons.Filled.Close,
                             contentDescription = stringResource(R.string.close_search),
-                            tint = Color.White
+                            tint = topAppBarForegroundColor
                         )
                     }
                 } else {
@@ -320,7 +356,7 @@ fun BuildingsScreenTopAppBar(
                         Icon(
                             imageVector = Icons.Filled.Search,
                             contentDescription = stringResource(R.string.search),
-                            tint = Color.White
+                            tint = topAppBarForegroundColor
                         )
                     }
                 }
@@ -328,7 +364,7 @@ fun BuildingsScreenTopAppBar(
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = stringResource(R.string.building_entry_title),
-                        tint = Color.Yellow
+                        tint = if(topAppBarBackgroundColor == Color.Yellow) Color.Blue else Color.Yellow
                     )
                 }
 
@@ -338,7 +374,7 @@ fun BuildingsScreenTopAppBar(
                     Icon(
                         imageVector = Icons.Filled.Info,
                         contentDescription = stringResource(R.string.about),
-                        tint = Color.White
+                        tint = topAppBarForegroundColor
                     )
                 }
             },
@@ -348,7 +384,7 @@ fun BuildingsScreenTopAppBar(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White)
+                    .background(topAppBarBackgroundColor)
                     .heightIn(max = 400.dp) // Adjust height as needed
             ) {
                 LazyColumn {
@@ -400,18 +436,20 @@ fun PinsScreenTopAppBar(
     navigateToPinEntry: () -> Unit,
     openDrawer: () -> Unit,
     navigateUp: () -> Unit = {},
-    ){
+    topAppBarBackgroundColor: Color, // Dynamic background color
+    topAppBarForegroundColor: Color  // Dynamic foreground color
+){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
-        title = { Text( title,color = Color.White)},
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = topAppBarBackgroundColor),
+        title = { Text( title,color = topAppBarForegroundColor)},
         scrollBehavior = scrollBehavior,
         navigationIcon = {if (canNavigateBack) {
             IconButton(onClick = navigateUp) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = stringResource(R.string.back_button),
-                    tint = Color.White
+                    tint = topAppBarForegroundColor
                 )
             }
         } else {
@@ -419,7 +457,7 @@ fun PinsScreenTopAppBar(
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = stringResource(R.string.menu),
-                    tint = Color.White
+                    tint = topAppBarForegroundColor
                 )
             }
         }
@@ -431,7 +469,7 @@ fun PinsScreenTopAppBar(
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription =  stringResource(R.string.pin_entry_title),
-                    tint = Color.Yellow
+                    tint = if(topAppBarBackgroundColor == Color.Yellow) Color.Blue else Color.Yellow
                 )
             }
 
@@ -441,7 +479,7 @@ fun PinsScreenTopAppBar(
                 Icon(
                     imageVector = Icons.Filled.Info,
                     contentDescription = stringResource(R.string.about),
-                    tint = Color.White
+                    tint = topAppBarForegroundColor
                 )
             }
         },
@@ -453,13 +491,15 @@ fun PinsScreenTopAppBar(
 fun CoordinateEntryScreenTopAppBar(
     title: String,
     canNavigateBack: Boolean,
-    navigateUp: () -> Unit = {}
-) {
+    navigateUp: () -> Unit = {},
+    topAppBarBackgroundColor: Color, // Dynamic background color
+    topAppBarForegroundColor: Color  // Dynamic foreground color
+){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
-        title = { Text(title, color = Color.White) },
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = topAppBarBackgroundColor),
+        title = { Text(title, color = topAppBarForegroundColor) },
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if (canNavigateBack) {
@@ -467,7 +507,7 @@ fun CoordinateEntryScreenTopAppBar(
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.back_button),
-                        tint = Color.White
+                        tint = topAppBarForegroundColor
                     )
                 }
             }
@@ -479,7 +519,7 @@ fun CoordinateEntryScreenTopAppBar(
                 Icon(
                     imageVector = Icons.Filled.Info,
                     contentDescription = stringResource(R.string.about),
-                    tint = Color.White
+                    tint = topAppBarForegroundColor
                 )
             }
 
@@ -494,7 +534,9 @@ fun MapScreenTopAppBar(
     onGetDirectionsClick: () -> Unit,
     openDrawer: () -> Unit,
     onRouteTypeSelected: (String) -> Unit,
-) {
+    topAppBarBackgroundColor: Color, // Dynamic background color
+    topAppBarForegroundColor: Color  // Dynamic foreground color
+){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val carIcon: Painter = painterResource(id = R.drawable.car_icon)
     val cyclingIcon: Painter = painterResource(id = R.drawable.cycling_icon)
@@ -505,15 +547,15 @@ fun MapScreenTopAppBar(
     var selectedRouteType by remember { mutableStateOf("walking") }
 
     TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
-        title = { Text(title, color = Color.White) },
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = topAppBarBackgroundColor),
+        title = { Text(title, color = topAppBarForegroundColor) },
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             IconButton(onClick = openDrawer) {
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = stringResource(R.string.menu),
-                    tint = Color.White
+                    tint = topAppBarForegroundColor
                 )
             }
         },
@@ -522,7 +564,7 @@ fun MapScreenTopAppBar(
                 Icon(
                     imageVector = Icons.Filled.Place,
                     contentDescription = stringResource(R.string.about),
-                    tint = Color.White
+                    tint = topAppBarForegroundColor
                 )
             }
             //Route Type Dropdown Menu
@@ -531,7 +573,7 @@ fun MapScreenTopAppBar(
                     Image(
                         painter = selectedIcon,
                         contentDescription = "Route Icon",
-                        colorFilter = ColorFilter.tint(Color.White)
+                        colorFilter = ColorFilter.tint(topAppBarForegroundColor)
                     )
                 }
                 DropdownMenu(
@@ -591,7 +633,9 @@ fun GuideScreenTopAppBar(
     navigateUp: () -> Unit = {},
     onRouteTypeSelected: (String) -> Unit,
     onChooseLocation: () -> Unit,
-) {
+    topAppBarBackgroundColor: Color, // Dynamic background color
+    topAppBarForegroundColor: Color  // Dynamic foreground color
+){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val carIcon: Painter = painterResource(id = R.drawable.car_icon)
     val cyclingIcon: Painter = painterResource(id = R.drawable.cycling_icon)
@@ -603,8 +647,8 @@ fun GuideScreenTopAppBar(
 
 
     TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
-        title = { Text(title, color = Color.White) },
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = topAppBarBackgroundColor),
+        title = { Text(title, color = topAppBarForegroundColor) },
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if (canNavigateBack) {
@@ -612,7 +656,7 @@ fun GuideScreenTopAppBar(
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.back_button),
-                        tint = Color.White
+                        tint = topAppBarForegroundColor
                     )
                 }
             }
@@ -622,7 +666,7 @@ fun GuideScreenTopAppBar(
                 Icon(
                     imageVector = Icons.Filled.Place,
                     contentDescription = stringResource(R.string.about),
-                    tint = Color.White
+                    tint = topAppBarForegroundColor
                 )
             }
             //Route Type Dropdown Menu
@@ -631,7 +675,7 @@ fun GuideScreenTopAppBar(
                     Image(
                         painter = selectedIcon,
                         contentDescription = "Route Icon",
-                        colorFilter = ColorFilter.tint(Color.White)
+                        colorFilter = ColorFilter.tint(topAppBarForegroundColor)
                     )
                 }
                 DropdownMenu(
@@ -691,11 +735,13 @@ fun ColorScreenDetailTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     onNavigateUp: () -> Unit = {},
+    topAppBarBackgroundColor: Color, // Dynamic background color
+    topAppBarForegroundColor: Color  // Dynamic foreground color
 ){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
-        title = { Text( title,color = Color.White) },
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = topAppBarBackgroundColor),
+        title = { Text( title,color = topAppBarForegroundColor) },
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if (canNavigateBack) {
@@ -703,7 +749,7 @@ fun ColorScreenDetailTopAppBar(
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.back_button),
-                        tint = Color.White
+                        tint = topAppBarForegroundColor
                     )
                 }
             }
@@ -720,11 +766,13 @@ fun LocationScreenTopAppBar(
     navigateToEdit: (Int) -> Unit,
     navigateToRoomEntry: (Int) -> Unit,
     navigateUp: () -> Unit = {},
+    topAppBarBackgroundColor: Color, // Dynamic background color
+    topAppBarForegroundColor: Color  // Dynamic foreground color
 ){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
-        title = { Text( title,color = Color.White)},
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = topAppBarBackgroundColor),
+        title = { Text( title,color = topAppBarForegroundColor)},
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if(canNavigateBack){
@@ -732,7 +780,7 @@ fun LocationScreenTopAppBar(
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription  = stringResource(R.string.back_button),
-                        tint = Color.White
+                        tint = topAppBarForegroundColor
                     )
                 }
             }
@@ -744,7 +792,7 @@ fun LocationScreenTopAppBar(
                 Icon(
                     imageVector = Icons.Filled.Edit,
                     contentDescription = stringResource(R.string.building_edit_title),
-                    tint = Color.White
+                    tint = topAppBarForegroundColor
                 )
             }
             IconButton(
@@ -753,7 +801,7 @@ fun LocationScreenTopAppBar(
                 Icon(
                     imageVector = Icons.Filled.Add,
                     contentDescription = stringResource(R.string.room_entry_title),
-                    tint = Color.White
+                    tint = topAppBarForegroundColor
                 )
             }
             IconButton(
@@ -762,7 +810,7 @@ fun LocationScreenTopAppBar(
                 Icon(
                     imageVector = Icons.Filled.Info,
                     contentDescription = stringResource(R.string.about),
-                    tint = Color.White
+                    tint = topAppBarForegroundColor
                 )
             }
         },
@@ -777,11 +825,13 @@ fun EditScreenTopAppBar(
     canNavigateBack: Boolean,
     navigateToEdit: (Int) -> Unit,
     navigateUp: () -> Unit = {},
+    topAppBarBackgroundColor: Color, // Dynamic background color
+    topAppBarForegroundColor: Color  // Dynamic foreground color
 ){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
-        title = { Text( title,color = Color.White)},
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = topAppBarBackgroundColor),
+        title = { Text( title,color = topAppBarForegroundColor)},
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             if(canNavigateBack){
@@ -789,7 +839,7 @@ fun EditScreenTopAppBar(
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription  = stringResource(R.string.back_button),
-                        tint = Color.White
+                        tint = topAppBarForegroundColor
                     )
                 }
             }
@@ -801,7 +851,7 @@ fun EditScreenTopAppBar(
                 Icon(
                     imageVector = Icons.Filled.Edit,
                     contentDescription = stringResource(R.string.building_edit_title),
-                    tint = Color.White
+                    tint = topAppBarForegroundColor
                 )
             }
             IconButton(
@@ -810,7 +860,7 @@ fun EditScreenTopAppBar(
                 Icon(
                     imageVector = Icons.Filled.Info,
                     contentDescription = stringResource(R.string.about),
-                    tint = Color.White
+                    tint = topAppBarForegroundColor
                 )
             }
         },
@@ -821,19 +871,62 @@ fun EditScreenTopAppBar(
 @Composable
 fun SettingsScreenTopAppBar(
     title: String,
-    openDrawer: () -> Unit
+    openDrawer: () -> Unit,
+    topAppBarBackgroundColor: Color, // Dynamic background color
+    topAppBarForegroundColor: Color  // Dynamic foreground color
 ){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Blue),
-        title = { Text( title,color = Color.White) },
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = topAppBarBackgroundColor),
+        title = { Text( title,color = topAppBarForegroundColor) },
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             IconButton(onClick = openDrawer) {
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = stringResource(R.string.menu),
-                    tint = Color.White
+                    tint = topAppBarForegroundColor
+                )
+            }
+        }
+    )
+}
+
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ColorScreenTopAppBar(
+    title: String,
+    navigateToColorEntry: () -> Unit,
+    canNavigateBack: Boolean,
+    onNavigateUp: () -> Unit = {},
+    topAppBarBackgroundColor: Color, // Dynamic background color
+    topAppBarForegroundColor: Color  // Dynamic foreground color
+){
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = topAppBarBackgroundColor),
+        title = { Text( title,color = topAppBarForegroundColor) },
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            if (canNavigateBack) {
+                IconButton(onClick = onNavigateUp) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.back_button),
+                        tint = topAppBarForegroundColor
+                    )
+                }
+            }
+        },
+        actions = {
+
+            IconButton(onClick = navigateToColorEntry) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(R.string.color_entry),
+                    tint = if(topAppBarBackgroundColor == Color.Yellow) Color.Blue else Color.Yellow
                 )
             }
         }

@@ -28,10 +28,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
-import com.edison.lakbayuplb.data.ClassSchedule
+import com.edison.lakbayuplb.data.classes.ClassSchedule
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.ScheduleScreenTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import com.edison.lakbayuplb.ui.theme.ColorEntry
 
 object ClassHomeDestination: NavigationDestination {
@@ -45,8 +46,12 @@ fun ClassHomeScreen(
     navigateToClassScheduleUpdate: (Int) -> Unit,
     modifier: Modifier = Modifier,
     openDrawer: () -> Unit,
-    viewModel: ClassHomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: ClassHomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
     val homeUiState by viewModel.classHomeUiState.collectAsState()
 
     Scaffold(
@@ -56,7 +61,9 @@ fun ClassHomeScreen(
                 title = stringResource(R.string.classes),
                 canNavigateBack = false,
                 navigateToScheduleEntry = navigateToClassScheduleEntry,
-                openDrawer = openDrawer
+                openDrawer = openDrawer,
+                topAppBarForegroundColor = topAppBarForegroundColor,
+                topAppBarBackgroundColor = topAppBarBackgroundColor
             )
         }
     ){ innerPadding ->

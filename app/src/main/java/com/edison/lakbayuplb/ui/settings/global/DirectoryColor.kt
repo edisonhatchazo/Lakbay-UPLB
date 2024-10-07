@@ -1,6 +1,5 @@
 package com.edison.lakbayuplb.ui.settings.global
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -26,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
+import com.edison.lakbayuplb.ui.screen.DirectoryTopAppBar
 import kotlinx.coroutines.launch
 
 object DirectoryColorsDestination: NavigationDestination {
@@ -41,8 +41,12 @@ object DirectoryColorsDestination: NavigationDestination {
 fun ColorDirectory(
     onNavigateUp: () -> Unit,
     canNavigateBack: Boolean = true,
-    viewModel: DirectoryColorViewModel = viewModel(factory = AppViewModelProvider.Factory)
-){
+    viewModel: DirectoryColorViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
+    val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
+    val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
+
     val collegeFullName = viewModel.college
     val previousColorId = viewModel.previousColorId
     val fullNameToAbbreviation = mapOf(
@@ -66,7 +70,9 @@ fun ColorDirectory(
             DirectoryTopAppBar(
                 title =  "Select Color for $collegeAbbreviation" ,
                 canNavigateBack = canNavigateBack,
-                onNavigateUp = onNavigateUp
+                onNavigateUp = onNavigateUp,
+                topAppBarBackgroundColor = topAppBarBackgroundColor,
+                topAppBarForegroundColor = topAppBarForegroundColor
             )
         }
     ) { innerPadding ->
@@ -90,7 +96,7 @@ fun DirectoryColorScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val colors by viewModel.existingColors.collectAsState()
-    Log.d("Color","ID: $previousColorId")
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
         contentPadding = PaddingValues(8.dp),

@@ -7,6 +7,10 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.edison.lakbayuplb.LakbayUPLBApplication
 import com.edison.lakbayuplb.algorithm.SearchViewModel
+import com.edison.lakbayuplb.ui.buildingScreens.pins.PinsDetailsViewModel
+import com.edison.lakbayuplb.ui.buildingScreens.pins.PinsEditViewModel
+import com.edison.lakbayuplb.ui.buildingScreens.pins.PinsEntryViewModel
+import com.edison.lakbayuplb.ui.buildingScreens.pins.PinsViewModel
 import com.edison.lakbayuplb.ui.buildingScreens.uplb.buildings.BuildingDetailsViewModel
 import com.edison.lakbayuplb.ui.buildingScreens.uplb.buildings.BuildingEditViewModel
 import com.edison.lakbayuplb.ui.buildingScreens.uplb.buildings.BuildingEntryViewModel
@@ -28,14 +32,12 @@ import com.edison.lakbayuplb.ui.settings.colors.ColorSchemeDetailsViewModel
 import com.edison.lakbayuplb.ui.settings.colors.ColorSchemeEditViewModel
 import com.edison.lakbayuplb.ui.settings.colors.ColorSchemeEntryViewModel
 import com.edison.lakbayuplb.ui.settings.colors.ColorSchemeHomeViewModel
+import com.edison.lakbayuplb.ui.settings.global.AppPreferences
 import com.edison.lakbayuplb.ui.settings.global.CollegeDirectoryViewModel
 import com.edison.lakbayuplb.ui.settings.global.DirectoryColorViewModel
 import com.edison.lakbayuplb.ui.settings.global.RouteSettingsViewModel
+import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import com.edison.lakbayuplb.ui.theme.ColorPaletteViewModel
-import com.edison.lakbayuplb.ui.buildingScreens.pins.PinsDetailsViewModel
-import com.edison.lakbayuplb.ui.buildingScreens.pins.PinsEditViewModel
-import com.edison.lakbayuplb.ui.buildingScreens.pins.PinsEntryViewModel
-import com.edison.lakbayuplb.ui.buildingScreens.pins.PinsViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory{
@@ -257,6 +259,13 @@ object AppViewModelProvider {
         initializer{
             DirectoryColorViewModel(
                 this.createSavedStateHandle(),
+                lakbayUPLBApplication().container.colorSchemesRepository
+            )
+        }
+
+        initializer{
+            TopAppBarColorSchemesViewModel(
+                AppPreferences(lakbayUPLBApplication().applicationContext),
                 lakbayUPLBApplication().container.colorSchemesRepository
             )
         }
