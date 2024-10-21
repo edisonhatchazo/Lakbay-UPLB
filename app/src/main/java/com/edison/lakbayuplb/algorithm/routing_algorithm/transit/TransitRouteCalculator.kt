@@ -141,7 +141,7 @@ suspend fun calculateSingleTransitRoute(
     val dispatcher = Executors.newFixedThreadPool(numberOfThreads).asCoroutineDispatcher()
 
     try {
-        withTimeout(100_000) { // Set timeout to ensure no long-running tasks
+        withTimeout(10_000_000) { // Set timeout to ensure no long-running tasks
             coroutineScope {
                 val jobs = allStartBusStops.chunked(numberOfThreads).flatMap { chunkedStartBusStops ->
                     chunkedStartBusStops.map { startBusStop ->
@@ -170,7 +170,7 @@ suspend fun calculateSingleTransitRoute(
                                         // Calculate transit route
                                         val routeCoordinates = findRouteCoordinates(startBusStop, endBusStop, busRoutes)
                                         val transitRoute = repository.getRouteWithPredefinedPath(
-                                            "driving",
+                                            "transit",
                                             routeCoordinates.coordinates, // Predefined coordinates from the bus route
                                             "#FF0000",
                                             routeSettingsViewModel
@@ -222,4 +222,74 @@ suspend fun calculateSingleTransitRoute(
     }
 
     return optimalRoute as List<RouteWithLineString>
+}
+
+
+fun findOptimalBusStop(
+    nearestKaliwaBusStops: List<BusStop>,
+    nearestKananBusStops: List<BusStop>,
+    nearestForestryBusStops: List<BusStop>,
+    userLat: Double,
+    userLon: Double,
+    distanceThreshold: Double // Threshold distance in meters
+): BusStop {
+    // Combine all the nearest bus stops from Kaliwa, Kanan, and Forestry
+    val allNearestBusStops = nearestKaliwaBusStops + nearestKananBusStops + nearestForestryBusStops
+
+    // Initialize variables to track the optimal bus stop or midpoint
+    var optimalBusStop: BusStop? = null
+    var shortestDistance = Double.MAX_VALUE
+
+    // Compare all the nearest bus stops to find the optimal one
+    for (busStop in allNearestBusStops) {
+        // Calculate the distance from the user's location to this bus stop
+        val distanceToUser = calculateDistance(userLat, userLon, busStop.lat, busStop.lon)
+
+        // If the distance is less than the current shortest distance, update the optimal bus stop
+        if (distanceToUser < shortestDistance) {
+            shortestDistance = distanceToUser
+            optimalBusStop = busStop
+        }
+    }
+
+
+    for (startBusStop in allNearestBusStops) {
+        for (endBusStop in allNearestBusStops) {
+            // Avoid comparing the same bus stop
+            if (startBusStop != endBusStop) {
+                // Calculate the distance between these two bus stops
+                val distanceBetweenBusStops = calculateDistance(startBusStop.lat, startBusStop.lon, endBusStop.lat, endBusStop.lon)
+
+                // If the bus stops are closer than the threshold, calculate the midpoint
+                if (distanceBetweenBusStops <= distanceThreshold) {
+                    val midpointLatLon = calculateMidpoint(startBusStop, endBusStop)
+
+                    // Create a temporary "midpoint" bus stop with a virtual name
+                    val midpointBusStop = BusStop(
+                        name = "Drop Off",
+                        lat = midpointLatLon.first,
+                        lon = midpointLatLon.second
+                    )
+
+                    // Calculate the distance from the user to the midpoint
+                    val distanceToMidpoint = calculateDistance(userLat, userLon, midpointLatLon.first, midpointLatLon.second)
+
+                    // Update the optimal bus stop if the midpoint is closer to the user than the current optimal stop
+                    if (distanceToMidpoint < shortestDistance) {
+                        shortestDistance = distanceToMidpoint
+                        optimalBusStop = midpointBusStop
+                    }
+                }
+            }
+        }
+    }
+
+    return optimalBusStop ?: throw IllegalArgumentException("No valid bus stop found")
+}
+
+// Helper function: Calculate the midpoint between two bus stops
+fun calculateMidpoint(startBusStop: BusStop, endBusStop: BusStop): Pair<Double, Double> {
+    val midLat = (startBusStop.lat + endBusStop.lat) / 2
+    val midLon = (startBusStop.lon + endBusStop.lon) / 2
+    return Pair(midLat, midLon)
 }

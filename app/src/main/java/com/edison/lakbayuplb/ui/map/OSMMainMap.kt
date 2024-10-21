@@ -17,10 +17,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.graphics.toColor
 import com.edison.lakbayuplb.R
 import com.edison.lakbayuplb.algorithm.routing_algorithm.RouteWithLineString
 import org.json.JSONObject
-import org.maplibre.android.geometry.LatLng
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.MapTileProviderArray
 import org.osmdroid.tileprovider.modules.MBTilesFileArchive
@@ -34,9 +34,6 @@ import org.osmdroid.views.overlay.Overlay
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
 import java.io.File
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.sin
 
 @Composable
 fun OSMMapView(
@@ -161,9 +158,11 @@ class OSMainMap(
         if (initialLocation != null) {
             addTextMarkerOverlay(
                 initialLocation,
-                title = "Your Location",
+                title = "",
                 snippet = "",
-                iconResId = R.drawable.icons8_circle_18___
+                iconResId = R.drawable.icons8_circle_18___,
+                backgroundColor = Color.TRANSPARENT.toColor(),
+                foreGroundColor = Color.TRANSPARENT.toColor()
             )
             mapView.controller.setCenter(initialLocation)
         }
@@ -173,7 +172,10 @@ class OSMainMap(
                 destinationLocation,
                 title = title,
                 snippet = snippet,
-                iconResId = R.drawable.marker_48
+                iconResId = R.drawable.marker_48,
+                backgroundColor = Color.WHITE.toColor(),
+                foreGroundColor = Color.BLACK.toColor()
+
             )
         }
 
@@ -205,7 +207,7 @@ class OSMainMap(
             setPoints(geoPoints)
             outlinePaint.apply {
                 color = Color.parseColor(route.colorCode)  // Set the color
-                strokeWidth = 5f  // Set the stroke width
+                strokeWidth = 15f  // Set the stroke width
             }
         }
 
@@ -217,14 +219,21 @@ class OSMainMap(
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    private fun addTextMarkerOverlay(position: GeoPoint?, title: String, snippet: String, iconResId: Int) {
+    private fun addTextMarkerOverlay(
+        position: GeoPoint?,
+        title: String,
+        snippet: String,
+        iconResId: Int,
+        backgroundColor: Color,
+        foreGroundColor: Color
+    ) {
         if (position == null) {
             return
         }
 
         val iconDrawable = context.getDrawable(iconResId) ?: return
 
-        val textMarkerOverlay = TextMarkerOverlay(position, title, snippet, iconDrawable)
+        val textMarkerOverlay = TextMarkerOverlay(position, title, snippet, iconDrawable, backgroundColor = backgroundColor,foreGroundColor = foreGroundColor)
         mapView.overlays.add(textMarkerOverlay)
     }
 }
@@ -234,7 +243,9 @@ class TextMarkerOverlay(
     private val title: String,
     private val snippet: String,
     private val icon: Drawable,
-    private val textSize: Float = 40f
+    private val textSize: Float = 40f,
+    private val backgroundColor: Color,
+    private val foreGroundColor: Color
 ) : Overlay() {
 
     override fun draw(canvas: Canvas?, mapView: MapView?, shadow: Boolean) {
@@ -254,7 +265,7 @@ class TextMarkerOverlay(
 
         // Prepare Paint for drawing text
         val textPaint = Paint().apply {
-            color = Color.BLACK
+            color = foreGroundColor.toArgb()
             textSize = this@TextMarkerOverlay.textSize
             isAntiAlias = true
             textAlign = Paint.Align.CENTER
@@ -262,7 +273,7 @@ class TextMarkerOverlay(
 
         // Prepare Paint for drawing the background rectangle
         val backgroundPaint = Paint().apply {
-            color = Color.WHITE
+            color = backgroundColor.toArgb()
             style = Paint.Style.FILL
         }
 
@@ -307,20 +318,4 @@ class TextMarkerOverlay(
         // Restore the canvas state (important to undo the rotation)
         canvas?.restore()
     }
-}
-
-fun Double.format(digits: Int) = "%.${digits}f".format(this)
-
-fun calculateBearing(start: LatLng, end: LatLng): Double {
-    val lat1 = Math.toRadians(start.latitude)
-    val lon1 = Math.toRadians(start.longitude)
-    val lat2 = Math.toRadians(end.latitude)
-    val lon2 = Math.toRadians(end.longitude)
-
-    val dLon = lon2 - lon1
-    val y = sin(dLon) * cos(lat2)
-    val x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon)
-    val bearing = Math.toDegrees(atan2(y, x))
-
-    return ((bearing + 360) % 360)
 }

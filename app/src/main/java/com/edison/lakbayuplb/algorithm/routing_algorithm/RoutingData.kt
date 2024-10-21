@@ -9,13 +9,14 @@ data class Node(
 data class Edge(
     val source: Node,
     val destination: Node,
-    val weight: Double  // Distance or time
+    val weight: Double,
+    val isCrossing: Boolean = false // Flag to indicate if this is a crossing
 )
 
 open class Graph {
     var nodes: List<Node> = emptyList() // Default to an empty list
     var edges: List<Edge> = emptyList() // Default to an empty list
-
+    var crossings: List<Node> = emptyList()
     // Get neighbors of a node (for Dijkstra's traversal)
     fun getNeighbors(node: Node): List<Node> {
         return edges.filter { it.source == node }.map { it.destination }

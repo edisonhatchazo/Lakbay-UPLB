@@ -297,17 +297,17 @@ fun GuideMapPointPickerDialog(
 
                 if (showMapDialog) {
                     val pinTitle = if (isSelectingStartPoint) "Start" else "Destination"
-//                    LocationPickerMap(
-//                        latitude = 14.16747822735461,
-//                        longitude = 121.24338486047947,
-//                        pinTitle = pinTitle,
-//                        onMapClick = { lat, lng ->
-//
-//                            onStartPointSelected(lat, lng)
-//
-//                            showMapDialog = false
-//                        }
-//                    )
+                    LocationPickerMap(
+                        latitude = 14.16747822735461,
+                        longitude = 121.24338486047947,
+                        pinTitle = pinTitle,
+                        onMapClick = { lat, lng ->
+
+                            onStartPointSelected(lat, lng)
+
+                            showMapDialog = false
+                        }
+                    )
                 }
             }
         }

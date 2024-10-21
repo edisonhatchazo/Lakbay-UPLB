@@ -2,6 +2,7 @@ package com.edison.lakbayuplb.ui.map
 
 import android.app.Application
 import android.util.Log
+import androidx.compose.runtime.saveable.Saver
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -160,3 +161,14 @@ class MapViewModel(private val repository: LocalRoutingRepository, application: 
 //    }
 }
 
+
+
+// Custom Saver for GeoPoint to ensure it can be saved and restored properly
+fun geoPointSaver() = Saver<GeoPoint?, List<Double>>(
+    save = { geoPoint ->
+        geoPoint?.let { listOf(it.latitude, it.longitude) } ?: emptyList()
+    },
+    restore = { list ->
+        if (list.isNotEmpty()) GeoPoint(list[0], list[1]) else null
+    }
+)

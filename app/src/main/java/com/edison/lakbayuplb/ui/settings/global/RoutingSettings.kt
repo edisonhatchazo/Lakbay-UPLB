@@ -1,5 +1,6 @@
 package com.edison.lakbayuplb.ui.settings.global
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -28,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -97,63 +100,88 @@ fun RoutingScreen(
     val parkingRadius = viewModel.parkingRadius.collectAsState().value
 
     val toggle = viewModel.forestryRouteDoubleRideEnabled.collectAsState().value
-    Column(
-        modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(dimensionResource(id = R.dimen.padding_medium))
     ) {
-        Text("Speed:",style = MaterialTheme.typography.titleMedium)
+        item {
+            Text("Speed:", style = MaterialTheme.typography.titleMedium)
+        }
+        item {
+            RoutingDetail(
+                title = stringResource(R.string.walking_speed),
+                speed = "$walkingSpeed m/s",
+                onEditClick = {
+                    selectedSpeedType = SpeedType.WALKING
+                    showDialog = true
+                }
+            )
+        }
+        item {
+            RoutingDetail(
+                title = stringResource(R.string.cycling_speed),
+                speed = "$cyclingSpeed km/hr",
+                onEditClick = {
+                    selectedSpeedType = SpeedType.CYCLING
+                    showDialog = true
+                }
+            )
+        }
+        item {
+            TransportDetail(
+                title = stringResource(R.string.car_speed),
+                speed = "$carSpeed km/hr"
+            )
+        }
+        item {
+            TransportDetail(
+                title = stringResource(R.string.jeepney_speed),
+                speed = "$jeepneySpeed km/hr"
+            )
+        }
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                "Maximum Radius for Finding Parking (Car/Bicycle):",
+                style = MaterialTheme.typography.titleMedium
+            )
+            RoutingDetail(
+                title = stringResource(R.string.parking_radius),
+                speed = "$parkingRadius meters",
+                onEditClick = {
+                    selectedSpeedType = SpeedType.PARKING_RADIUS
+                    showDialog = true
+                }
+            )
+        }
 
-        RoutingDetail(
-            title = stringResource(R.string.walking_speed),
-            speed = "$walkingSpeed m/s",
-            onEditClick = {
-                selectedSpeedType = SpeedType.WALKING
-                showDialog = true
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                "The maximum distance you are willing to walk before considering riding a jeepney:",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            RoutingDetail(
+                title = stringResource(R.string.walking_distance),
+                speed = "$walkingDistance meters",
+                onEditClick = {
+                    selectedSpeedType = SpeedType.WALKING_DISTANCE
+                    showDialog = true
+                }
+            )
+        }
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text("Forestry Routes Double Ride:", style = MaterialTheme.typography.titleMedium)
+
+            ForestryRouteToggle(
+                title = stringResource(R.string.forestry_route),
+                initialToggleState = toggle
+            ) {
+                viewModel.setForestryRouteDoubleRideEnabled(it)
             }
-        )
-        RoutingDetail(
-            title = stringResource(R.string.cycling_speed),
-            speed = "$cyclingSpeed km/hr",
-            onEditClick = {
-                selectedSpeedType = SpeedType.CYCLING
-                showDialog = true
-            }
-        )
-        TransportDetail(
-            title = stringResource(R.string.car_speed),
-            speed = "$carSpeed km/hr")
-
-        TransportDetail(
-            title = stringResource(R.string.jeepney_speed),
-            speed = "$jeepneySpeed km/hr")
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Text("Maximum Radius for Finding Parking (Car/Bicycle):",style = MaterialTheme.typography.titleMedium)
-        RoutingDetail(
-            title = stringResource(R.string.parking_radius),
-            speed = "$parkingRadius meters",
-            onEditClick = {
-                selectedSpeedType = SpeedType.PARKING_RADIUS
-                showDialog = true
-            }
-        )
-
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Text("The maximum distance you are willing to walk before considering riding a jeepney:",style = MaterialTheme.typography.titleMedium)
-        Spacer(modifier = Modifier.height(8.dp))
-        RoutingDetail(
-            title = stringResource(R.string.walking_distance),
-            speed = "$walkingDistance meters",
-            onEditClick = {
-                selectedSpeedType = SpeedType.WALKING_DISTANCE
-                showDialog = true
-            }
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text("Forestry Routes Double Ride:",style = MaterialTheme.typography.titleMedium)
-
-        ForestryRouteToggle(title = stringResource(R.string.forestry_route), initialToggleState = toggle) {
-            viewModel.setForestryRouteDoubleRideEnabled(it)
         }
 
 
@@ -258,6 +286,14 @@ fun TransportDetail(
     speed: String,
 ) {
     val colors = MaterialTheme.colorScheme
+    val configuration = LocalConfiguration.current
+
+    // Determine the weight for the first spacer based on the screen orientation
+    val spacerWeight = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        0.7f  // Use 0.7f for landscape mode
+    } else {
+        0.25f // Use 0.25f for portrait mode
+    }
 
     Row(
         modifier = Modifier
@@ -265,14 +301,13 @@ fun TransportDetail(
             .padding(dimensionResource(id = R.dimen.padding_medium)),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = title,color = colors.onSurface)
-        Spacer(modifier = Modifier.weight(0.25f))
+        Text(text = title, color = colors.onSurface)
+        Spacer(modifier = Modifier.weight(spacerWeight))  // Use dynamic weight based on orientation
         Text(text = speed, color = colors.onSecondary)
         Spacer(modifier = Modifier.weight(0.25f))
-
     }
-
 }
+
 
 @Composable
 fun SpeedInputDialog(

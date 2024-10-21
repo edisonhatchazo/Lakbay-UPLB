@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
@@ -43,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.edison.lakbayuplb.R
 import com.edison.lakbayuplb.ui.screen.Screen
-
 @Composable
 fun NavigationDrawerContent(navController: NavHostController, closeDrawer: () -> Unit) {
     Box(
@@ -53,142 +53,157 @@ fun NavigationDrawerContent(navController: NavHostController, closeDrawer: () ->
             .background(MaterialTheme.colorScheme.surface)
             .padding(12.dp)
     ) {
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxHeight()
                 .padding(top = 10.dp)
         ) {
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 50.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.lakbay_uplb),  // Use your app icon resource
-                    contentDescription = null,
-                    modifier = Modifier.size(70.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Image(
-                    painter = painterResource(id = R.drawable.lakbay_uplb_text),  // Use your app icon resource
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(110.dp)
-                        .padding(bottom = 20.dp)
-                )
-            }
-
-            Divider()
-
-            // Navigation items
-            DrawerDropdownMenu(
-                iconResId = R.drawable.icons8_class_18___,
-                title = "Classes",
-                items = listOf(
-                    DrawerMenuItem("Class Schedule Screen", Icons.Filled.DateRange) {
-                        navController.navigate(Screen.Schedules.route)
-                        closeDrawer()
-                    },
-                    DrawerMenuItem("Classes Screen", Icons.Filled.List) {
-                        navController.navigate(Screen.Classes.route)
-                        closeDrawer()
-                    }
-                )
-            )
-            DrawerDropdownMenu(
-                iconResId = R.mipmap.blue_book,
-                title = "Exams",
-                items = listOf(
-                    DrawerMenuItem("Exams Schedule Screen", Icons.Filled.DateRange) {
-                        navController.navigate(Screen.ExamSchedule.route)
-                        closeDrawer()
-                    },
-                    DrawerMenuItem("Exams Screen", Icons.Filled.List) {
-                        navController.navigate(Screen.Exams.route)
-                        closeDrawer()
-                    }
-                )
-            )
-            DrawerDropdownMenu(
-                iconResId = R.drawable.icons8_school_building_18___,
-                title = "Location",
-                items = listOf(
-                    DrawerMenuItem("Buildings Screen", Icons.Filled.List) {
-                        navController.navigate(Screen.Buildings.route)
-                        closeDrawer()
-                    },
-                    DrawerMenuItem("My Own Pins Screen", Icons.Filled.LocationOn) {
-                        navController.navigate(Screen.Pins.route)
-                        closeDrawer()
-                    }
-                )
-            )
-
-            TextButton(
-                onClick = {
-                    navController.navigate(Screen.Map.route)
-                    closeDrawer()
-                },
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(0.dp)  // Remove padding to align text to the start
-            ) {
+            item {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 50.dp)
                 ) {
                     Image(
-                        painter = painterResource(R.mipmap.map_icon),
-                        contentDescription = null,  // Provide a content description for accessibility
-                        modifier = Modifier.size(24.dp),  // Adjust the size as needed
-                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
+                        painter = painterResource(id = R.drawable.lakbay_uplb),  // Use your app icon resource
+                        contentDescription = null,
+                        modifier = Modifier.size(70.dp)
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text("Map", modifier = Modifier.weight(1f))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.lakbay_uplb_text),  // Use your app icon resource
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(110.dp)
+                            .padding(bottom = 20.dp)
+                    )
+                }
+
+                Divider()
+            }
+
+            // Add each DrawerDropdownMenu or TextButton as a new item in the LazyColumn
+            item {
+                DrawerDropdownMenu(
+                    iconResId = R.drawable.icons8_class_18___,
+                    title = "Classes",
+                    items = listOf(
+                        DrawerMenuItem("Class Schedule Screen", Icons.Filled.DateRange) {
+                            navController.navigate(Screen.Schedules.route)
+                            closeDrawer()
+                        },
+                        DrawerMenuItem("Classes Screen", Icons.Filled.List) {
+                            navController.navigate(Screen.Classes.route)
+                            closeDrawer()
+                        }
+                    )
+                )
+            }
+
+            item {
+                DrawerDropdownMenu(
+                    iconResId = R.mipmap.blue_book,
+                    title = "Exams",
+                    items = listOf(
+                        DrawerMenuItem("Exams Schedule Screen", Icons.Filled.DateRange) {
+                            navController.navigate(Screen.ExamSchedule.route)
+                            closeDrawer()
+                        },
+                        DrawerMenuItem("Exams Screen", Icons.Filled.List) {
+                            navController.navigate(Screen.Exams.route)
+                            closeDrawer()
+                        }
+                    )
+                )
+            }
+
+            item {
+                DrawerDropdownMenu(
+                    iconResId = R.drawable.icons8_school_building_18___,
+                    title = "Location",
+                    items = listOf(
+                        DrawerMenuItem("Buildings Screen", Icons.Filled.List) {
+                            navController.navigate(Screen.Buildings.route)
+                            closeDrawer()
+                        },
+                        DrawerMenuItem("My Own Pins Screen", Icons.Filled.LocationOn) {
+                            navController.navigate(Screen.Pins.route)
+                            closeDrawer()
+                        }
+                    )
+                )
+            }
+
+            item {
+                TextButton(
+                    onClick = {
+                        navController.navigate(Screen.Map.route)
+                        closeDrawer()
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(0.dp)  // Remove padding to align text to the start
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Image(
+                            painter = painterResource(R.mipmap.map_icon),
+                            contentDescription = null,  // Provide a content description for accessibility
+                            modifier = Modifier.size(24.dp),  // Adjust the size as needed
+                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Text("Map", modifier = Modifier.weight(1f))
+                    }
                 }
             }
 
-            TextButton(
-                onClick = {
-                    navController.navigate(Screen.Settings.route)
-                    closeDrawer()
-                },
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(0.dp)  // Remove padding to align text to the start
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start,
-                    modifier = Modifier.fillMaxWidth()
+            item {
+                TextButton(
+                    onClick = {
+                        navController.navigate(Screen.Settings.route)
+                        closeDrawer()
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(0.dp)  // Remove padding to align text to the start
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.Settings,
-                        contentDescription = null
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text("Settings", modifier = Modifier.weight(1f))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Settings,
+                            contentDescription = null
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Text("Settings", modifier = Modifier.weight(1f))
+                    }
                 }
             }
 
-            TextButton(
-                onClick = {
-                    closeDrawer()
-                },
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(0.dp)  // Remove padding to align text to the start
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start,
-                    modifier = Modifier.fillMaxWidth()
+            item {
+                TextButton(
+                    onClick = {
+                        closeDrawer()
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(0.dp)  // Remove padding to align text to the start
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.Info,
-                        contentDescription = null
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text("About", modifier = Modifier.weight(1f))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Info,
+                            contentDescription = null
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Text("About", modifier = Modifier.weight(1f))
+                    }
                 }
             }
         }
@@ -207,6 +222,7 @@ fun NavigationDrawerContent(navController: NavHostController, closeDrawer: () ->
         }
     }
 }
+
 
 
 @Composable

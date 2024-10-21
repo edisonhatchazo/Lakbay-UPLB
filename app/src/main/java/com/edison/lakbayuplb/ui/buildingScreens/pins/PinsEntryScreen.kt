@@ -26,7 +26,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -34,12 +33,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
 import com.edison.lakbayuplb.algorithm.ColorPickerDialog
+import com.edison.lakbayuplb.algorithm.MapSelectionDialog
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.CoordinateEntryScreenTopAppBar
 import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import kotlinx.coroutines.launch
-import org.maplibre.android.geometry.LatLng
+import org.osmdroid.util.GeoPoint
 
 object PinsEntryDestination: NavigationDestination {
     override val route = "pins_entry"
@@ -122,28 +122,29 @@ fun PinsEntryBody(
         }
     }
 }
-
 @Composable
 fun PinsInputForm(
+    modifier: Modifier = Modifier,
     pinsDetails: PinsDetails,
     onValueChange: (PinsDetails) -> Unit,
-    viewModel:PinsEntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    modifier: Modifier = Modifier,
+    viewModel: PinsEntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
     enabled: Boolean = true
-){
-    var selectedLocation by remember { mutableStateOf(LatLng(pinsDetails.latitude, pinsDetails.longitude)) }
+) {
+    var selectedLocation by remember { mutableStateOf(GeoPoint(pinsDetails.latitude, pinsDetails.longitude)) }
+    var showMapDialog by remember { mutableStateOf(false) }
     var showColorPicker by remember { mutableStateOf(false) }
-    val context = LocalContext.current
+
     val colorEntry = viewModel.colorSchemesUiState
     val coroutineScope = rememberCoroutineScope()
+
     // Update pinsDetails when selectedLocation changes
     LaunchedEffect(selectedLocation) {
         onValueChange(pinsDetails.copy(latitude = selectedLocation.latitude, longitude = selectedLocation.longitude))
     }
 
+    // Sync selectedLocation with pinsDetails when pinsDetails changes
     LaunchedEffect(pinsDetails) {
-        val newLocation = LatLng(pinsDetails.latitude, pinsDetails.longitude)
-        selectedLocation = newLocation
+        selectedLocation = GeoPoint(pinsDetails.latitude, pinsDetails.longitude)
     }
 
     Column(
@@ -167,57 +168,18 @@ fun PinsInputForm(
             singleLine = true
         )
 
-//        Box(
-//            modifier = Modifier
-//                .height(300.dp)
-//                .fillMaxWidth()
-//        ) {
-//            AndroidView(
-//                modifier = Modifier.fillMaxSize(),
-//                factory = { context ->
-//                    MapLibre.getInstance(context, apiKey, tileServer)
-//                    MapView(context).apply {
-//                        getMapAsync { mapLibreMap ->
-//                            mapLibreMap.setStyle(mapType.styleUrl) { style ->
-//                                val location = LatLng(pinsDetails.latitude, pinsDetails.longitude)
-//                                mapLibreMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 18.0))
-//
-//                                // Add the marker icon to the style
-//                                style.addImage("marker-icon", BitmapFactory.decodeResource(context.resources, R.drawable.marker_48))
-//
-//                                // Initialize SymbolManager
-//                                val symbolManager = SymbolManager(this, mapLibreMap, style).apply {
-//                                    iconAllowOverlap = true
-//                                    textAllowOverlap = true
-//                                }
-//
-//                                // Add a marker (symbol)
-//                                val symbolOptions = SymbolOptions()
-//                                    .withLatLng(location)
-//                                    .withIconImage("marker-icon")
-//                                    .withTextField(pinsDetails.title)
-//                                    .withTextOffset(arrayOf(0f, 1.5f))
-//                                symbolManager.create(symbolOptions)
-//
-//                                mapLibreMap.addOnMapClickListener { latLng ->
-//                                    selectedLocation = latLng
-//                                    symbolManager.deleteAll()
-//                                    symbolManager.create(
-//                                        SymbolOptions()
-//                                            .withLatLng(latLng)
-//                                            .withIconImage("marker-icon")
-//                                            .withTextField(pinsDetails.title)
-//                                            .withTextOffset(arrayOf(0f, 1.5f))
-//                                    )
-//                                    true
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            )
-//        }
+        // Button to open the map dialog for location selection
+        OutlinedButton(
+            onClick = { showMapDialog = true },
+            shape = MaterialTheme.shapes.small,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+        ) {
+            Text("Select Location")
+        }
 
+        // Button to open color picker
         OutlinedButton(
             onClick = { showColorPicker = true },
             shape = MaterialTheme.shapes.small,
@@ -229,7 +191,7 @@ fun PinsInputForm(
             Text("Select Color", color = Color(colorEntry.colorSchemeDetails.fontColor))
         }
 
-
+        // Required fields label
         if (enabled) {
             Text(
                 text = stringResource(R.string.required_fields),
@@ -238,11 +200,24 @@ fun PinsInputForm(
         }
     }
 
+    // Display the map dialog when the button is clicked
+    if (showMapDialog) {
+        MapSelectionDialog(
+            initialLocation = selectedLocation,
+            onLocationSelected = { geoPoint ->
+                selectedLocation = geoPoint
+                showMapDialog = false
+            },
+            onDismiss = { showMapDialog = false }
+        )
+    }
+
+    // Display the color picker dialog when the button is clicked
     if (showColorPicker) {
         ColorPickerDialog(
             onColorSelected = { colorId ->
                 onValueChange(pinsDetails.copy(colorId = colorId))
-                coroutineScope.launch{
+                coroutineScope.launch {
                     viewModel.getColor(colorId)
                 }
                 showColorPicker = false
@@ -250,5 +225,4 @@ fun PinsInputForm(
             onDismiss = { showColorPicker = false }
         )
     }
-
 }

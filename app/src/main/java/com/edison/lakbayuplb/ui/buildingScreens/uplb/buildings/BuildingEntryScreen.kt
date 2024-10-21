@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
@@ -17,6 +18,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,19 +32,20 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
+import com.edison.lakbayuplb.algorithm.MapSelectionDialog
 import com.edison.lakbayuplb.ui.buildingScreens.uplb.BuildingDetails
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.EntryScreenTopAppBar
 import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import kotlinx.coroutines.launch
-import org.maplibre.android.geometry.LatLng
+import org.osmdroid.util.GeoPoint
 
 object BuildingEntryDestination: NavigationDestination {
     override val route = "building_entry"
@@ -132,6 +135,7 @@ fun BuildingInputForm(
     modifier: Modifier,
     enabled: Boolean = true
 ){
+    var showMapDialog by remember { mutableStateOf(false) }
     val colleges = listOf(
         "College of Arts and Sciences",
         "College of Development Communication",
@@ -147,16 +151,15 @@ fun BuildingInputForm(
         "Dormitory",
         "Landmark"
     )
-    var selectedLocation by remember { mutableStateOf(LatLng(buildingDetails.latitude, buildingDetails.longitude)) }
+    var selectedLocation by remember { mutableStateOf(GeoPoint(buildingDetails.latitude, buildingDetails.longitude)) }
 
-    val context = LocalContext.current
 
     LaunchedEffect(selectedLocation) {
         onValueChange(buildingDetails.copy(latitude = selectedLocation.latitude, longitude = selectedLocation.longitude))
     }
 
     LaunchedEffect(buildingDetails) {
-        val newLocation = LatLng(buildingDetails.latitude, buildingDetails.longitude)
+        val newLocation = GeoPoint(buildingDetails.latitude, buildingDetails.longitude)
         selectedLocation = newLocation
     }
 
@@ -232,54 +235,24 @@ fun BuildingInputForm(
                 }
             }
         }
-
-//        Box(
-//            modifier = Modifier.height(300.dp).fillMaxWidth()
-//        ) {
-//            AndroidView(
-//                modifier = Modifier.fillMaxSize(),
-//                factory = { context ->
-//                    MapLibre.getInstance(context, apiKey, tileServer)
-//                    MapView(context).apply {
-//                        getMapAsync { mapLibreMap ->
-//                            mapLibreMap.setStyle(mapType.styleUrl) { style ->
-//                                val location = LatLng(buildingDetails.latitude, buildingDetails.longitude)
-//                                mapLibreMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 18.0))
-//
-//                                // Add the marker icon to the style
-//                                style.addImage("marker-icon", BitmapFactory.decodeResource(context.resources, R.drawable.marker_48))
-//
-//                                // Initialize SymbolManager
-//                                val symbolManager = SymbolManager(this, mapLibreMap, style).apply {
-//                                    iconAllowOverlap = true
-//                                    textAllowOverlap = true
-//                                }
-//
-//                                // Add a marker (symbol)
-//                                val symbolOptions = SymbolOptions()
-//                                    .withLatLng(location)
-//                                    .withIconImage("marker-icon")
-//                                    .withTextField(buildingDetails.name)
-//                                    .withTextOffset(arrayOf(0f, 1.5f))
-//                                symbolManager.create(symbolOptions)
-//
-//                                mapLibreMap.addOnMapClickListener { latLng ->
-//                                    selectedLocation = latLng
-//                                    symbolManager.deleteAll()
-//                                    symbolManager.create(
-//                                        SymbolOptions()
-//                                            .withLatLng(latLng)
-//                                            .withIconImage("marker-icon")
-//                                            .withTextField(buildingDetails.name)
-//                                            .withTextOffset(arrayOf(0f, 1.5f))
-//                                    )
-//                                    true
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            )
-//        }
+        OutlinedButton(
+            onClick = { showMapDialog = true },
+            shape = MaterialTheme.shapes.small,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+        ) {
+            Text("Select Location")
+        }
+        if (showMapDialog) {
+            MapSelectionDialog(
+                initialLocation = selectedLocation,
+                onLocationSelected = { geoPoint ->
+                    selectedLocation = geoPoint
+                    showMapDialog = false
+                },
+                onDismiss = { showMapDialog = false }
+            )
+        }
     }
 }

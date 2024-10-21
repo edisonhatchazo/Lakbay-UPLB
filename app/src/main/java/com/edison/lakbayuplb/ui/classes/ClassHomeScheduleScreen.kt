@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -93,7 +94,7 @@ fun ScheduleScreenBody(
 
     classHomeUiState.classScheduleList.forEach { classSchedule ->
         val key = "${classSchedule.title} ${classSchedule.section}"
-        val slots = generateScheduleSlots(//Generates the Information that will be shown in the schedule
+        val slots = generateScheduleSlots( // Generates the Information that will be shown in the schedule
             classSchedule.title,
             classSchedule.section,
             classSchedule.time,
@@ -103,31 +104,35 @@ fun ScheduleScreenBody(
         classSlotsMap[key] = slots
     }
 
-    Column(
+    // Make the entire Column scrollable
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(contentPadding)
     ) {
-        // Headers
-        Row(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = "",
-                modifier = Modifier.width(50.dp),
-                textAlign = TextAlign.Center,
-                fontSize = 14.sp
-            )
-            listOf("M", "T", "W", "TH", "F", "S").forEach { day ->
+        // Add header as the first item in the LazyColumn
+        item {
+            // Headers
+            Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = day,
-                    modifier = Modifier.weight(1f),
+                    text = "",
+                    modifier = Modifier.width(50.dp),
                     textAlign = TextAlign.Center,
                     fontSize = 14.sp
                 )
+                listOf("M", "T", "W", "TH", "F", "S").forEach { day ->
+                    Text(
+                        text = day,
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.Center,
+                        fontSize = 14.sp
+                    )
+                }
             }
         }
 
-        // First loop: 7:00 AM to 12:00 PM
-        for (hour in 7..12) {  // This loop handles the morning hours from 7:00 AM to 12:00 PM
+        // Add time slots for 7:00 AM to 12:00 PM
+        items((7..12).toList()) { hour ->  // Convert the IntRange to a List
             for (half in 0..1) {
                 val timeLabel = if (half == 0) "$hour:00" else "$hour:30"
                 Row(
@@ -143,7 +148,7 @@ fun ScheduleScreenBody(
                         textAlign = TextAlign.Center,
                         fontSize = 12.sp
                     )
-                    for (day in listOf("M", "T", "W", "TH", "F", "S")) {
+                    listOf("M", "T", "W", "TH", "F", "S").forEach { day ->
                         val timeSlotStart = LocalTime.of(hour, half * 30)
                         val timeSlotEnd = timeSlotStart.plusMinutes(30)
                         val classForThisTime = classHomeUiState.classScheduleList.firstOrNull {
@@ -192,8 +197,8 @@ fun ScheduleScreenBody(
             }
         }
 
-        // Second loop: 1:00 PM to 7:00 PM
-        for (hour in 1..6) {  // This loop handles the afternoon hours from 1:00 PM to 7:00 PM
+        // Add time slots for 1:00 PM to 7:00 PM
+        items((1..6).toList()) { hour ->  // Convert the IntRange to a List
             for (half in 0..1) {
                 val timeLabel = if (half == 0) "$hour:00" else "$hour:30"
                 Row(
@@ -209,7 +214,7 @@ fun ScheduleScreenBody(
                         textAlign = TextAlign.Center,
                         fontSize = 12.sp
                     )
-                    for (day in listOf("M", "T", "W", "TH", "F", "S")) {
+                    listOf("M", "T", "W", "TH", "F", "S").forEach { day ->
                         val timeSlotStart = LocalTime.of(hour + 12, half * 30)  // Add 12 to shift the time to PM hours
                         val timeSlotEnd = timeSlotStart.plusMinutes(30)
                         val classForThisTime = classHomeUiState.classScheduleList.firstOrNull {
@@ -258,20 +263,24 @@ fun ScheduleScreenBody(
             }
         }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(40.dp)  // Ensure the row is tall enough for the text
-        ) {
-            Text(
-                text = "7:00",
+        // Extra slot for 7:00 PM
+        item {
+            Row(
                 modifier = Modifier
-                    .width(50.dp)
-                    .padding(end = 4.dp)
-                    .offset(y = (-8).dp),
-                textAlign = TextAlign.Center,
-                fontSize = 12.sp
-            )
+                    .fillMaxWidth()
+                    .height(40.dp)  // Ensure the row is tall enough for the text
+            ) {
+                Text(
+                    text = "7:00",
+                    modifier = Modifier
+                        .width(50.dp)
+                        .padding(end = 4.dp)
+                        .offset(y = (-8).dp),
+                    textAlign = TextAlign.Center,
+                    fontSize = 12.sp
+                )
+            }
         }
     }
+
 }

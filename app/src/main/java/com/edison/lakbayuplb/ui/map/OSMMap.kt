@@ -1,223 +1,235 @@
 package com.edison.lakbayuplb.ui.map
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Color
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.graphics.toColor
+import com.edison.lakbayuplb.R
+import com.edison.lakbayuplb.algorithm.routing_algorithm.RouteWithLineString
+import org.json.JSONObject
+import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.MapTileProviderArray
+import org.osmdroid.tileprovider.modules.MBTilesFileArchive
+import org.osmdroid.tileprovider.modules.MapTileFileArchiveProvider
+import org.osmdroid.tileprovider.tilesource.XYTileSource
+import org.osmdroid.tileprovider.util.SimpleRegisterReceiver
+import org.osmdroid.util.BoundingBox
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Polyline
+import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
+import java.io.File
 
 
-//
-//@OptIn(ExperimentalPermissionsApi::class)
-//@Composable
-//fun OSMMap(
-//    title: String,
-//    snippet: String,
-//    location: LatLng,
-//    initialLocation: LatLng?,
-//    routeViewModel: RouteSettingsViewModel,
-//    destinationLocation: LatLng,
-//    routeResponse: List<RouteWithLineString>?,
-//    osmMapType: OSMCustomMapType,
-//    modifier: Modifier = Modifier
-//) {
-//
-//    val context = LocalContext.current
-//    val permissionsState = rememberMultiplePermissionsState(
-//        listOf(
-//            Manifest.permission.ACCESS_FINE_LOCATION,
-//            Manifest.permission.ACCESS_COARSE_LOCATION
-//        )
-//    )
-//
-//    val walkingSpeed by routeViewModel.walkingSpeed.collectAsState()
-//    val cyclingSpeed by routeViewModel.cyclingSpeed.collectAsState()
-//    val carSpeed by routeViewModel.carSpeed.collectAsState()
-//    val jeepneySpeed by routeViewModel.jeepneySpeed.collectAsState()
-//
-//
-//    val minZoom = 14.0
-//    val maxZoom = 19.0
-//    val bounds = LatLngBounds.Builder()
-//        .include(LatLng(14.147,  121.227)) // Southwest corner
-//        .include(LatLng(14.178, 121.121)) // Northeast corner
-//        .build()
-//
-////    val bounds = LatLngBounds.Builder()
-////        .include(LatLng(14.116059432252356,  121.29498816252921)) // Southwest corner
-////        .include(LatLng(14.18336407476095, 121.19205689274669)) // Northeast corner
-////        .build()
-//    var mapViewKey by remember { mutableIntStateOf(0) }
-//    LaunchedEffect(Unit) {
-//        permissionsState.launchMultiplePermissionRequest()
-//    }
-//
-//    if (permissionsState.allPermissionsGranted) {
-//        var mapView by remember { mutableStateOf<MapView?>(null) }
-//        var symbolManager by remember { mutableStateOf<SymbolManager?>(null) }
-//        var symbols by remember { mutableStateOf<List<Symbol>>(emptyList()) }
-//
-//        MapLibre.getInstance(context)
-//        DisposableEffect(Unit) {
-//            onDispose {
-//                mapView?.onStop()
-//                mapView?.onDestroy()
-//                mapView = null
-//                symbolManager?.let {
-//                    it.delete(symbols)
-//                    it.onDestroy()
-//                }
-//                symbols = emptyList()
-//                symbolManager = null
-//            }
-//        }
-//
-//        LaunchedEffect(key1 = routeResponse,key2 = osmMapType) {
-//            symbolManager?.let {
-//                it.delete(symbols)
-//                symbols = emptyList()
-//                mapViewKey++ // Force map view reset
-//            }
-//            routeResponse?.forEach { routeWithLineString ->
-//                if(routeWithLineString.lineString!="") {
-//                    Log.d("OSMMainMap", "Bus Route Name: ${routeWithLineString.lineString}")
-//                }
-//            }
-//        }
-//
-//        LaunchedEffect(mapViewKey) {
-//            mapView?.getMapAsync { mapLibreMap ->
-//                mapLibreMap.setStyle(osmMapType.styleUrl) { style ->
-//
-//                    val manager = SymbolManager(mapView!!, mapLibreMap, style).apply {
-//                        iconAllowOverlap = true
-//                        textAllowOverlap = true
-//                    }
-//                    symbolManager = manager
-//
-//                    style.addImage("destination-icon", BitmapFactory.decodeResource(context.resources, R.drawable.marker_48))
-//                    style.addImage("initial-icon", BitmapFactory.decodeResource(context.resources, R.drawable.icons8_circle_18___))
-//                    style.addImage("walking-icon", BitmapFactory.decodeResource(context.resources, R.drawable.walking_icon))
-//                    style.addImage("cycling-icon", BitmapFactory.decodeResource(context.resources, R.drawable.cycling_icon))
-//                    style.addImage("car-icon", BitmapFactory.decodeResource(context.resources, R.drawable.car_icon))
-//                    style.addImage("transit-icon", BitmapFactory.decodeResource(context.resources, R.mipmap.transit))
-//
-//                    mapLibreMap.setMinZoomPreference(minZoom)
-//                    mapLibreMap.setMaxZoomPreference(maxZoom)
-//                    mapLibreMap.setLatLngBoundsForCameraTarget(bounds)
-//                    val cameraLocation = if (routeResponse.isNullOrEmpty()) {
-//                        location
-//                    } else {
-//                        initialLocation ?: location
-//                    }
-//                    mapLibreMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraLocation, 18.0))
-//
-//                    initialLocation?.let {
-//                        val bearing = destinationLocation?.let { dest ->
-//                            calculateBearing(it, dest)
-//                        } ?: 0f
-//                        mapLibreMap.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 18.0))
-//                        mapLibreMap.animateCamera(CameraUpdateFactory.bearingTo(bearing.toDouble()))
-//                    }
-//
-//                    if(initialLocation != null && destinationLocation != null) {
-//                        symbols = listOf(
-//                            manager.create(
-//                                SymbolOptions()
-//                                    .withLatLng(destinationLocation)
-//                                    .withIconImage("destination-icon")
-//                                    .withTextField(title)
-//                                    .withTextOffset(arrayOf(0f, 1.5f))
-//                            ),
-//                            manager.create(
-//                                SymbolOptions()
-//                                    .withLatLng(initialLocation)
-//                                    .withIconImage("initial-icon")
-//                                    .withTextField("Your Location")
-//                                    .withTextOffset(arrayOf(0f, 1.5f))
-//                            )
-//                        )
-//                    }
-//
-//                    routeResponse?.forEachIndexed { index, (route, color) ->
-//                        val coordinates = route.routes.first().legs.flatMap { leg ->
-//                            leg.steps.flatMap { step ->
-//                                PolylineUtils.decode(step.geometry, 5)
-//                            }
-//                        }.map {
-//                            Point.fromLngLat(it.longitude(), it.latitude())
-//                        }
-//
-//                        val distance = route.routes.first().distance // in meters
-//                        val selectedSpeed = when (routeResponse[index].profile) {
-//                            "foot" -> walkingSpeed
-//                            "bicycle" -> cyclingSpeed
-//                            "car" -> carSpeed
-//                            "transit" -> jeepneySpeed
-//                            else -> walkingSpeed // Default to car speed if route type is unknown
-//                        }
-//                        val duration = distance / selectedSpeed / 60 // in minutes
-//
-//                        val midpoint = coordinates[coordinates.size / 2]
-//                        val adjustedMidpoint = LatLng(midpoint.latitude() + 0.0002, midpoint.longitude() - 0.0002)
-//
-//                        val iconName = when (color) {
-//                            "#0000FF" -> "walking-icon" // Blue for walking
-//                            "#FFA500" -> "cycling-icon" // Orange for cycling
-//                            "#FF0000" -> "car-icon" // Red for car
-//                            "#00FF00" -> "transit-icon" // Green for transit
-//                            else -> "default-icon"
-//                        }
-//
-//
-//                        symbols += manager.create(
-//                            SymbolOptions()
-//                                .withLatLng(adjustedMidpoint)
-//                                .withIconImage(iconName)
-//                                .withTextField("${duration.toInt()} min\n${distance.format(2)} m")
-//                                .withTextOffset(arrayOf(0f, 1.5f))
-//                                .withTextJustify("auto")
-//                                .withTextAnchor("top")
-//                        )
-//
-//                        val routeFeature = Feature.fromGeometry(LineString.fromLngLats(coordinates))
-//                        val routeSource = GeoJsonSource("route-source-$index", FeatureCollection.fromFeature(routeFeature))
-//                        style.addSource(routeSource)
-//
-//                        val routeLayer = LineLayer("route-layer-$index", "route-source-$index").apply {
-//                            setProperties(
-//                                PropertyFactory.lineColor(Color.parseColor(color)),
-//                                PropertyFactory.lineWidth(5.0f)
-//                            )
-//                        }
-//                        style.addLayer(routeLayer)
-//
-//                    }
-//
-//
-//                }
-//            }
-//        }
-//
-//        AndroidView(
-//            modifier = modifier.fillMaxSize(),
-//            factory = {
-//                MapView(context).apply {
-//                    mapView = this
-//                }
-//            },
-//            update = {
-//                mapView = it
-//            }
-//        )
-//    } else {
-//        if (permissionsState.shouldShowRationale) {
-//            AlertDialog(
-//                onDismissRequest = { /* Do nothing */ },
-//                title = { Text("Permissions Required") },
-//                text = { Text("This app requires location permissions to show your position on the map.") },
-//                confirmButton = {
-//                    TextButton(onClick = { permissionsState.launchMultiplePermissionRequest() }) {
-//                        Text("OK")
-//                    }
-//                }
-//            )
-//        }
-//    }
-//}
-//
+@Composable
+fun GuideMapView(
+    modifier: Modifier,
+    title: String,
+    snippet: String,
+    initialLocation: GeoPoint?,
+    routeType: String,
+    routeResponse: List<RouteWithLineString>?,  // Route response
+    destinationLocation: GeoPoint?
+) {
+    val context = LocalContext.current
+
+    // Create an instance of OSMMainMap
+    val osmMainMap = remember { OSMainMap(context, title, snippet) }
+
+    // Use mutable state to track the initial and destination locations
+    var currentInitialLocation by remember { mutableStateOf(initialLocation) }
+    var currentDestinationLocation by remember { mutableStateOf(destinationLocation) }
+
+    // Update the state when locations change
+    LaunchedEffect(initialLocation, destinationLocation,routeResponse,routeType) {
+        currentInitialLocation = initialLocation
+        currentDestinationLocation = destinationLocation
+        osmMainMap.updateMarkers(currentInitialLocation, currentDestinationLocation)
+    }
+
+    // Initialize the map view
+    val mapView = remember { osmMainMap.initializeMap(currentInitialLocation, currentDestinationLocation) }
+
+    // Embed the MapView in AndroidView
+    AndroidView(
+        factory = { mapView },
+        modifier = modifier.fillMaxSize()
+    )
+
+    // Add route overlays if there is a route response
+    LaunchedEffect(routeResponse,routeType) {
+        routeResponse?.forEach { route ->
+            osmMainMap.addRouteOverlay(route)
+        }
+    }
+}
+class GuideMap(
+    private val context: Context,
+    private val title: String,
+    private val snippet: String
+) {
+
+    private lateinit var mapView: MapView
+
+    fun initializeMap(
+        initialLocation: GeoPoint?,
+        destinationLocation: GeoPoint?
+    ): MapView {
+        // Initialize OSMDroid configuration
+        Configuration.getInstance().load(context, context.getSharedPreferences("osmdroid_preferences", Context.MODE_PRIVATE))
+
+        // Create a MapView instance
+        mapView = MapView(context)
+
+        // Path to the MBTiles file
+        val mbTilesFile = File(context.getExternalFilesDir(null), "assets/map/UPLB.mbtiles")
+
+        if (mbTilesFile.exists()) {
+            // Create a tile source based on the MBTiles
+            val tileSource = XYTileSource(
+                "MBTiles",
+                17, 21, 256, ".png",
+                arrayOf()
+            )
+
+            // Set up the tile provider for MBTiles
+            val archiveFile = MBTilesFileArchive.getDatabaseFileArchive(mbTilesFile)
+            val tileProvider = MapTileProviderArray(
+                tileSource,
+                null,
+                arrayOf(MapTileFileArchiveProvider(SimpleRegisterReceiver(context), tileSource, arrayOf(archiveFile)))
+            )
+
+            // Set the tile provider for the MapView
+            mapView.setTileProvider(tileProvider)
+        }
+
+        // Enable multi-touch controls (for zoom and panning)
+        mapView.setMultiTouchControls(true)
+
+        // Set initial zoom and center on UPLB
+        mapView.controller.setZoom(20.0)
+        mapView.controller.setCenter(GeoPoint(14.165080369830758, 121.24152668957413)) // UPLB center
+
+        mapView.minZoomLevel = 17.0
+        mapView.maxZoomLevel = 21.0
+
+        // Set bounds (optional, if you want to limit the view to a specific area)
+        val boundingBox = BoundingBox(
+            14.178379933496627, 121.25898739159179,
+            14.147189880033771, 121.22749500166606
+        )
+
+        //
+        mapView.setScrollableAreaLimitDouble(boundingBox)
+
+        // Add a rotation gesture overlay for user interaction
+        val rotationGestureOverlay = RotationGestureOverlay(mapView)
+        rotationGestureOverlay.isEnabled = true
+        mapView.overlays.add(rotationGestureOverlay)
+
+        // Add markers if locations are not null
+        updateMarkers(initialLocation, destinationLocation)
+
+        // Force the map to refresh and apply changes
+        mapView.invalidate()
+
+        return mapView
+    }
+
+    fun updateMarkers(initialLocation: GeoPoint?, destinationLocation: GeoPoint?) {
+        // Clear existing markers
+        mapView.overlays.clear()
+
+        if (initialLocation != null) {
+            addTextMarkerOverlay(
+                initialLocation,
+                title = "",
+                snippet = "",
+                iconResId = R.drawable.icons8_circle_18___,
+                backgroundColor = Color.TRANSPARENT.toColor(),
+                foreGroundColor = Color.TRANSPARENT.toColor()
+            )
+            mapView.controller.setCenter(initialLocation)
+        }
+
+        if (destinationLocation != null) {
+            addTextMarkerOverlay(
+                destinationLocation,
+                title = title,
+                snippet = snippet,
+                iconResId = R.drawable.marker_48,
+                backgroundColor = Color.WHITE.toColor(),
+                foreGroundColor = Color.BLACK.toColor()
+
+            )
+        }
+
+        // Set center and refresh the map
+
+        mapView.invalidate()  // Ensure the map is refreshed
+
+        mapView.setMultiTouchControls(true)
+        val rotationGestureOverlay = RotationGestureOverlay(mapView)
+        rotationGestureOverlay.isEnabled = true
+        mapView.overlays.add(rotationGestureOverlay)
+    }
+
+    // New function to add polyline for route
+    fun addRouteOverlay(route: RouteWithLineString) {
+        // Parse the coordinates from the LineString in the RouteWithLineString
+        val jsonObject = JSONObject(route.lineString)
+        val coordinatesArray = jsonObject.getJSONArray("coordinates")
+
+        val geoPoints = mutableListOf<GeoPoint>()
+        for (i in 0 until coordinatesArray.length()) {
+            val coordinate = coordinatesArray.getJSONArray(i)
+            val lon = coordinate.getDouble(0)
+            val lat = coordinate.getDouble(1)
+            geoPoints.add(GeoPoint(lat, lon))
+        }
+        // Create a polyline for the route
+        val polyline = Polyline().apply {
+            setPoints(geoPoints)
+            outlinePaint.apply {
+                color = Color.parseColor(route.colorCode)  // Set the color
+                strokeWidth = 15f  // Set the stroke width
+            }
+        }
+
+        // Add the polyline to the map
+        mapView.overlays.add(polyline)
+
+        // Force the map to refresh and apply changes
+        mapView.invalidate()
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun addTextMarkerOverlay(
+        position: GeoPoint?,
+        title: String,
+        snippet: String,
+        iconResId: Int,
+        backgroundColor: Color,
+        foreGroundColor: Color
+    ) {
+        if (position == null) {
+            return
+        }
+
+        val iconDrawable = context.getDrawable(iconResId) ?: return
+
+        val textMarkerOverlay = TextMarkerOverlay(position, title, snippet, iconDrawable, backgroundColor = backgroundColor,foreGroundColor = foreGroundColor)
+        mapView.overlays.add(textMarkerOverlay)
+    }
+}

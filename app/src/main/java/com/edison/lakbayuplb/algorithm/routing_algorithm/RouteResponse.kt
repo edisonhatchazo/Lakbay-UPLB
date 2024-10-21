@@ -2,6 +2,14 @@ package com.edison.lakbayuplb.algorithm.routing_algorithm
 
 import com.edison.lakbayuplb.ui.settings.global.RouteSettingsViewModel
 
+data class FinalRoutes(
+    val profile: String,
+    val startLat: Double,
+    val startLon: Double,
+    val endLat: Double,
+    val endLon: Double
+)
+
 data class RouteWithLineString(
     val route: Route,        // The updated route object with legs, distance, etc.
     val colorCode: String,   // Color code for visualizing the route on the map
@@ -30,9 +38,6 @@ data class Step(
     val name: String = "" // Instruction for the step, e.g., "Turn right onto Main St"
 )
 
-data class NearestResponse(
-    val waypoints: List<Waypoint> // Waypoints in response to nearest points query
-)
 
 data class Waypoint(
     val location: List<Double> // Coordinates of the waypoint [longitude, latitude]

@@ -20,7 +20,7 @@ class LocalRoutingRepository(
 
     // This method is called to parse GeoJSON during app initialization
     fun initializeGraphs(context: Context) {
-        val profiles = listOf("foot", "bicycle", "driving")
+        val profiles = listOf("foot", "bicycle", "driving","transit")
         for (profile in profiles) {
             val graph = parseGeoJSON(context, profile)
             graphCache[profile] = graph

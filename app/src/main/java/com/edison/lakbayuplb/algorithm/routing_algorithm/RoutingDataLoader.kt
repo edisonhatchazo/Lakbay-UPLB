@@ -16,7 +16,7 @@ fun parseGeoJSON(context: Context, profile: String): Graph = runBlocking {
     val jsonObject = JSONObject(geoJsonString)
     val features = jsonObject.getJSONArray("features")
 
-    val nodeList = mutableMapOf<String, Node>()  // Use a map to avoid duplicate nodes
+    val nodeList = mutableMapOf<String, Node>()  // Map to store nodes and avoid duplicates
     val edgeList = mutableListOf<Edge>()
 
     for (i in 0 until features.length()) {
@@ -27,6 +27,9 @@ fun parseGeoJSON(context: Context, profile: String): Graph = runBlocking {
 
         // Detect if the road is one-way
         val isOneWay = properties.optString("oneway") == "yes"
+
+        // Detect if it's a pedestrian crossing
+        val isCrossing = properties.optString("highway") == "crossing"
 
         if (geometry.getString("type") == "LineString") {
             // Iterate through the coordinates to build edges
@@ -50,11 +53,11 @@ fun parseGeoJSON(context: Context, profile: String): Graph = runBlocking {
                 val distance = haversine(startNode.latitude, startNode.longitude, endNode.latitude, endNode.longitude)
 
                 // Create forward edge
-                edgeList.add(Edge(source = startNode, destination = endNode, weight = distance))
+                edgeList.add(Edge(source = startNode, destination = endNode, weight = distance, isCrossing = isCrossing))
 
                 // Only add the reverse edge if it's not a one-way road
                 if (!isOneWay) {
-                    edgeList.add(Edge(source = endNode, destination = startNode, weight = distance))
+                    edgeList.add(Edge(source = endNode, destination = startNode, weight = distance, isCrossing = isCrossing))
                 }
             }
         }
