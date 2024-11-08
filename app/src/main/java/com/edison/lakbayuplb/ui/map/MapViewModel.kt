@@ -1,7 +1,6 @@
 package com.edison.lakbayuplb.ui.map
 
 import android.app.Application
-import android.util.Log
 import androidx.compose.runtime.saveable.Saver
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -22,8 +21,11 @@ import org.osmdroid.util.GeoPoint
 
 class MapViewModel(private val repository: LocalRoutingRepository, application: Application) : AndroidViewModel(application) {
 
-    private val _routeResponse = MutableLiveData<List<RouteWithLineString>>()
-    val routeResponse: LiveData<List<RouteWithLineString>> = _routeResponse
+    private val _routeResponse =
+        MutableLiveData<MutableList<Pair<String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>>>()
+    val routeResponse: LiveData<MutableList<Pair<String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>>> =
+        _routeResponse
+
     var isCalculatingRoute = false
     private val _busStopsKaliwa = MutableLiveData<List<BusStop>>()
     private val _busStopsKanan = MutableLiveData<List<BusStop>>()
@@ -61,7 +63,6 @@ class MapViewModel(private val repository: LocalRoutingRepository, application: 
             _parkingSpots.postValue(parkingSpots)
         }
     }
-
     fun calculateRouteFromUserInput(
         profile: String,
         startLat: Double,
@@ -77,42 +78,37 @@ class MapViewModel(private val repository: LocalRoutingRepository, application: 
             val start = "$startLng,$startLat"
             val end = "$endLng,$endLat"
 
-            when (profile) {
+            // Initialize `routeResponse` to the new structure
+            val routeResponse: MutableList<Pair<String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>> = when (profile) {
+                "foot" -> {
+                    // Foot profile: only one walking route
+                    val walkingRoute = repository.getRoute(
+                        "foot",
+                        start,
+                        end,
+                        "#00FF00", // Green for walking
+                        routeSettingsViewModel
+                    ).toMutableList()
+                    mutableListOf("foot" to mutableListOf("foot" to walkingRoute))
+                }
                 "driving", "bicycle" -> {
-                    try {
-                        val routes = repository.getRouteWithParking(
-                            profile,
-                            start,
-                            end,
-                            colorCode,
-                            _parkingSpots.value ?: emptyList(),
-                            routeSettingsViewModel.parkingRadius.value,
-                            routeSettingsViewModel
-                        )
-                        _routeResponse.postValue(routes)
-                    } catch (e: IllegalArgumentException) {
-                        Log.d("No Parking", "No parking spot found within the specified radius.")
-                    }
+                    // Car or Bicycle profile
+                    val (mainRoute, walkToDestination) = repository.getRouteWithParking(
+                        profile,
+                        start,
+                        end,
+                        colorCode, // Red for car, blue for bicycle
+                        _parkingSpots.value ?: emptyList(),
+                        routeSettingsViewModel.parkingRadius.value,
+                        routeSettingsViewModel
+                    )
+                    mutableListOf(
+                        profile to mutableListOf(profile to mainRoute.toMutableList()),          // First: Car or bicycle route
+                        "foot" to mutableListOf("foot" to walkToDestination.toMutableList())    // Second: Walking route to destination
+                    )
                 }
                 "transit" -> {
-                    // Handle transit (combination of foot + bus routes)
-                    val routes = if (doubleTransit) {
-                        calculateDoubleTransitRoute(
-                            startLat,
-                            startLng,
-                            endLat,
-                            endLng,
-                            libraryPoint =  GeoPoint(14.16570083526473, 121.23851448662828),
-                            upGatePoint =  GeoPoint(14.167623176682682, 121.24295209618953),
-                            _busStopsKaliwa.value ?: emptyList(),
-                            _busStopsKanan.value ?: emptyList(),
-                            _busStopsForestry.value ?: emptyList(),
-                            busRoutes = busRoutes,
-                            routeSettingsViewModel.walkingDistance.value,
-                            repository,
-                            routeSettingsViewModel
-                        )
-                    } else {
+                    if (!doubleTransit) {
                         calculateSingleTransitRoute(
                             startLat,
                             startLng,
@@ -121,30 +117,44 @@ class MapViewModel(private val repository: LocalRoutingRepository, application: 
                             _busStopsKaliwa.value ?: emptyList(),
                             _busStopsKanan.value ?: emptyList(),
                             _busStopsForestry.value ?: emptyList(),
-                            busRoutes = busRoutes,
+                            busRoutes,
+                            routeSettingsViewModel.walkingDistance.value,
+                            repository,
+                            routeSettingsViewModel
+                        )
+                    } else {
+                        calculateDoubleTransitRoute(
+                            startLat,
+                            startLng,
+                            endLat,
+                            endLng,
+                            libraryPoint = GeoPoint(14.16570083526473, 121.23851448662828),
+                            upGatePoint = GeoPoint(14.167623176682682, 121.24295209618953),
+                            _busStopsKaliwa.value ?: emptyList(),
+                            _busStopsKanan.value ?: emptyList(),
+                            _busStopsForestry.value ?: emptyList(),
+                            busRoutes,
                             routeSettingsViewModel.walkingDistance.value,
                             repository,
                             routeSettingsViewModel
                         )
                     }
-                    _routeResponse.postValue(routes)
                 }
-                else -> {
-                    val routes = repository.getRoute(
-                        profile,
-                        start,
-                        end,
-                        colorCode,
-                        routeSettingsViewModel
-                    )
-                    _routeResponse.postValue(routes)
-                }
+
+                else -> mutableListOf()
             }
 
+            // Update `_routeResponse` with the newly formatted response
+            _routeResponse.postValue(routeResponse)
             isCalculatingRoute = false
         }
     }
 
+
+
+
+
+}
 //    fun updateInitialLocation(newLocation: GeoPoint) {
 //        _initialLocation.value = newLocation
 //        _selectedRouteType.value?.let { routeType ->
@@ -159,7 +169,7 @@ class MapViewModel(private val repository: LocalRoutingRepository, application: 
 //            }
 //        }
 //    }
-}
+
 
 
 

@@ -46,7 +46,7 @@ class LocationViewModel(
                 }
             }
         } catch (e: SecurityException) {
-            // Handle exception
+
         }
     }
 

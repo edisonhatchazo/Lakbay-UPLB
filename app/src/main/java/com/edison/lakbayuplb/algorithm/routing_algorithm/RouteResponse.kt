@@ -2,13 +2,6 @@ package com.edison.lakbayuplb.algorithm.routing_algorithm
 
 import com.edison.lakbayuplb.ui.settings.global.RouteSettingsViewModel
 
-data class FinalRoutes(
-    val profile: String,
-    val startLat: Double,
-    val startLon: Double,
-    val endLat: Double,
-    val endLon: Double
-)
 
 data class RouteWithLineString(
     val route: Route,        // The updated route object with legs, distance, etc.
@@ -38,12 +31,6 @@ data class Step(
     val name: String = "" // Instruction for the step, e.g., "Turn right onto Main St"
 )
 
-
-data class Waypoint(
-    val location: List<Double> // Coordinates of the waypoint [longitude, latitude]
-)
-
-
 fun calculateTotalDistance(nodes: List<Node>): Double {
     var totalDistance = 0.0
     for (i in 0 until nodes.size - 1) {
@@ -68,7 +55,7 @@ fun calculateTotalDuration(
         "bicycle" -> routeSettingsViewModel.cyclingSpeed.value
         "driving" -> routeSettingsViewModel.carSpeed.value
         "transit" -> routeSettingsViewModel.jeepneySpeed.value
-        else -> 1.4 // Default walking speed
+        else -> 1.0 // Default walking speed
     }
 
     // Calculate duration based on speed

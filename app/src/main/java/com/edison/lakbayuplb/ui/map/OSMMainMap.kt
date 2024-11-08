@@ -42,12 +42,11 @@ fun OSMMapView(
     snippet: String,
     initialLocation: GeoPoint?,
     routeType: String,
-    routeResponse: List<RouteWithLineString>?,  // Route response
+    routeResponse: MutableList<Pair<String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>>?,  // Route response
     destinationLocation: GeoPoint?
 ) {
     val context = LocalContext.current
 
-    // Create an instance of OSMMainMap
     val osmMainMap = remember { OSMainMap(context, title, snippet) }
 
     // Use mutable state to track the initial and destination locations
@@ -69,13 +68,15 @@ fun OSMMapView(
         factory = { mapView },
         modifier = modifier.fillMaxSize()
     )
-
     // Add route overlays if there is a route response
-    LaunchedEffect(routeResponse,routeType) {
-        routeResponse?.forEach { route ->
-            osmMainMap.addRouteOverlay(route)
+    LaunchedEffect(routeResponse, routeType) {
+        routeResponse?.forEachIndexed { _, routePair ->
+            routePair.second.firstOrNull()?.second?.forEach { routeWithLineString ->
+                osmMainMap.addRouteOverlay(routeWithLineString)
+            }
         }
     }
+
 }
 class OSMainMap(
     private val context: Context,
@@ -130,9 +131,12 @@ class OSMainMap(
 
         // Set bounds (optional, if you want to limit the view to a specific area)
         val boundingBox = BoundingBox(
-            14.178379933496627, 121.25898739159179,
+            14.199483653098456, 121.25590394224918,
             14.147189880033771, 121.22749500166606
         )
+
+        //14.199483653098456,
+        //14.16818796226134,
 
         //
         mapView.setScrollableAreaLimitDouble(boundingBox)

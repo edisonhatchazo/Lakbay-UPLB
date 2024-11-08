@@ -175,21 +175,39 @@ fun MapDetails(
     destinationLocation: GeoPoint?,
     routeViewModel: RouteSettingsViewModel,
     routeType: String,
-    routeResponse: List<RouteWithLineString>?,
+    routeResponse: MutableList<Pair<String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>>?,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
 
     var instructionList = mutableListOf<String>()
     var currentInstruction: String
-    var remainingDistance = 0
+    var remainingDistance = routeResponse?.getOrNull(0)?.second
+        ?.sumOf { pair ->
+            pair.second.sumOf { routeWithLineString ->
+                routeWithLineString.route.legs.sumOf { leg ->
+                    leg.distance
+                }
+            }
+        } ?: 0.0
     var turningDistance = 0
     var direction: String
-    var currentProfile = "foot"
+    var currentProfile = routeResponse?.getOrNull(0)?.first
     var currentImage = R.drawable.left
-    routeResponse?.forEach{routeWithLineString ->
-        val routeInstructions = generateRouteInstructions(routeWithLineString)
-        instructionList.addAll(routeInstructions)
+    remainingDistance = String.format("%.2f", remainingDistance).toDouble()
+
+    var destination = if((currentProfile == "driving" || currentProfile == "bicycle") && routeResponse?.size!! >1) "Parking"
+    else if(currentProfile == "foot" && routeResponse?.size!! > 1) "Jeepney Stop"
+    else if(currentProfile == "transit") "Drop Off" else "Destination"
+
+
+    routeResponse?.forEach { routePair ->
+        routePair.second.forEach { innerPair ->
+            innerPair.second.firstOrNull()?.let { routeWithLineString ->
+                val routeInstructions = generateRouteInstructions(routeWithLineString)
+                instructionList.addAll(routeInstructions)
+            }
+        }
     }
 
     if (instructionList.isNotEmpty()) {
@@ -207,13 +225,14 @@ fun MapDetails(
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT
 
-    var mode = when (routeType) {
+    var mode = when (currentProfile) {
         "foot" -> R.drawable.walking_icon  //Walking
         "bicycle" -> R.drawable.cycling_icon  // Blue for cycling
         "driving" -> R.drawable.car_icon  // Red for driving
         else -> R.mipmap.transit  // Black for any other type
     }
     val weight = .15f
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -224,11 +243,7 @@ fun MapDetails(
         OSMMapView(modifier,title,snippet,initialLocation,routeType,routeResponse,destinationLocation)
     }
     if(isPortrait) {
-        Column(
-            modifier = modifier
-                .padding(16.dp)
-
-        ) {
+        Column(modifier = modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -288,7 +303,7 @@ fun MapDetails(
                         modifier = Modifier.size(48.dp),
                         colorFilter = ColorFilter.tint(Color.White)
                     )
-                    Text(text = "${remainingDistance}m until \nDestination", color = Color.White, fontSize = 14.sp)
+                    Text(text = "${remainingDistance}m until \n$destination", color = Color.White, fontSize = 14.sp)
 
                 }
             }
@@ -349,7 +364,7 @@ fun MapDetails(
                     modifier = Modifier.size(48.dp),
                     colorFilter = ColorFilter.tint(Color.White)
                 )
-                Text(text = "${remainingDistance}m until \nDestination", color = Color.White, fontSize = 14.sp)
+                Text(text = "${remainingDistance}m until \n $destination", color = Color.White, fontSize = 14.sp)
             }
         }
     }

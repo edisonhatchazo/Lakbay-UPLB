@@ -1,18 +1,17 @@
 package com.edison.lakbayuplb.algorithm.routing_algorithm.transit
 
-import android.util.Log
 import com.edison.lakbayuplb.algorithm.routing_algorithm.LocalRoutingRepository
 import com.edison.lakbayuplb.algorithm.routing_algorithm.RouteWithLineString
 import com.edison.lakbayuplb.ui.settings.global.RouteSettingsViewModel
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withContext
 import org.osmdroid.util.GeoPoint
-import java.util.concurrent.Executors
 
-
+@OptIn(ExperimentalCoroutinesApi::class)
 suspend fun calculateDoubleTransitRoute(
     startLat: Double,
     startLon: Double,
@@ -27,69 +26,78 @@ suspend fun calculateDoubleTransitRoute(
     minimumWalkingDistance: Int,
     repository: LocalRoutingRepository,
     routeSettingsViewModel: RouteSettingsViewModel
-): List<RouteWithLineString> = coroutineScope {
+): MutableList<Pair<String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>> = coroutineScope {
 
-    val nearestLibraryBusStops = findNearestBusStops(busStopsKaliwa + busStopsKanan + busStopsForestry, libraryPoint.latitude, libraryPoint.longitude, 1)
-    val nearestUPGateBusStops = findNearestBusStops(busStopsKaliwa + busStopsKanan + busStopsForestry, upGatePoint.latitude, upGatePoint.longitude, 1)
-
-    val nearestLibraryBusStop = nearestLibraryBusStops.first()
-    val nearestUPGateBusStop = nearestUPGateBusStops.first()
-
-    // Waiting Time Penalties
+    // Define waiting time penalties
     val libraryWaitingTime = 120.0
     val upGateWaitingTime = 60.0
 
-    // Calculate paths A and B using A*
-    var pathA = calculateSingleTransitRoute(
-        startLat, startLon,
-        nearestLibraryBusStop.lat, nearestLibraryBusStop.lon,
-        busStopsKaliwa, busStopsKanan, busStopsForestry,
-        busRoutes, minimumWalkingDistance,repository, routeSettingsViewModel
-    )
+    // Determine the number of threads based on available cores
+    val coreCount = Runtime.getRuntime().availableProcessors()
+    val threadCount = when {
+        coreCount > 4 -> 5
+        coreCount == 4 -> 4
+        coreCount == 2 -> 2
+        else -> 1
+    }
+    val dispatcher = Dispatchers.IO.limitedParallelism(threadCount)
 
-    var pathB = calculateSingleTransitRoute(
-        startLat, startLon,
-        nearestUPGateBusStop.lat, nearestUPGateBusStop.lon,
-        busStopsKaliwa, busStopsKanan, busStopsForestry,
-        busRoutes, minimumWalkingDistance,repository, routeSettingsViewModel
-    )
+    // Launch path calculations on different threads
+    val (pathA, pathB, pathC, pathD, pathE) = withContext(dispatcher) {
+        listOf(
+            async { calculateSingleTransitRoute(startLat, startLon, libraryPoint.latitude, libraryPoint.longitude, busStopsKaliwa, busStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository, routeSettingsViewModel) },
+            async { calculateSingleTransitRoute(startLat, startLon, upGatePoint.latitude, upGatePoint.longitude, busStopsKaliwa, busStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository, routeSettingsViewModel) },
+            async { calculateSingleTransitRoute(libraryPoint.latitude, libraryPoint.longitude, endLat, endLon, busStopsKaliwa, busStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository, routeSettingsViewModel) },
+            async { calculateSingleTransitRoute(upGatePoint.latitude, upGatePoint.longitude, endLat, endLon, busStopsKaliwa, busStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository, routeSettingsViewModel) },
+            async { calculateSingleTransitRoute(startLat, startLon, endLat, endLon, busStopsKaliwa, busStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository, routeSettingsViewModel) }
+        ).awaitAll()
+    }
 
-    // Calculate paths C and D
-    val pathC = calculateSingleTransitRoute(
-        libraryPoint.latitude, libraryPoint.longitude,
-        endLat, endLon,
-        busStopsKaliwa, busStopsKanan, busStopsForestry,
-        busRoutes, minimumWalkingDistance,repository, routeSettingsViewModel
-    )
+    // Utility function to calculate total path duration
+    fun calculateTotalDuration(
+        path: MutableList<Pair<String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>>
+    ): Double {
+        // Calculate walking duration and distance, using the first available RouteWithLineString for each foot segment
+        val walkingDuration = path.filter { it.first == "foot" }.sumOf { outerPair ->
+            outerPair.second.sumOf { innerPair ->
+                val routeWithLineString = innerPair.second.firstOrNull()
+                routeWithLineString?.route?.duration ?: 0.0
+            }
+        }
+        val transitDuration = path.filter { it.first == "transit" }.sumOf { outerPair ->
+            outerPair.second.sumOf { innerPair ->
+                val routeWithLineString = innerPair.second.firstOrNull()
+                routeWithLineString?.route?.duration ?: 0.0
+            }
+        }
+        return walkingDuration + transitDuration
+    }
 
-    val pathD = calculateSingleTransitRoute(
-        upGatePoint.latitude, upGatePoint.longitude,
-        endLat, endLon,
-        busStopsKaliwa, busStopsKanan, busStopsForestry,
-        busRoutes, minimumWalkingDistance,repository, routeSettingsViewModel
-    )
+    // Calculate total durations with penalties
+    val totalDurationAC = calculateTotalDuration(pathA) + calculateTotalDuration(pathC) + libraryWaitingTime
+    val totalDurationBD = calculateTotalDuration(pathB) + calculateTotalDuration(pathD) + upGateWaitingTime
+    val durationE = calculateTotalDuration(pathE)
 
-    val pathE = calculateSingleTransitRoute(
-        startLat, startLon,
-        endLat, endLon,
-        busStopsKaliwa, busStopsKanan, busStopsForestry,
-        busRoutes, minimumWalkingDistance,repository, routeSettingsViewModel
-    )
-
-    // Combine paths C+A and D+B and calculate total durations
-    val totalDurationAC = pathA.sumOf { it.route.duration } + pathC.sumOf { it.route.duration } + libraryWaitingTime
-    val totalDurationBD = pathB.sumOf { it.route.duration } + pathD.sumOf { it.route.duration } + upGateWaitingTime
-    val durationE = pathE.sumOf { it.route.duration }
-
-    // Return the route with the shortest total duration
-    if (totalDurationAC < totalDurationBD) {
-        if (pathA.isNotEmpty()) pathA = pathA.dropLast(1)
-        return@coroutineScope if (durationE < totalDurationAC) pathE else pathA + pathC
-    } else {
-        if (pathB.isNotEmpty()) pathB = pathB.dropLast(1)
-        return@coroutineScope if (durationE < totalDurationBD) pathE else pathB + pathD
+    // Determine the optimal route and concatenate while preserving structure
+    return@coroutineScope when {
+        durationE < totalDurationAC && durationE < totalDurationBD -> pathE // Return single route pathE as it’s optimal
+        totalDurationAC < totalDurationBD -> {
+            // Combine pathA and pathC
+            val combinedPath = mutableListOf<Pair<String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>>()
+            combinedPath.addAll(pathA.dropLast(1)) // Add pathA without its last segment to avoid duplication
+            combinedPath.addAll(pathC)
+            combinedPath
+        }
+        else -> {
+            // Combine pathB and pathD
+            val combinedPath = mutableListOf<Pair<String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>>()
+            combinedPath.addAll(pathB.dropLast(1)) // Add pathB without its last segment to avoid duplication
+            combinedPath.addAll(pathD)
+            combinedPath
+        }
     }
 }
+
 suspend fun calculateSingleTransitRoute(
     startLat: Double,
     startLon: Double,
@@ -102,24 +110,19 @@ suspend fun calculateSingleTransitRoute(
     minimumWalkingDistance: Int,
     repository: LocalRoutingRepository,
     routeSettingsViewModel: RouteSettingsViewModel
-): List<RouteWithLineString> {
+): MutableList<Pair<String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>> {
+
     val start = "$startLon,$startLat"
     val end = "$endLon,$endLat"
 
-    val walkingRoute = repository.getRoute(
-        "foot",
-        start,
-        end,
-        "#00FF00",
-        routeSettingsViewModel
-    )
+    // Check if walking alone is sufficient
+    val walkingRoute = repository.getRoute("foot", start, end, "#00FF00", routeSettingsViewModel)
     val walkingDistance = walkingRoute.sumOf { it.route.distance }
-
     if (walkingDistance <= minimumWalkingDistance) {
-        return walkingRoute
+        return mutableListOf("foot" to mutableListOf("foot" to walkingRoute)) // Only a walking route needed
     }
 
-    // Finding nearest bus stops (sequential)
+    // Find nearest bus stops for each route type
     val nearestKaliwaStartBusStops = findNearestBusStops(busStopsKaliwa, startLat, startLon, 3)
     val nearestKananStartBusStops = findNearestBusStops(busStopsKanan, startLat, startLon, 3)
     val nearestForestryStartBusStops = findNearestBusStops(busStopsForestry, startLat, startLon, 3)
@@ -128,168 +131,167 @@ suspend fun calculateSingleTransitRoute(
     val nearestKananEndBusStops = findNearestBusStops(busStopsKanan, endLat, endLon, 3)
     val nearestForestryEndBusStops = findNearestBusStops(busStopsForestry, endLat, endLon, 3)
 
-    val allStartBusStops = nearestKaliwaStartBusStops + nearestKananStartBusStops + nearestForestryStartBusStops
-    val allEndBusStops = nearestKaliwaEndBusStops + nearestKananEndBusStops + nearestForestryEndBusStops
+    // Calculate routes for each type
+    val kaliwaRoutes = calculateRoutesForType(
+        startBusStops = nearestKaliwaStartBusStops,
+        endBusStops = nearestKaliwaEndBusStops,
+        busRoutes = busRoutes.filter { it.name.startsWith("Kaliwa") },
+        repository = repository,
+        routeSettingsViewModel = routeSettingsViewModel,
+        startLat = startLat,
+        startLon = startLon,
+        endLat = endLat,
+        endLon = endLon,
+        routeTypePrefix = "Kaliwa"
+    )
 
-    var optimalRoute: List<RouteWithLineString>? = null
-    var shortestTime = Double.MAX_VALUE
+    val kananRoutes = calculateRoutesForType(
+        startBusStops = nearestKananStartBusStops,
+        endBusStops = nearestKananEndBusStops,
+        busRoutes = busRoutes.filter { it.name.startsWith("Kanan") },
+        repository = repository,
+        routeSettingsViewModel = routeSettingsViewModel,
+        startLat = startLat,
+        startLon = startLon,
+        endLat = endLat,
+        endLon = endLon,
+        routeTypePrefix = "Kanan"
+    )
 
-    // Calculate number of cores and threads
-    val availableCores = Runtime.getRuntime().availableProcessors()
-    val numberOfThreads = availableCores * 3 // 3 threads per core
+    val forestryRoutes = calculateRoutesForType(
+        startBusStops = nearestForestryStartBusStops,
+        endBusStops = nearestForestryEndBusStops,
+        busRoutes = busRoutes.filter { it.name.startsWith("Forestry") },
+        repository = repository,
+        routeSettingsViewModel = routeSettingsViewModel,
+        startLat = startLat,
+        startLon = startLon,
+        endLat = endLat,
+        endLon = endLon,
+        routeTypePrefix = "Forestry"
+    )
 
-    val dispatcher = Executors.newFixedThreadPool(numberOfThreads).asCoroutineDispatcher()
+    val routeGroups = mutableListOf<MutableList<Pair<String, MutableList<RouteWithLineString>>>>()
+    val combinedArray = kaliwaRoutes + kananRoutes + forestryRoutes
 
-    try {
-        withTimeout(10_000_000) { // Set timeout to ensure no long-running tasks
-            coroutineScope {
-                val jobs = allStartBusStops.chunked(numberOfThreads).flatMap { chunkedStartBusStops ->
-                    chunkedStartBusStops.map { startBusStop ->
-                        launch(dispatcher) {
-                            for (endBusStop in allEndBusStops) {
-                                val route: BusRoute? = busRoutes.find { route ->
-                                    route.coordinates.contains(GeoPoint(startBusStop.lat, startBusStop.lon)) &&
-                                            route.coordinates.contains(GeoPoint(endBusStop.lat, endBusStop.lon))
-                                }
+    for (i in combinedArray.indices step 3) {
+        val list = mutableListOf<Pair<String, MutableList<RouteWithLineString>>>()
+        list.add(combinedArray[i].second.first())
+        list.add(combinedArray[i + 1].second.first())
+        list.add(combinedArray[i + 2].second.first())
+        routeGroups.add(list)
+    }
 
-                                if (route != null) {
-                                    // Add back startIndex and endIndex logic
-                                    val startIndex = route.coordinates.indexOf(GeoPoint(startBusStop.lat, startBusStop.lon))
-                                    val endIndex = route.coordinates.indexOf(GeoPoint(endBusStop.lat, endBusStop.lon))
-
-                                    if (startIndex < endIndex) {
-                                        // Calculate walking route to bus stop
-                                        val walkingRouteToBusStop = repository.getRoute(
-                                            "foot",
-                                            start,
-                                            "${startBusStop.lon},${startBusStop.lat}",
-                                            "#00FF00",
-                                            routeSettingsViewModel
-                                        )
-
-                                        // Calculate transit route
-                                        val routeCoordinates = findRouteCoordinates(startBusStop, endBusStop, busRoutes)
-                                        val transitRoute = repository.getRouteWithPredefinedPath(
-                                            "transit",
-                                            routeCoordinates.coordinates, // Predefined coordinates from the bus route
-                                            "#FF0000",
-                                            routeSettingsViewModel
-                                        )
-
-                                        // Calculate walking route to the end destination
-                                        val walkingRouteToEnd = repository.getRoute(
-                                            "foot",
-                                            "${endBusStop.lon},${endBusStop.lat}",
-                                            end,
-                                            "#00FF00",
-                                            routeSettingsViewModel
-                                        )
-
-                                        // Total time calculation
-                                        val totalWalkingTime = walkingRouteToBusStop.sumOf { it.route.duration } + walkingRouteToEnd.sumOf { it.route.duration }
-                                        val totalTransitTime = transitRoute.sumOf { it.route.duration }
-                                        val totalTime = totalWalkingTime + totalTransitTime
-                                        // Update optimal route if this route is the shortest
-                                        synchronized(this) {
-                                            if (totalTime < shortestTime) {
-                                                shortestTime = totalTime
-                                                optimalRoute = walkingRouteToBusStop + transitRoute + walkingRouteToEnd
-
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Wait for all jobs to complete
-                jobs.forEach { it.join() }
-            }
+    val sortedRouteGroups = routeGroups.sortedBy { routeGroup ->
+        routeGroup.sumOf { segmentPair ->
+            segmentPair.second.sumOf { routeSegment -> routeSegment.route.duration }
         }
-    } catch (e: TimeoutCancellationException) {
-        Log.e("Map", "Timeout occurred while calculating routes.")
-    } catch (e: Exception) {
-        Log.e("Map", "Error occurred while calculating routes: ${e.message}")
-    } finally {
-        // Clean up dispatcher
-        dispatcher.close()
     }
 
-    if (optimalRoute == null) {
-        throw IllegalArgumentException("No valid route found between bus stops")
-    }
+    val initialFoot = mutableListOf(
+        ("foot" to sortedRouteGroups.firstOrNull()?.getOrNull(0)!!.second)
+    )
 
-    return optimalRoute as List<RouteWithLineString>
+    val finalFoot = mutableListOf(
+        ("foot" to sortedRouteGroups.firstOrNull()?.getOrNull(2)!!.second)
+    )
+
+    val combinedTransitSegments = mutableListOf<Pair<String, MutableList<RouteWithLineString>>>()
+    sortedRouteGroups.forEach { routeGroup ->
+        val transitSegment = routeGroup.getOrNull(1)?.second
+        if (transitSegment != null) {
+            combinedTransitSegments.add(routeGroup[1].first to transitSegment)
+        }
+    }
+    return mutableListOf(
+        "foot" to initialFoot,
+        "transit" to combinedTransitSegments,
+        "foot" to finalFoot
+    )
+
+
 }
 
+suspend fun calculateRoutesForType(
+    startBusStops: List<BusStop>,
+    endBusStops: List<BusStop>,
+    busRoutes: List<BusRoute>,
+    repository: LocalRoutingRepository,
+    routeSettingsViewModel: RouteSettingsViewModel,
+    startLat: Double,
+    startLon: Double,
+    endLat: Double,
+    endLon: Double,
+    routeTypePrefix: String
+): MutableList<Pair<String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>> = coroutineScope {
 
-fun findOptimalBusStop(
-    nearestKaliwaBusStops: List<BusStop>,
-    nearestKananBusStops: List<BusStop>,
-    nearestForestryBusStops: List<BusStop>,
-    userLat: Double,
-    userLon: Double,
-    distanceThreshold: Double // Threshold distance in meters
-): BusStop {
-    // Combine all the nearest bus stops from Kaliwa, Kanan, and Forestry
-    val allNearestBusStops = nearestKaliwaBusStops + nearestKananBusStops + nearestForestryBusStops
+    val start = "$startLon,$startLat"
+    val end = "$endLon,$endLat"
+    val routeResults = mutableListOf<Pair<String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>>()
 
-    // Initialize variables to track the optimal bus stop or midpoint
-    var optimalBusStop: BusStop? = null
-    var shortestDistance = Double.MAX_VALUE
+    // Filter busRoutes to include only those matching the specified routeTypePrefix
+    val filteredRoutes = busRoutes.filter { it.name.startsWith(routeTypePrefix) }
+    var shortestTime = Double.MAX_VALUE
+    var optimalInitialFoot: MutableList<RouteWithLineString>? = null
+    var optimalTransit: MutableList<RouteWithLineString>? = null
+    var optimalEndFoot: MutableList<RouteWithLineString>? = null
 
-    // Compare all the nearest bus stops to find the optimal one
-    for (busStop in allNearestBusStops) {
-        // Calculate the distance from the user's location to this bus stop
-        val distanceToUser = calculateDistance(userLat, userLon, busStop.lat, busStop.lon)
+    for (busRoute in filteredRoutes) {
+        for (startBusStop in startBusStops) {
+            for (endBusStop in endBusStops) {
+                val startIndex = busRoute.coordinates.indexOf(GeoPoint(startBusStop.lat, startBusStop.lon))
+                val endIndex = busRoute.coordinates.indexOf(GeoPoint(endBusStop.lat, endBusStop.lon))
 
-        // If the distance is less than the current shortest distance, update the optimal bus stop
-        if (distanceToUser < shortestDistance) {
-            shortestDistance = distanceToUser
-            optimalBusStop = busStop
-        }
-    }
-
-
-    for (startBusStop in allNearestBusStops) {
-        for (endBusStop in allNearestBusStops) {
-            // Avoid comparing the same bus stop
-            if (startBusStop != endBusStop) {
-                // Calculate the distance between these two bus stops
-                val distanceBetweenBusStops = calculateDistance(startBusStop.lat, startBusStop.lon, endBusStop.lat, endBusStop.lon)
-
-                // If the bus stops are closer than the threshold, calculate the midpoint
-                if (distanceBetweenBusStops <= distanceThreshold) {
-                    val midpointLatLon = calculateMidpoint(startBusStop, endBusStop)
-
-                    // Create a temporary "midpoint" bus stop with a virtual name
-                    val midpointBusStop = BusStop(
-                        name = "Drop Off",
-                        lat = midpointLatLon.first,
-                        lon = midpointLatLon.second
+                if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
+                    // Calculate walking route to start bus stop
+                    val walkingRouteToBusStop = repository.getRoute(
+                        "foot",
+                        start,
+                        "${startBusStop.lon},${startBusStop.lat}",
+                        "#00FF00",
+                        routeSettingsViewModel
                     )
 
-                    // Calculate the distance from the user to the midpoint
-                    val distanceToMidpoint = calculateDistance(userLat, userLon, midpointLatLon.first, midpointLatLon.second)
+                    // Calculate transit route along the predefined path
+                    val routeCoordinates = findRouteCoordinates(startBusStop, endBusStop, busRoutes)
+                    val transitRoute = repository.getRouteWithPredefinedPath(
+                        "transit",
+                        routeCoordinates.coordinates,
+                        "#FF0000",
+                        routeSettingsViewModel
+                    )
 
-                    // Update the optimal bus stop if the midpoint is closer to the user than the current optimal stop
-                    if (distanceToMidpoint < shortestDistance) {
-                        shortestDistance = distanceToMidpoint
-                        optimalBusStop = midpointBusStop
+                    // Calculate walking route from end bus stop to destination
+                    val walkingRouteToEnd = repository.getRoute(
+                        "foot",
+                        "${endBusStop.lon},${endBusStop.lat}",
+                        end,
+                        "#00FF00",
+                        routeSettingsViewModel
+                    )
+
+                    // Calculate total time for this route
+                    val totalWalkingTime = walkingRouteToBusStop.sumOf { it.route.duration } + walkingRouteToEnd.sumOf { it.route.duration }
+                    val totalTransitTime = transitRoute.sumOf { it.route.duration }
+                    val totalTime = totalWalkingTime + totalTransitTime
+
+                    // Update optimal route if this route is the shortest
+                    if (totalTime < shortestTime) {
+                        shortestTime = totalTime
+                        optimalInitialFoot = walkingRouteToBusStop.toMutableList()
+                        optimalTransit = transitRoute.toMutableList()
+                        optimalEndFoot = walkingRouteToEnd.toMutableList()
                     }
                 }
             }
         }
+
+        if (optimalInitialFoot != null && optimalTransit != null && optimalEndFoot != null) {
+            routeResults.add("foot" to mutableListOf("foot" to optimalInitialFoot))
+            routeResults.add("transit" to mutableListOf(busRoute.name to optimalTransit))
+            routeResults.add("foot" to mutableListOf("foot" to optimalEndFoot))
+        }
     }
 
-    return optimalBusStop ?: throw IllegalArgumentException("No valid bus stop found")
-}
-
-// Helper function: Calculate the midpoint between two bus stops
-fun calculateMidpoint(startBusStop: BusStop, endBusStop: BusStop): Pair<Double, Double> {
-    val midLat = (startBusStop.lat + endBusStop.lat) / 2
-    val midLon = (startBusStop.lon + endBusStop.lon) / 2
-    return Pair(midLat, midLon)
+    return@coroutineScope routeResults
 }

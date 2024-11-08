@@ -41,7 +41,7 @@ class LocalRoutingRepository(
         end: String,
         colorCode: String,
         routeSettingsViewModel: RouteSettingsViewModel
-    ): List<RouteWithLineString> {
+    ): MutableList<RouteWithLineString> {
         val startLatLng = start.split(",")
         val endLatLng = end.split(",")
 
@@ -59,9 +59,9 @@ class LocalRoutingRepository(
         if (path.isNotEmpty()) {
             // Create the route with line string and return
             val routeWithLineString = createRouteWithLineString(path, profile, colorCode,routeSettingsViewModel) // Replace color code dynamically
-            return listOf(routeWithLineString)
+            return mutableListOf(routeWithLineString)
         } else {
-            return emptyList()
+            return mutableListOf()
         }
     }
 
@@ -73,33 +73,36 @@ class LocalRoutingRepository(
         parkingSpots: List<ParkingSpot>,
         radius: Double,
         routeSettingsViewModel: RouteSettingsViewModel
-    ): List<RouteWithLineString> {
+    ): Pair<MutableList<RouteWithLineString>, MutableList<RouteWithLineString>> {
         val destination = GeoPoint(end.split(",")[1].toDouble(), end.split(",")[0].toDouble())
         val nearestParkingSpot = findNearestParkingSpot(destination, parkingSpots.map { GeoPoint(it.latitude, it.longitude) }, radius)
 
         return nearestParkingSpot?.let { parkingSpot ->
             val parkingCoordinates = "${parkingSpot.longitude},${parkingSpot.latitude}"
 
-            // Driving or Cycling route to parking spot
-            val carOrCyclingRoute = getRoute(profile, start, parkingCoordinates, colorCode,routeSettingsViewModel)
+            // Main route (car or bicycle) to the parking spot, converted to mutable
+            val carOrCyclingRoute = getRoute(profile, start, parkingCoordinates, colorCode, routeSettingsViewModel).toMutableList()
 
-            // Walking route from parking spot to destination
-            val walkingRoute = getRoute("foot", parkingCoordinates, end, "#00FF00",routeSettingsViewModel)
+            // Walking route from parking spot to destination, converted to mutable
+            val walkingRoute = getRoute("foot", parkingCoordinates, end, "#00FF00", routeSettingsViewModel).toMutableList()
 
-            // Combine both routes (drive to parking + walk to destination)
-            carOrCyclingRoute + walkingRoute
+            // Return both routes as mutable lists
+            carOrCyclingRoute to walkingRoute
         } ?: run {
-            // Fallback to normal route if no parking spot is found
-            getRoute(profile, start, end, colorCode,routeSettingsViewModel)
+            // Fallback to a direct route if no parking spot is found, with empty mutable walking route
+            val directRoute = getRoute(profile, start, end, colorCode, routeSettingsViewModel).toMutableList()
+            directRoute to mutableListOf()
         }
+
     }
+
 
     fun getRouteWithPredefinedPath(
         profile: String,
         predefinedCoordinates: String,
         colorCode: String,
         routeSettingsViewModel: RouteSettingsViewModel
-    ): List<RouteWithLineString> {
+    ): MutableList<RouteWithLineString> {
         val coordinates = predefinedCoordinates.split(";")
         val routeSegments = mutableListOf<RouteWithLineString>()
 

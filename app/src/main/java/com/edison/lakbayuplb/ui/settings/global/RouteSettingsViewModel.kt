@@ -1,7 +1,6 @@
 package com.edison.lakbayuplb.ui.settings.global
 
 import android.content.Context
-import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +23,7 @@ class RouteSettingsViewModel(context: Context) : ViewModel() {
     private val _carSpeed = MutableStateFlow(20.0 /3.6) // 20 km/h converted to m/s
     val carSpeed: StateFlow<Double> = _carSpeed.asStateFlow()
 
-    private val _jeepneySpeed = MutableStateFlow(10.0 /3.6) // 20 km/h converted to m/s
+    private val _jeepneySpeed = MutableStateFlow(10.0 /3.6) // 10 km/h converted to m/s
     val jeepneySpeed: StateFlow<Double> = _jeepneySpeed.asStateFlow()
 
     private val _minimumWalkingDistance = MutableStateFlow(speedPreferences.minimumWalkingDistance) // 600 meters
