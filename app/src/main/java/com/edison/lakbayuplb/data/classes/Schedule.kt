@@ -24,6 +24,7 @@ data class ClassSchedule (
         return "ClassSchedule(id=$id, title='$title', location='$location', time=$formattedTime, timeEnd=$formattedTimeEnd, days='$days')"
     }
 }
+
 @Entity(tableName = "exams")
 data class ExamSchedule (
     @PrimaryKey(autoGenerate = true)

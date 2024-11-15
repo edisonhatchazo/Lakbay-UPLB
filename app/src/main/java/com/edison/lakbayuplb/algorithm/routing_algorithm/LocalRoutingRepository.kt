@@ -4,7 +4,6 @@ import android.content.Context
 import com.edison.lakbayuplb.algorithm.routing_algorithm.transit.BusRoute
 import com.edison.lakbayuplb.algorithm.routing_algorithm.transit.ParkingSpot
 import com.edison.lakbayuplb.algorithm.routing_algorithm.transit.findNearestParkingSpot
-import com.edison.lakbayuplb.ui.settings.global.RouteSettingsViewModel
 import org.osmdroid.util.GeoPoint
 
 
@@ -36,11 +35,12 @@ class LocalRoutingRepository(
     }
 
     fun getRoute(
+        context: Context,
         profile: String,
         start: String,
         end: String,
         colorCode: String,
-        routeSettingsViewModel: RouteSettingsViewModel
+
     ): MutableList<RouteWithLineString> {
         val startLatLng = start.split(",")
         val endLatLng = end.split(",")
@@ -58,7 +58,7 @@ class LocalRoutingRepository(
         val path = aStar(graph, nearestStart, nearestEnd)
         if (path.isNotEmpty()) {
             // Create the route with line string and return
-            val routeWithLineString = createRouteWithLineString(path, profile, colorCode,routeSettingsViewModel) // Replace color code dynamically
+            val routeWithLineString = createRouteWithLineString(context,path, profile, colorCode) // Replace color code dynamically
             return mutableListOf(routeWithLineString)
         } else {
             return mutableListOf()
@@ -66,13 +66,13 @@ class LocalRoutingRepository(
     }
 
     fun getRouteWithParking(
+        context: Context,
         profile: String,
         start: String,
         end: String,
         colorCode: String,
         parkingSpots: List<ParkingSpot>,
         radius: Double,
-        routeSettingsViewModel: RouteSettingsViewModel
     ): Pair<MutableList<RouteWithLineString>, MutableList<RouteWithLineString>> {
         val destination = GeoPoint(end.split(",")[1].toDouble(), end.split(",")[0].toDouble())
         val nearestParkingSpot = findNearestParkingSpot(destination, parkingSpots.map { GeoPoint(it.latitude, it.longitude) }, radius)
@@ -81,16 +81,16 @@ class LocalRoutingRepository(
             val parkingCoordinates = "${parkingSpot.longitude},${parkingSpot.latitude}"
 
             // Main route (car or bicycle) to the parking spot, converted to mutable
-            val carOrCyclingRoute = getRoute(profile, start, parkingCoordinates, colorCode, routeSettingsViewModel).toMutableList()
+            val carOrCyclingRoute = getRoute(context,profile, start, parkingCoordinates, colorCode).toMutableList()
 
             // Walking route from parking spot to destination, converted to mutable
-            val walkingRoute = getRoute("foot", parkingCoordinates, end, "#00FF00", routeSettingsViewModel).toMutableList()
+            val walkingRoute = getRoute(context,"foot", parkingCoordinates, end, "#00FF00").toMutableList()
 
             // Return both routes as mutable lists
             carOrCyclingRoute to walkingRoute
         } ?: run {
             // Fallback to a direct route if no parking spot is found, with empty mutable walking route
-            val directRoute = getRoute(profile, start, end, colorCode, routeSettingsViewModel).toMutableList()
+            val directRoute = getRoute(context,profile, start, end, colorCode).toMutableList()
             directRoute to mutableListOf()
         }
 
@@ -98,10 +98,10 @@ class LocalRoutingRepository(
 
 
     fun getRouteWithPredefinedPath(
+        context: Context,
         profile: String,
         predefinedCoordinates: String,
-        colorCode: String,
-        routeSettingsViewModel: RouteSettingsViewModel
+        colorCode: String
     ): MutableList<RouteWithLineString> {
         val coordinates = predefinedCoordinates.split(";")
         val routeSegments = mutableListOf<RouteWithLineString>()
@@ -116,11 +116,12 @@ class LocalRoutingRepository(
 
             // Use the `getRoute` function to calculate the route between these two points
             val segmentRoute = getRoute(
+                context,
                 profile,
                 start,
                 end,
-                colorCode,
-                routeSettingsViewModel
+                colorCode
+
             )
 
             // Add this segment to the overall route
@@ -129,7 +130,4 @@ class LocalRoutingRepository(
 
         return routeSegments
     }
-
-
-
 }

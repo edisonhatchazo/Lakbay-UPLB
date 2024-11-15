@@ -67,3 +67,37 @@ fun findRouteCoordinates(startBusStop: BusStop, endBusStop: BusStop, busRoutes: 
         throw IllegalArgumentException("No valid route found between bus stops")
     }
 }
+
+/*
+* [versions]
+accompanistPermissions = "0.26.5-rc"
+activityKtx = "1.9.2"
+agp = "8.4.2"
+androidPluginAnnotationV9 = "3.0.0"
+androidSdkVersion = "11.0.1"
+constraintlayoutCompose = "1.0.1"
+converterGson = "2.9.0"
+fragmentKtx = "1.3.6"
+kotlin = "1.9.0"
+coreKtx = "1.13.1"
+junit = "4.13.2"
+junitVersion = "1.1.5"
+espressoCore = "3.5.1"
+lifecycleRuntimeKtx = "2.8.1"
+activityCompose = "1.9.0"
+composeBom = "2023.08.00"
+nanohttpd = "2.3.1"
+osmdroidAndroid = "6.1.20"
+retrofit = "2.9.0"
+roomKtx = "2.6.1"
+roomRuntime = "2.6.1"
+navigationRuntimeKtx = "2.7.7"
+navigationCompose = "2.7.7"
+places = "3.5.0"
+runtimeLivedata = "1.6.7"
+material = "1.12.0"
+ui = "1.6.8"
+protoliteWellKnownTypes = "18.0.0"
+playServicesPhenotype = "17.0.0"
+material3Android = "1.3.0"
+* */

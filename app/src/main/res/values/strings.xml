@@ -15,6 +15,8 @@
     <string name="college">College</string>
     <string name="college_unit">College/UP Unit</string>
     <string name="buildings_title">Buildings</string>
+    <string name="notifications">Notifications</string>
+    <string name="notification_settings">Notification Settings</string>
     <string name="building_title">Building</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
@@ -27,6 +29,12 @@
     <string name="my_pins">My Coordinate Pins</string>
     <string name="floor">Floor</string>
     <string name="title">Title</string>
+    <string name="class_channel_id">class_schedule_reminder</string>
+    <string name="class_channel_name">Class Schedule Reminders</string>
+    <string name="class_channel_description">Receive timely reminders about your upcoming classes and alerts if you’re at risk of being late</string>
+    <string name="exam_channel_id">exam_schedule_reminder</string>
+    <string name="exam_channel_name">Exam Schedule Reminders</string>
+    <string name="exam_channel_description">Receive timely reminders about your upcoming exams</string>
     <string name="type">Type</string>
     <string name="day">Day</string>
     <string name="top_app_bar">Top App Bar</string>

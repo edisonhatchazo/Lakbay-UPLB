@@ -1,35 +1,8 @@
 package com.edison.lakbayuplb.algorithm.routing_algorithm
 
-import com.edison.lakbayuplb.ui.settings.global.RouteSettingsViewModel
+import android.content.Context
+import com.edison.lakbayuplb.ui.settings.global.SpeedPreferences
 
-
-data class RouteWithLineString(
-    val route: Route,        // The updated route object with legs, distance, etc.
-    val colorCode: String,   // Color code for visualizing the route on the map
-    val lineString: String,  // GeoJSON LineString representing the full path geometry
-    val profile: String      // Profile (e.g., "foot", "bicycle", "car")
-)
-
-data class Route(
-    val legs: List<Leg>, // Each route can have multiple legs (e.g., in multi-modal routes)
-    val distance: Double, // Total distance of the route
-    val duration: Double, // Total duration of the route
-    val weight: Double // Optional: weight based on factors like traffic, penalties, etc.
-)
-
-data class Leg(
-    val steps: List<Step>, // Each leg has multiple steps (e.g., "turn left", "continue straight")
-    val distance: Double, // Distance of this leg
-    val duration: Double, // Duration of this leg
-    val weight: Double // Weight for this leg
-)
-
-data class Step(
-    val geometry: String, // Encoded polyline or GeoJSON geometry for this step
-    val distance: Double, // Distance for this step
-    val duration: Double, // Duration for this step
-    val name: String = "" // Instruction for the step, e.g., "Turn right onto Main St"
-)
 
 fun calculateTotalDistance(nodes: List<Node>): Double {
     var totalDistance = 0.0
@@ -43,18 +16,18 @@ fun calculateTotalDistance(nodes: List<Node>): Double {
 }
 
 fun calculateTotalDuration(
+    context: Context,
     nodes: List<Node>,
     profile: String,
-    routeSettingsViewModel: RouteSettingsViewModel
 ): Double {
     val totalDistanceMeters = calculateTotalDistance(nodes)
-
+    val speedPreferences = SpeedPreferences(context)
     // Get the speed based on the profile
     val speedMetersPerSecond = when (profile) {
-        "foot" -> routeSettingsViewModel.walkingSpeed.value
-        "bicycle" -> routeSettingsViewModel.cyclingSpeed.value
-        "driving" -> routeSettingsViewModel.carSpeed.value
-        "transit" -> routeSettingsViewModel.jeepneySpeed.value
+        "foot" -> speedPreferences.walkingSpeed
+        "bicycle" -> speedPreferences.cyclingSpeed
+        "driving" -> 20.0
+        "transit" -> 10.0
         else -> 1.0 // Default walking speed
     }
 
@@ -82,16 +55,16 @@ fun findNearestNode(targetNode: Node, nodes: List<Node>): Node {
 }
 
 fun createRouteWithLineString(
+    context: Context,
     path: List<Node>,
     profile: String,
     colorCode: String,
-    routeSettingsViewModel: RouteSettingsViewModel
 ): RouteWithLineString {
     val totalDistance = calculateTotalDistance(path)
-    val totalDuration = calculateTotalDuration(path,profile,routeSettingsViewModel)
+    val totalDuration = calculateTotalDuration(context,path,profile)
 
     // Create a single leg with steps
-    val leg = createLeg(path,profile,routeSettingsViewModel)
+    val leg = createLeg(context,path,profile)
 
     // Create the route with the single leg
     val route = Route(
@@ -114,9 +87,9 @@ fun createRouteWithLineString(
 }
 
 fun createLeg(
+    context: Context,
     path: List<Node>,
     profile: String,
-    routeSettingsViewModel: RouteSettingsViewModel
 ): Leg {
     val steps = mutableListOf<Step>()
 
@@ -128,7 +101,7 @@ fun createLeg(
         val step = Step(
             geometry = nodesToGeoJsonLineString(listOf(startNode, endNode)), // Create a GeoJSON LineString for this step
             distance = haversine(startNode.latitude, startNode.longitude, endNode.latitude, endNode.longitude) * 1000, // Convert to meters
-            duration = calculateTotalDuration(listOf(startNode, endNode),profile,routeSettingsViewModel), // Estimate duration based on distance
+            duration = calculateTotalDuration(context,listOf(startNode, endNode),profile), // Estimate duration based on distance
             name = "Move from Node ${startNode.id} to Node ${endNode.id}" // Placeholder for instructions
         )
         steps.add(step)
@@ -138,7 +111,7 @@ fun createLeg(
     return Leg(
         steps = steps,
         distance = calculateTotalDistance(path),
-        duration = calculateTotalDuration(path,profile,routeSettingsViewModel),
+        duration = calculateTotalDuration(context,path,profile),
         weight = calculateTotalDistance(path) // Customize weight logic if needed
     )
 }

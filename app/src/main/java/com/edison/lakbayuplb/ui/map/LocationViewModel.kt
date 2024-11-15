@@ -1,6 +1,7 @@
 package com.edison.lakbayuplb.ui.map
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import org.maplibre.android.geometry.LatLng
+import org.osmdroid.util.GeoPoint
 
 class LocationViewModel(
     application: Application,
@@ -33,8 +34,8 @@ class LocationViewModel(
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
                 initialValue = MapDataUiState()
             )
-    private val _currentLocation = MutableLiveData<LatLng>()
-    val currentLocation: LiveData<LatLng> = _currentLocation
+    private val _currentLocation = MutableLiveData<GeoPoint>()
+    val currentLocation: LiveData<GeoPoint> = _currentLocation
 
     private val fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(application)
 
@@ -42,11 +43,11 @@ class LocationViewModel(
         try {
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 location?.let {
-                    _currentLocation.postValue(LatLng(it.latitude, it.longitude))
+                    _currentLocation.postValue(GeoPoint(it.latitude, it.longitude))
                 }
             }
         } catch (e: SecurityException) {
-
+            Log.e("Error","$e")
         }
     }
 

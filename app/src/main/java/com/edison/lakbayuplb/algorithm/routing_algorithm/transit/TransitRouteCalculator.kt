@@ -1,8 +1,8 @@
 package com.edison.lakbayuplb.algorithm.routing_algorithm.transit
 
+import android.content.Context
 import com.edison.lakbayuplb.algorithm.routing_algorithm.LocalRoutingRepository
 import com.edison.lakbayuplb.algorithm.routing_algorithm.RouteWithLineString
-import com.edison.lakbayuplb.ui.settings.global.RouteSettingsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -13,6 +13,7 @@ import org.osmdroid.util.GeoPoint
 
 @OptIn(ExperimentalCoroutinesApi::class)
 suspend fun calculateDoubleTransitRoute(
+    context: Context,
     startLat: Double,
     startLon: Double,
     endLat: Double,
@@ -24,8 +25,7 @@ suspend fun calculateDoubleTransitRoute(
     busStopsForestry: List<BusStop>,
     busRoutes: List<BusRoute>,
     minimumWalkingDistance: Int,
-    repository: LocalRoutingRepository,
-    routeSettingsViewModel: RouteSettingsViewModel
+    repository: LocalRoutingRepository
 ): MutableList<Pair<String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>> = coroutineScope {
 
     // Define waiting time penalties
@@ -45,11 +45,11 @@ suspend fun calculateDoubleTransitRoute(
     // Launch path calculations on different threads
     val (pathA, pathB, pathC, pathD, pathE) = withContext(dispatcher) {
         listOf(
-            async { calculateSingleTransitRoute(startLat, startLon, libraryPoint.latitude, libraryPoint.longitude, busStopsKaliwa, busStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository, routeSettingsViewModel) },
-            async { calculateSingleTransitRoute(startLat, startLon, upGatePoint.latitude, upGatePoint.longitude, busStopsKaliwa, busStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository, routeSettingsViewModel) },
-            async { calculateSingleTransitRoute(libraryPoint.latitude, libraryPoint.longitude, endLat, endLon, busStopsKaliwa, busStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository, routeSettingsViewModel) },
-            async { calculateSingleTransitRoute(upGatePoint.latitude, upGatePoint.longitude, endLat, endLon, busStopsKaliwa, busStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository, routeSettingsViewModel) },
-            async { calculateSingleTransitRoute(startLat, startLon, endLat, endLon, busStopsKaliwa, busStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository, routeSettingsViewModel) }
+            async { calculateSingleTransitRoute(context, startLat, startLon, libraryPoint.latitude, libraryPoint.longitude, busStopsKaliwa, busStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository) },
+            async { calculateSingleTransitRoute(context, startLat, startLon, upGatePoint.latitude, upGatePoint.longitude, busStopsKaliwa, busStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository) },
+            async { calculateSingleTransitRoute(context, libraryPoint.latitude, libraryPoint.longitude, endLat, endLon, busStopsKaliwa, busStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository) },
+            async { calculateSingleTransitRoute(context, upGatePoint.latitude, upGatePoint.longitude, endLat, endLon, busStopsKaliwa, busStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository) },
+            async { calculateSingleTransitRoute(context, startLat, startLon, endLat, endLon, busStopsKaliwa, busStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository) }
         ).awaitAll()
     }
 
@@ -99,6 +99,7 @@ suspend fun calculateDoubleTransitRoute(
 }
 
 suspend fun calculateSingleTransitRoute(
+    context: Context,
     startLat: Double,
     startLon: Double,
     endLat: Double,
@@ -109,14 +110,13 @@ suspend fun calculateSingleTransitRoute(
     busRoutes: List<BusRoute>,
     minimumWalkingDistance: Int,
     repository: LocalRoutingRepository,
-    routeSettingsViewModel: RouteSettingsViewModel
 ): MutableList<Pair<String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>> {
 
     val start = "$startLon,$startLat"
     val end = "$endLon,$endLat"
 
     // Check if walking alone is sufficient
-    val walkingRoute = repository.getRoute("foot", start, end, "#00FF00", routeSettingsViewModel)
+    val walkingRoute = repository.getRoute(context,"foot", start, end, "#00FF00")
     val walkingDistance = walkingRoute.sumOf { it.route.distance }
     if (walkingDistance <= minimumWalkingDistance) {
         return mutableListOf("foot" to mutableListOf("foot" to walkingRoute)) // Only a walking route needed
@@ -137,7 +137,7 @@ suspend fun calculateSingleTransitRoute(
         endBusStops = nearestKaliwaEndBusStops,
         busRoutes = busRoutes.filter { it.name.startsWith("Kaliwa") },
         repository = repository,
-        routeSettingsViewModel = routeSettingsViewModel,
+        context = context,
         startLat = startLat,
         startLon = startLon,
         endLat = endLat,
@@ -150,7 +150,7 @@ suspend fun calculateSingleTransitRoute(
         endBusStops = nearestKananEndBusStops,
         busRoutes = busRoutes.filter { it.name.startsWith("Kanan") },
         repository = repository,
-        routeSettingsViewModel = routeSettingsViewModel,
+        context = context,
         startLat = startLat,
         startLon = startLon,
         endLat = endLat,
@@ -163,7 +163,7 @@ suspend fun calculateSingleTransitRoute(
         endBusStops = nearestForestryEndBusStops,
         busRoutes = busRoutes.filter { it.name.startsWith("Forestry") },
         repository = repository,
-        routeSettingsViewModel = routeSettingsViewModel,
+        context = context,
         startLat = startLat,
         startLon = startLon,
         endLat = endLat,
@@ -213,11 +213,11 @@ suspend fun calculateSingleTransitRoute(
 }
 
 suspend fun calculateRoutesForType(
+    context: Context,
     startBusStops: List<BusStop>,
     endBusStops: List<BusStop>,
     busRoutes: List<BusRoute>,
     repository: LocalRoutingRepository,
-    routeSettingsViewModel: RouteSettingsViewModel,
     startLat: Double,
     startLon: Double,
     endLat: Double,
@@ -245,29 +245,29 @@ suspend fun calculateRoutesForType(
                 if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
                     // Calculate walking route to start bus stop
                     val walkingRouteToBusStop = repository.getRoute(
+                        context,
                         "foot",
                         start,
                         "${startBusStop.lon},${startBusStop.lat}",
-                        "#00FF00",
-                        routeSettingsViewModel
+                        "#00FF00"
                     )
 
                     // Calculate transit route along the predefined path
                     val routeCoordinates = findRouteCoordinates(startBusStop, endBusStop, busRoutes)
                     val transitRoute = repository.getRouteWithPredefinedPath(
+                        context,
                         "transit",
                         routeCoordinates.coordinates,
-                        "#FF0000",
-                        routeSettingsViewModel
+                        "#FF0000"
                     )
 
                     // Calculate walking route from end bus stop to destination
                     val walkingRouteToEnd = repository.getRoute(
+                        context,
                         "foot",
                         "${endBusStop.lon},${endBusStop.lat}",
                         end,
-                        "#00FF00",
-                        routeSettingsViewModel
+                        "#00FF00"
                     )
 
                     // Calculate total time for this route

@@ -139,12 +139,3 @@ fun getImage(direction: String): Int{
     }
 }
 
-fun getTotalRouteDistance(routeResponse: MutableList<Pair<String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>>?): Int {
-    return routeResponse?.sumOf { routePair ->
-        routePair.second.sumOf { innerPair ->
-            innerPair.second.sumOf { routeWithLineString ->
-                routeWithLineString.route.legs.sumOf { it.distance }
-            }
-        }
-    }?.toInt() ?: 0
-}

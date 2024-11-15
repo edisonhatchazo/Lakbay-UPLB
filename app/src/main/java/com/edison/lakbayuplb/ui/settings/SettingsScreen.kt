@@ -19,6 +19,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -29,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -38,6 +41,7 @@ import com.edison.lakbayuplb.R
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.SettingsScreenTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.RouteSettingsViewModel
 import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import com.edison.lakbayuplb.ui.theme.ThemeMode
 
@@ -99,9 +103,13 @@ fun MainSettingsScreen(
     navigateToRoutesColors: () -> Unit,
     navigateToTopAppBarColors: () -> Unit,
     navigateToRoutingSettings: () -> Unit,
+    routeSettingsViewModel: RouteSettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
     modifier: Modifier,
 ) {
     var selectedThemeMode by remember { mutableStateOf(ThemeMode.SYSTEM) }
+    val isClassesNotificationEnabled by routeSettingsViewModel.classNotificationEnabled.collectAsState()
+    val isExamsNotificationEnabled by routeSettingsViewModel.examNotificationEnabled.collectAsState()
+    val context = LocalContext.current
     Column(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium))
     ) {
@@ -176,14 +184,8 @@ fun MainSettingsScreen(
                     onClick = navigateToTopAppBarColors,
                     icon = Icons.Default.Edit
                 )
-//                SettingItem(
-//                    title = "Routes",
-//                    onClick = navigateToRoutesColors,
-//                    icon = Icons.Default.Edit
-//                )
             )
         )
-//        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
         // Map Routing
         SettingCategory(
             header = stringResource(R.string.map_routing),
@@ -195,8 +197,72 @@ fun MainSettingsScreen(
                 ),
             )
         )
+
+        NotificationCategory(
+            header = stringResource(R.string.notifications),
+            items = listOf(
+                NotificationItem(
+                    title = stringResource(R.string.classes),
+                    initialToggleState = isClassesNotificationEnabled,
+                    onToggleChanged = {isEnabled ->
+                        routeSettingsViewModel.toggleClassNotificationEnabled(context,isEnabled)
+                    }
+                ),
+                NotificationItem(
+                    title = stringResource(R.string.exams),
+                    initialToggleState = isExamsNotificationEnabled,
+                    onToggleChanged = {isEnabled ->
+                        routeSettingsViewModel.toggleExamNotificationEnabled(context,isEnabled)
+                    }
+                )
+            )
+        )
     }
 }
+
+@Composable
+fun NotificationCategory(
+    header: String,
+    items: List<NotificationItem>
+){
+    Text(
+        text = header,
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.padding_small))
+    )
+    items.forEach{item ->
+        NotificationItemToggle(item = item)
+    }
+}
+
+
+@Composable
+fun NotificationItemToggle(item: NotificationItem){
+    var isToggled by remember { mutableStateOf(item.initialToggleState) }
+    val colors = MaterialTheme.colorScheme
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = "    ${item.title}", color = colors.onSurface)
+        Spacer(modifier = Modifier.weight(1f))
+        Switch(
+            checked = isToggled,
+            onCheckedChange = {
+                isToggled = it
+                item.onToggleChanged(it)
+            },
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = colors.primary,
+                uncheckedThumbColor = colors.onSurface
+            )
+        )
+    }
+}
+
+
 
 @Composable
 fun SettingCategory(
@@ -241,3 +307,8 @@ data class SettingItem(
     val icon: ImageVector
 )
 
+data class NotificationItem(
+    val title: String,
+    val initialToggleState: Boolean,
+    val onToggleChanged: (Boolean) -> Unit
+)

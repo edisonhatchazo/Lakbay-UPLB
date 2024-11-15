@@ -1,7 +1,10 @@
 package com.edison.lakbayuplb.ui.navigation
 
+import android.app.Activity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -26,6 +29,18 @@ fun ClassScheduleNavHost(
     modifier: Modifier = Modifier,
     openDrawer: () -> Unit,
 ){
+
+    val classId = (LocalContext.current as? Activity)?.intent?.getIntExtra("classId", -1) ?: -1
+    LaunchedEffect(classId) {
+        if (classId != -1) {
+            navController.navigate(ClassHomeDestination.route) {
+                popUpTo(ClassHomeDestination.route) { inclusive = false }
+            }
+            navController.navigate("${ClassScheduleDetailsDestination.route}/$classId")
+        }
+    }
+
+
     NavHost(
         navController = navController,
         startDestination = ClassHomeDestination.route,

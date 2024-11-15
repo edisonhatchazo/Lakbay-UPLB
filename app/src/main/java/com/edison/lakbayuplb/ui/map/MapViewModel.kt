@@ -26,6 +26,7 @@ class MapViewModel(private val repository: LocalRoutingRepository, application: 
     val routeResponse: LiveData<MutableList<Pair<String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>>> =
         _routeResponse
 
+
     var isCalculatingRoute = false
     private val _busStopsKaliwa = MutableLiveData<List<BusStop>>()
     private val _busStopsKanan = MutableLiveData<List<BusStop>>()
@@ -73,7 +74,7 @@ class MapViewModel(private val repository: LocalRoutingRepository, application: 
         colorCode: String,
     ) {
         isCalculatingRoute = true
-
+        val context = getApplication<Application>().applicationContext
         viewModelScope.launch {
             val start = "$startLng,$startLat"
             val end = "$endLng,$endLat"
@@ -83,24 +84,24 @@ class MapViewModel(private val repository: LocalRoutingRepository, application: 
                 "foot" -> {
                     // Foot profile: only one walking route
                     val walkingRoute = repository.getRoute(
+                        context,
                         "foot",
                         start,
                         end,
-                        "#00FF00", // Green for walking
-                        routeSettingsViewModel
+                        "#00FF00" // Green for walking
                     ).toMutableList()
                     mutableListOf("foot" to mutableListOf("foot" to walkingRoute))
                 }
                 "driving", "bicycle" -> {
                     // Car or Bicycle profile
                     val (mainRoute, walkToDestination) = repository.getRouteWithParking(
+                        context,
                         profile,
                         start,
                         end,
                         colorCode, // Red for car, blue for bicycle
                         _parkingSpots.value ?: emptyList(),
-                        routeSettingsViewModel.parkingRadius.value,
-                        routeSettingsViewModel
+                        routeSettingsViewModel.parkingRadius.value
                     )
                     mutableListOf(
                         profile to mutableListOf(profile to mainRoute.toMutableList()),          // First: Car or bicycle route
@@ -110,6 +111,7 @@ class MapViewModel(private val repository: LocalRoutingRepository, application: 
                 "transit" -> {
                     if (!doubleTransit) {
                         calculateSingleTransitRoute(
+                            context,
                             startLat,
                             startLng,
                             endLat,
@@ -119,11 +121,11 @@ class MapViewModel(private val repository: LocalRoutingRepository, application: 
                             _busStopsForestry.value ?: emptyList(),
                             busRoutes,
                             routeSettingsViewModel.walkingDistance.value,
-                            repository,
-                            routeSettingsViewModel
+                            repository
                         )
                     } else {
                         calculateDoubleTransitRoute(
+                            context,
                             startLat,
                             startLng,
                             endLat,
@@ -135,8 +137,7 @@ class MapViewModel(private val repository: LocalRoutingRepository, application: 
                             _busStopsForestry.value ?: emptyList(),
                             busRoutes,
                             routeSettingsViewModel.walkingDistance.value,
-                            repository,
-                            routeSettingsViewModel
+                            repository
                         )
                     }
                 }

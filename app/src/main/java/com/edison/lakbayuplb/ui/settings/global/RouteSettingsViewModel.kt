@@ -3,14 +3,21 @@ package com.edison.lakbayuplb.ui.settings.global
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.edison.lakbayuplb.data.AppDataContainer
+import com.edison.lakbayuplb.algorithm.notifications.cancelAllClassAlarms
+import com.edison.lakbayuplb.algorithm.notifications.cancelAllExamAlarms
+import com.edison.lakbayuplb.algorithm.notifications.scheduleClassAlarms
+import com.edison.lakbayuplb.algorithm.notifications.scheduleExamAlarms
+import com.edison.lakbayuplb.algorithm.notifications.scheduleWeeklyExamSummary
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class RouteSettingsViewModel(context: Context) : ViewModel() {
     private val speedPreferences = SpeedPreferences(context)
-
+    private val appPreferences = AppPreferences(context)
     private val _walkingSpeed = MutableStateFlow(speedPreferences.walkingSpeed) // meters per second
     val walkingSpeed: StateFlow<Double> = _walkingSpeed.asStateFlow()
 
@@ -35,7 +42,12 @@ class RouteSettingsViewModel(context: Context) : ViewModel() {
     private val _parkingRadius = MutableStateFlow(speedPreferences.parkingRadius)
     val parkingRadius: StateFlow<Double> = _parkingRadius.asStateFlow()
 
+    private val _classNotificationEnabled = MutableStateFlow(appPreferences.isClassesNotificationEnabled())
+    val classNotificationEnabled: StateFlow<Boolean> = _classNotificationEnabled.asStateFlow()
 
+
+    private val _examNotificationEnabled = MutableStateFlow(appPreferences.isExamsNotificationEnabled())
+    val examNotificationEnabled: StateFlow<Boolean> = _examNotificationEnabled.asStateFlow()
 
     fun setWalkingSpeed(speed: Double) {
         viewModelScope.launch {
@@ -69,6 +81,38 @@ class RouteSettingsViewModel(context: Context) : ViewModel() {
         viewModelScope.launch {
             _forestryRouteDoubleRideEnabled.emit(enabled)
             speedPreferences.forestryRouteDoubleRideEnabled = enabled
+        }
+    }
+    fun toggleClassNotificationEnabled(context: Context,isEnabled: Boolean) {
+        appPreferences.setClassesNotification(isEnabled)
+        _classNotificationEnabled.value = isEnabled
+
+        if (isEnabled) {
+            viewModelScope.launch {
+                val classSchedules = AppDataContainer(context).classScheduleRepository.getAllClassSchedules().first()
+                scheduleClassAlarms(context, classSchedules, AppDataContainer(context).buildingRepository, delay = 60)
+            }
+        } else {
+            viewModelScope.launch {
+                cancelAllClassAlarms(context)
+            }
+        }
+    }
+
+    fun toggleExamNotificationEnabled(context:Context,isEnabled: Boolean) {
+        appPreferences.setExamsNotification(isEnabled)
+        _examNotificationEnabled.value = isEnabled
+
+        if (isEnabled) {
+            viewModelScope.launch {
+                val examSchedules = AppDataContainer(context).examScheduleRepository.getAllExamsSchedules().first()
+                scheduleExamAlarms(context, examSchedules, AppDataContainer(context).buildingRepository, delay = 60)
+                scheduleWeeklyExamSummary(context)
+            }
+        } else {
+            viewModelScope.launch {
+                cancelAllExamAlarms(context)
+            }
         }
     }
 }

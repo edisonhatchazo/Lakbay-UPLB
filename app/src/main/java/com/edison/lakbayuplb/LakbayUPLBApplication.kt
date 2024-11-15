@@ -1,6 +1,8 @@
 package com.edison.lakbayuplb
 
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -18,6 +20,7 @@ import com.edison.lakbayuplb.data.AppContainer
 import com.edison.lakbayuplb.data.AppDataContainer
 import com.edison.lakbayuplb.ui.navigation.Navigation
 import com.edison.lakbayuplb.ui.navigation.NavigationDrawerContent
+import com.edison.lakbayuplb.algorithm.notifications.startAlarmService
 import com.edison.lakbayuplb.ui.theme.ThemeMode
 import kotlinx.coroutines.launch
 
@@ -27,7 +30,40 @@ class LakbayUPLBApplication : Application() {
     override fun onCreate(){
         super.onCreate()
         container = AppDataContainer(this)
+        val repository = container.localRoutingRepository
+        createNotificationChannel()
+        repository.initializeGraphs(context = this)
+        startAlarmService(this)
+    }
 
+    private fun createNotificationChannel() {
+        val classesChannelId = getString(R.string.class_channel_id)
+        val classesChannelName = getString(R.string.class_channel_name)
+        val classesChannelDescription = getString(R.string.class_channel_description)
+
+        val classesChannel = NotificationChannel(
+            classesChannelId,
+            classesChannelName,
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = classesChannelDescription
+        }
+
+        val examsChannelId = getString(R.string.exam_channel_id)
+        val examsChannelName = getString(R.string.exam_channel_name)
+        val examsChannelDescription = getString(R.string.exam_channel_description)
+
+        val examsChannel = NotificationChannel(
+            examsChannelId,
+            examsChannelName,
+            NotificationManager.IMPORTANCE_DEFAULT
+        ).apply {
+            description = examsChannelDescription
+        }
+
+        val notificationManager = getSystemService(NotificationManager::class.java)
+        notificationManager.createNotificationChannel(classesChannel)
+        notificationManager.createNotificationChannel(examsChannel)
     }
 }
 

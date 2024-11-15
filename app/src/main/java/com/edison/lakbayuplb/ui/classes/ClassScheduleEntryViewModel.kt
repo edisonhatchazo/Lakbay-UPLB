@@ -26,7 +26,7 @@ class ClassScheduleEntryViewModel(
     private val classScheduleRepository: ClassScheduleRepository,
     private val colorSchemesRepository: ColorSchemesRepository
 ) : ViewModel() {
-    var colorSchemesUiState by mutableStateOf(
+    private var colorSchemesUiState by mutableStateOf(
         savedStateHandle.get<ColorSchemesUiState>("colorSchemeUiState") ?: ColorSchemesUiState()
     )
     var classScheduleUiState by mutableStateOf(

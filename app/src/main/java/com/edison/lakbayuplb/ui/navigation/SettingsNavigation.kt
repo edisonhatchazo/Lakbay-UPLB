@@ -112,8 +112,6 @@ fun SettingsNavHost(
             )
         }
 
-
-
         composable(
             route = DirectoryColorsDestination.routeWithArgs,
             arguments = listOf(

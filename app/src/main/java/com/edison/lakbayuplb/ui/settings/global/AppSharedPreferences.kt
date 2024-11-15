@@ -12,16 +12,16 @@ class AppPreferences(context: Context) {
     companion object {
         private const val TOP_APP_BAR_BACKGROUND_COLOR_KEY = "top_app_bar_background_color"
         private const val TOP_APP_BAR_FOREGROUND_COLOR_KEY = "top_app_bar_foreground_color"
-        private const val PREVIOUS_COLOR_ID_KEY = "previous_color_id" // New key for storing previous color ID
+        private const val PREVIOUS_COLOR_ID_KEY = "previous_color_id"
+        private const val CLASSES_NOTIFICATION_KEY = "classes_notification"
+        private const val EXAMS_NOTIFICATION_KEY = "exams_notification"
     }
 
-    // Save the selected background and foreground colors
     fun saveTopAppBarColors(backgroundColor: Color, foregroundColor: Color) {
         preferences.edit().putInt(TOP_APP_BAR_BACKGROUND_COLOR_KEY, backgroundColor.toArgb()).apply()
         preferences.edit().putInt(TOP_APP_BAR_FOREGROUND_COLOR_KEY, foregroundColor.toArgb()).apply()
     }
 
-    // Retrieve both the saved background and foreground colors
     fun getTopAppBarColors(): Pair<Color, Color> {
         val backgroundColorInt = preferences.getInt(TOP_APP_BAR_BACKGROUND_COLOR_KEY, Color.Blue.toArgb())
         val foregroundColorInt = preferences.getInt(TOP_APP_BAR_FOREGROUND_COLOR_KEY, Color.White.toArgb())
@@ -36,6 +36,26 @@ class AppPreferences(context: Context) {
     // Retrieve the previous color ID (default to 1 if none is saved)
     fun getPreviousColorId(): Int {
         return preferences.getInt(PREVIOUS_COLOR_ID_KEY, 1)
+    }
+
+    // Save the classes notification setting
+    fun setClassesNotification(enabled: Boolean) {
+        preferences.edit().putBoolean(CLASSES_NOTIFICATION_KEY, enabled).apply()
+    }
+
+    // Get the classes notification setting (default to true)
+    fun isClassesNotificationEnabled(): Boolean {
+        return preferences.getBoolean(CLASSES_NOTIFICATION_KEY, true)
+    }
+
+    // Save the exams notification setting
+    fun setExamsNotification(enabled: Boolean) {
+        preferences.edit().putBoolean(EXAMS_NOTIFICATION_KEY, enabled).apply()
+    }
+
+    // Get the exams notification setting (default to true)
+    fun isExamsNotificationEnabled(): Boolean {
+        return preferences.getBoolean(EXAMS_NOTIFICATION_KEY, true)
     }
 }
 
