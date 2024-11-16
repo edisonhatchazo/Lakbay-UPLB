@@ -20,6 +20,9 @@ import com.edison.lakbayuplb.ui.classes.ClassScheduleEditScreen
 import com.edison.lakbayuplb.ui.classes.ClassScheduleEntryDestination
 import com.edison.lakbayuplb.ui.classes.ClassScheduleEntryScreen
 import com.edison.lakbayuplb.ui.classes.ClassScheduleHomeScreen
+import com.edison.lakbayuplb.ui.exam.ExamDetailsDestination
+import com.edison.lakbayuplb.ui.exam.ExamDetailsScreen
+import com.edison.lakbayuplb.ui.exam.ExamEditDestination
 import com.edison.lakbayuplb.ui.map.GuideMapDestination
 import com.edison.lakbayuplb.ui.map.GuideMapScreen
 
@@ -29,18 +32,6 @@ fun ClassScheduleNavHost(
     modifier: Modifier = Modifier,
     openDrawer: () -> Unit,
 ){
-
-    val classId = (LocalContext.current as? Activity)?.intent?.getIntExtra("classId", -1) ?: -1
-    LaunchedEffect(classId) {
-        if (classId != -1) {
-            navController.navigate(ClassHomeDestination.route) {
-                popUpTo(ClassHomeDestination.route) { inclusive = false }
-            }
-            navController.navigate("${ClassScheduleDetailsDestination.route}/$classId")
-        }
-    }
-
-
     NavHost(
         navController = navController,
         startDestination = ClassHomeDestination.route,
@@ -107,6 +98,25 @@ fun ScheduleNavHost(
     modifier: Modifier = Modifier,
     openDrawer: () -> Unit,
 ){
+    val classId = (LocalContext.current as? Activity)?.intent?.getIntExtra("classId", -1) ?: -1
+    val examId = (LocalContext.current as? Activity)?.intent?.getIntExtra("examId", -1) ?: -1
+    LaunchedEffect(classId) {
+        if (classId != -1) {
+            navController.navigate(ClassHomeScheduleDestination.route) {
+                popUpTo(ClassHomeScheduleDestination.route) { inclusive = false }
+            }
+            navController.navigate("${ClassScheduleDetailsDestination.route}/$classId")
+        }
+    }
+    LaunchedEffect(examId) {
+        if (examId != -1) {
+            navController.navigate(ClassHomeScheduleDestination.route) {
+                popUpTo(ClassHomeScheduleDestination.route) { inclusive = false }
+            }
+            navController.navigate("${ExamDetailsDestination.route}/$examId")
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = ClassHomeScheduleDestination.route,
@@ -162,5 +172,19 @@ fun ScheduleNavHost(
                 navigateBack = { navController.navigateUp() }
             )
         }
+        //Composable for Notifications
+        composable(
+            route = ExamDetailsDestination.routeWithArgs,
+            arguments = listOf(navArgument(ExamDetailsDestination.SCHEDULEIDARG){
+                type = NavType.IntType
+            })
+        ){
+            ExamDetailsScreen(
+                navigateToEditExam = {navController.navigate("${ExamEditDestination.route}/$it")},
+                navigateBack = {navController.navigateUp()},
+                navigateToMap = {navController.navigate("${GuideMapDestination.route}/${it}")},
+            )
+        }
+
     }
 }
