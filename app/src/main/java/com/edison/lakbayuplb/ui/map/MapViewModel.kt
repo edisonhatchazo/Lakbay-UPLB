@@ -1,7 +1,6 @@
 package com.edison.lakbayuplb.ui.map
 
 import android.app.Application
-import androidx.compose.runtime.saveable.Saver
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -16,7 +15,6 @@ import com.edison.lakbayuplb.algorithm.routing_algorithm.transit.loadAllBusStops
 import com.edison.lakbayuplb.algorithm.routing_algorithm.transit.loadAllParkingSpots
 import com.edison.lakbayuplb.ui.settings.global.RouteSettingsViewModel
 import kotlinx.coroutines.launch
-import org.maplibre.android.geometry.LatLng
 import org.osmdroid.util.GeoPoint
 
 class MapViewModel(private val repository: LocalRoutingRepository, application: Application) : AndroidViewModel(application) {
@@ -33,13 +31,6 @@ class MapViewModel(private val repository: LocalRoutingRepository, application: 
     private val _busStopsForestry = MutableLiveData<List<BusStop>>()
     private val _parkingSpots = MutableLiveData<List<ParkingSpot>>()
     private val busRoutes = repository.getBusRoutes()
-    private val _initialLocation = MutableLiveData<LatLng>()
-    val initialLocation: LiveData<LatLng> = _initialLocation
-
-    private val _destinationLocation = MutableLiveData<LatLng>()
-
-    private val _selectedRouteType = MutableLiveData<String>()
-
     private val routeSettingsViewModel = RouteSettingsViewModel(application)
 
 
@@ -48,6 +39,8 @@ class MapViewModel(private val repository: LocalRoutingRepository, application: 
         loadAllParkingSpots()
         repository.initializeGraphs(context = application.baseContext)
     }
+
+
 
     private fun loadAllBusStops() {
         viewModelScope.launch {
@@ -70,8 +63,7 @@ class MapViewModel(private val repository: LocalRoutingRepository, application: 
         startLng: Double,
         endLat: Double,
         endLng: Double,
-        doubleTransit: Boolean,
-        colorCode: String,
+        doubleTransit: Boolean
     ) {
         isCalculatingRoute = true
         val context = getApplication<Application>().applicationContext
@@ -87,8 +79,7 @@ class MapViewModel(private val repository: LocalRoutingRepository, application: 
                         context,
                         "foot",
                         start,
-                        end,
-                        "#00FF00" // Green for walking
+                        end
                     ).toMutableList()
                     mutableListOf("foot" to mutableListOf("foot" to walkingRoute))
                 }
@@ -99,13 +90,12 @@ class MapViewModel(private val repository: LocalRoutingRepository, application: 
                         profile,
                         start,
                         end,
-                        colorCode, // Red for car, blue for bicycle
                         _parkingSpots.value ?: emptyList(),
                         routeSettingsViewModel.parkingRadius.value
                     )
                     mutableListOf(
-                        profile to mutableListOf(profile to mainRoute.toMutableList()),          // First: Car or bicycle route
-                        "foot" to mutableListOf("foot" to walkToDestination.toMutableList())    // Second: Walking route to destination
+                        profile to mutableListOf(profile to mainRoute.toMutableList()),
+                        "foot" to mutableListOf("foot" to walkToDestination.toMutableList())
                     )
                 }
                 "transit" -> {
@@ -125,19 +115,19 @@ class MapViewModel(private val repository: LocalRoutingRepository, application: 
                         )
                     } else {
                         calculateDoubleTransitRoute(
-                            context,
-                            startLat,
-                            startLng,
-                            endLat,
-                            endLng,
+                            context = context,
+                            startLat = startLat,
+                            startLon = startLng,
+                            endLat = endLat,
+                            endLon = endLng,
                             libraryPoint = GeoPoint(14.16570083526473, 121.23851448662828),
                             upGatePoint = GeoPoint(14.167623176682682, 121.24295209618953),
-                            _busStopsKaliwa.value ?: emptyList(),
-                            _busStopsKanan.value ?: emptyList(),
-                            _busStopsForestry.value ?: emptyList(),
-                            busRoutes,
-                            routeSettingsViewModel.walkingDistance.value,
-                            repository
+                            busStopsKaliwa = _busStopsKaliwa.value ?: emptyList(),
+                            busStopsKanan = _busStopsKanan.value ?: emptyList(),
+                            busStopsForestry = _busStopsForestry.value ?: emptyList(),
+                            busRoutes = busRoutes,
+                            minimumWalkingDistance = routeSettingsViewModel.walkingDistance.value,
+                            repository = repository
                         )
                     }
                 }
@@ -150,36 +140,4 @@ class MapViewModel(private val repository: LocalRoutingRepository, application: 
             isCalculatingRoute = false
         }
     }
-
-
-
-
-
 }
-//    fun updateInitialLocation(newLocation: GeoPoint) {
-//        _initialLocation.value = newLocation
-//        _selectedRouteType.value?.let { routeType ->
-//            _destinationLocation.value?.let { destination ->
-//                calculateRouteFromUserInput(
-//                    routeType,
-//                    newLocation.latitude,
-//                    newLocation.longitude,
-//                    destination.latitude,
-//                    destination.longitude
-//                )
-//            }
-//        }
-//    }
-
-
-
-
-// Custom Saver for GeoPoint to ensure it can be saved and restored properly
-fun geoPointSaver() = Saver<GeoPoint?, List<Double>>(
-    save = { geoPoint ->
-        geoPoint?.let { listOf(it.latitude, it.longitude) } ?: emptyList()
-    },
-    restore = { list ->
-        if (list.isNotEmpty()) GeoPoint(list[0], list[1]) else null
-    }
-)

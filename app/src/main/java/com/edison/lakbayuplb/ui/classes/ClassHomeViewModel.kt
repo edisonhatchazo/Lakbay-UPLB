@@ -1,8 +1,10 @@
 package com.edison.lakbayuplb.ui.classes
 
+import android.app.Application
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.edison.lakbayuplb.algorithm.routing_algorithm.LocalRoutingRepository
 import com.edison.lakbayuplb.data.classes.ClassSchedule
 import com.edison.lakbayuplb.data.classes.ClassScheduleRepository
 import com.edison.lakbayuplb.data.colorschemes.ColorSchemesRepository
@@ -16,11 +18,14 @@ import kotlinx.coroutines.launch
 
 class ClassHomeViewModel(
     classScheduleRepository: ClassScheduleRepository,
-    private val colorSchemesRepository: ColorSchemesRepository
+    private val colorSchemesRepository: ColorSchemesRepository,
+    private val localRoutingRepository: LocalRoutingRepository,
+    application: Application
 ) : ViewModel() {
     private val _colorSchemes = MutableStateFlow<Map<Int, ColorEntry>>(emptyMap())
     val colorSchemes: StateFlow<Map<Int, ColorEntry>> get() = _colorSchemes
     init {
+        localRoutingRepository.initializeGraphs(context = application.baseContext)
         viewModelScope.launch {
             colorSchemesRepository.getAllColorSchemes().collect { colorSchemes ->
                 _colorSchemes.value = colorSchemes.associate { colorScheme ->

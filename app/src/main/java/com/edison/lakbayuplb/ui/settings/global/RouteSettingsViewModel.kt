@@ -3,12 +3,12 @@ package com.edison.lakbayuplb.ui.settings.global
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.edison.lakbayuplb.data.AppDataContainer
 import com.edison.lakbayuplb.algorithm.notifications.cancelAllClassAlarms
 import com.edison.lakbayuplb.algorithm.notifications.cancelAllExamAlarms
 import com.edison.lakbayuplb.algorithm.notifications.scheduleClassAlarms
 import com.edison.lakbayuplb.algorithm.notifications.scheduleExamAlarms
 import com.edison.lakbayuplb.algorithm.notifications.scheduleWeeklyExamSummary
+import com.edison.lakbayuplb.data.AppDataContainer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -45,9 +45,15 @@ class RouteSettingsViewModel(context: Context) : ViewModel() {
     private val _classNotificationEnabled = MutableStateFlow(appPreferences.isClassesNotificationEnabled())
     val classNotificationEnabled: StateFlow<Boolean> = _classNotificationEnabled.asStateFlow()
 
+    private val _navigationNotificationEnabled = MutableStateFlow(appPreferences.isNavigationNotificationEnabled())
+    val navigationNotificationEnabled: StateFlow<Boolean> = _navigationNotificationEnabled.asStateFlow()
 
     private val _examNotificationEnabled = MutableStateFlow(appPreferences.isExamsNotificationEnabled())
     val examNotificationEnabled: StateFlow<Boolean> = _examNotificationEnabled.asStateFlow()
+
+    private val _speechEnabled = MutableStateFlow(appPreferences.isNavigationSpeechEnabled())
+    val speechEnabled: StateFlow<Boolean> = _speechEnabled.asStateFlow()
+
 
     fun setWalkingSpeed(speed: Double) {
         viewModelScope.launch {
@@ -115,5 +121,17 @@ class RouteSettingsViewModel(context: Context) : ViewModel() {
             }
         }
     }
+
+    fun toggleNavigationNotificationEnabled(isEnabled: Boolean) {
+        appPreferences.setNavigationNotification(isEnabled) // Save preference
+        _navigationNotificationEnabled.value = isEnabled // Update LiveData or StateFlow
+    }
+
+
+    fun toggleNavigationSpeechEnabled(isEnabled: Boolean) {
+        appPreferences.setNavigationSpeech(isEnabled) // Save preference
+        _speechEnabled.value = isEnabled // Update LiveData or StateFlow
+    }
+
 }
 

@@ -14,12 +14,12 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-
 class LocationHelper(context: Context) {
 
     private var fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
-    private val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000)
-        .setMinUpdateIntervalMillis(5000)
+    private val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000) // 1-second interval
+        .setMinUpdateIntervalMillis(500) // Minimum interval of 1 second
+        .setMaxUpdateDelayMillis(1000) // Ensure no batch delays exceed 2 seconds
         .build()
     private var locationCallback: LocationCallback? = null
 
@@ -28,7 +28,7 @@ class LocationHelper(context: Context) {
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 for (location in locationResult.locations) {
-                    onLocationUpdate(location)
+                    onLocationUpdate(location) // Pass each location to the callback
                 }
             }
 
@@ -40,9 +40,7 @@ class LocationHelper(context: Context) {
         }
 
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback!!, Looper.getMainLooper())
-            .addOnFailureListener { exception ->
-                onFailure(exception)
-            }
+            .addOnFailureListener { exception -> onFailure(exception) }
     }
 
     fun stopLocationUpdates() {
@@ -51,6 +49,7 @@ class LocationHelper(context: Context) {
         }
     }
 }
+
 
 fun isOnline(context: Context): Boolean {
     val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

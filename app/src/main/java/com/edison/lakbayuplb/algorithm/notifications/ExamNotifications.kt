@@ -141,6 +141,7 @@ fun rescheduleExamAlarms(context: Context, delay: Long) {
         scheduleExamAlarms(context, examSchedules, buildingRepository, delay)
     }
 }
+
 suspend fun cancelAllExamAlarms(context: Context) {
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 

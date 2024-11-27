@@ -434,7 +434,7 @@
     {
       "type": "Feature",
       "properties": {
-        "route": "Forestry Route up"
+        "route": "Forestry Route Up"
       },
       "geometry": {
         "type": "LineString",
@@ -501,7 +501,7 @@
     {
       "type": "Feature",
       "properties": {
-        "route": "Forestry Route down"
+        "route": "Forestry Route Down"
       },
       "geometry": {
         "type": "LineString",

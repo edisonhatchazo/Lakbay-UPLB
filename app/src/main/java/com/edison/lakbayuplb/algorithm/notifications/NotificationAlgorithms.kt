@@ -20,10 +20,6 @@ fun startAlarmService(context: Context) {
     val serviceIntent = Intent(context, AlarmForegroundService::class.java)
     context.startForegroundService(serviceIntent)
 }
-fun stopAlarmService(context: Context) {
-    val serviceIntent = Intent(context, AlarmForegroundService::class.java)
-    context.stopService(serviceIntent)
-}
 
 suspend fun getRoomCoordinates(roomId: Int, buildingRepository: BuildingRepository): GeoPoint {
     val room = buildingRepository.getRoom(roomId).firstOrNull()

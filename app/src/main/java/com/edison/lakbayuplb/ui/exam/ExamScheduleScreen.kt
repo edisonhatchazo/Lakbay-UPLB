@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -39,6 +40,7 @@ import com.edison.lakbayuplb.algorithm.generateScheduleSlots
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.ExamScheduleScreenTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.AppPreferences
 import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -60,6 +62,9 @@ fun ExamScheduleScreen(
     openDrawer: () -> Unit,
     colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val context = LocalContext.current
+    val appPreferences = AppPreferences(context)
+    val fontSize = appPreferences.getFontSize()
     val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
     val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
 
@@ -88,7 +93,8 @@ fun ExamScheduleScreen(
             navigateToScheduleUpdate = navigateToScheduleUpdate,
             examScheduleViewModel = examScheduleViewModel,
             contentPadding = innerPadding,
-            selectedDate = selectedDate
+            selectedDate = selectedDate,
+            fontSize = fontSize
         )
     }
 }
@@ -97,7 +103,8 @@ fun ExamScheduleScreenBody(
     navigateToScheduleUpdate: (Int) -> Unit,
     examScheduleViewModel: ExamHomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    selectedDate: LocalDate
+    selectedDate: LocalDate,
+    fontSize: Float
 ) {
     val examHomeUiState by examScheduleViewModel.examHomeUiState.collectAsState()
     val startOfWeek = selectedDate.with(DayOfWeek.MONDAY)
@@ -208,7 +215,7 @@ fun ExamScheduleScreenBody(
                                     Text(
                                         text = currentText,
                                         color = fontColor,
-                                        fontSize = 10.sp,
+                                        fontSize = fontSize.sp,
                                         textAlign = TextAlign.Center,
                                     )
                                 }

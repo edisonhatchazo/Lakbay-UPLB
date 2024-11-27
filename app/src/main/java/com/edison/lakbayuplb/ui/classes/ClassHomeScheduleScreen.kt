@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -34,6 +35,7 @@ import com.edison.lakbayuplb.algorithm.generateScheduleSlots
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.ScheduleScreenTopAppBar
+import com.edison.lakbayuplb.ui.settings.global.AppPreferences
 import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import com.edison.lakbayuplb.ui.theme.ColorPaletteViewModel
 import java.time.LocalTime
@@ -56,7 +58,9 @@ fun ClassScheduleHomeScreen(
     val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
     val (topAppBarBackgroundColor, topAppBarForegroundColor) = topAppBarColors.value
 
-
+    val context = LocalContext.current
+    val appPreferences = AppPreferences(context)
+    val fontSize = appPreferences.getFontSize()
     LaunchedEffect(Unit){
         colorPaletteViewModel.observeColorSchemes()
     }
@@ -78,6 +82,7 @@ fun ClassScheduleHomeScreen(
             navigateToScheduleUpdate = navigateToScheduleUpdate,
             scheduleViewModel = scheduleViewModel,
             contentPadding = innerPadding,
+            fontSize = fontSize
         )
     }
 }
@@ -85,8 +90,10 @@ fun ClassScheduleHomeScreen(
 fun ScheduleScreenBody(
     navigateToScheduleUpdate: (Int) -> Unit,
     scheduleViewModel: ClassHomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    contentPadding: PaddingValues = PaddingValues(0.dp)
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    fontSize: Float
 ) {
+
     val classHomeUiState by scheduleViewModel.classHomeUiState.collectAsState()
     val colorSchemes by scheduleViewModel.colorSchemes.collectAsState()
 
@@ -186,7 +193,7 @@ fun ScheduleScreenBody(
                                     Text(
                                         text = currentText,
                                         color = fontColor,
-                                        fontSize = 10.sp,
+                                        fontSize = fontSize.sp,
                                         textAlign = TextAlign.Center,
                                     )
                                 }

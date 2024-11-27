@@ -39,3 +39,16 @@ fun aStar(graph: Graph, start: Node, goal: Node): List<Node> {
 
     return emptyList() // No path found
 }
+
+
+fun reconstructPath(cameFrom: Map<Node, Node?>, current: Node): List<Node> {
+    var curr: Node? = current
+    val path = mutableListOf<Node>()
+
+    while (curr != null) {
+        path.add(curr)
+        curr = cameFrom[curr]
+    }
+
+    return path.reversed()
+}

@@ -15,6 +15,10 @@ class AppPreferences(context: Context) {
         private const val PREVIOUS_COLOR_ID_KEY = "previous_color_id"
         private const val CLASSES_NOTIFICATION_KEY = "classes_notification"
         private const val EXAMS_NOTIFICATION_KEY = "exams_notification"
+        private const val NAVIGATIONS_NOTIFICATION_KEY = "navigation_notification"
+        private const val NAVIGATIONS_SPEECH_KEY = "navigation_speecb_notification"
+        private const val FONT_SIZE_KEY = "font_size"
+        private const val DEFAULT_FONT_SIZE = 9f
     }
 
     fun saveTopAppBarColors(backgroundColor: Color, foregroundColor: Color) {
@@ -56,6 +60,35 @@ class AppPreferences(context: Context) {
     // Get the exams notification setting (default to true)
     fun isExamsNotificationEnabled(): Boolean {
         return preferences.getBoolean(EXAMS_NOTIFICATION_KEY, true)
+    }
+
+    fun setNavigationNotification(enabled: Boolean) {
+        preferences.edit().putBoolean(NAVIGATIONS_NOTIFICATION_KEY, enabled).apply()
+    }
+
+    // Get the classes notification setting (default to true)
+    fun isNavigationSpeechEnabled(): Boolean {
+        return preferences.getBoolean(NAVIGATIONS_SPEECH_KEY, true)
+    }
+
+
+    fun setNavigationSpeech(enabled: Boolean) {
+        preferences.edit().putBoolean(NAVIGATIONS_SPEECH_KEY, enabled).apply()
+    }
+
+    // Get the classes notification setting (default to true)
+    fun isNavigationNotificationEnabled(): Boolean {
+        return preferences.getBoolean(NAVIGATIONS_NOTIFICATION_KEY, true)
+    }
+
+    // Save the font size
+    fun setFontSize(fontSize: Float) {
+        preferences.edit().putFloat(FONT_SIZE_KEY, fontSize).apply()
+    }
+
+    // Get the font size (default to 9.sp)
+    fun getFontSize(): Float {
+        return preferences.getFloat(FONT_SIZE_KEY, DEFAULT_FONT_SIZE)
     }
 }
 

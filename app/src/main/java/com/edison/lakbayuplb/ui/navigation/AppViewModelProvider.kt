@@ -46,6 +46,8 @@ object AppViewModelProvider {
             ClassHomeViewModel(
                 lakbayUPLBApplication().container.classScheduleRepository,
                 lakbayUPLBApplication().container.colorSchemesRepository,
+                lakbayUPLBApplication().container.localRoutingRepository,
+                lakbayUPLBApplication()
             )
 
         }

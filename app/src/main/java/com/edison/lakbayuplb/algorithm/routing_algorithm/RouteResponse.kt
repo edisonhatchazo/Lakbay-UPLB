@@ -57,8 +57,7 @@ fun findNearestNode(targetNode: Node, nodes: List<Node>): Node {
 fun createRouteWithLineString(
     context: Context,
     path: List<Node>,
-    profile: String,
-    colorCode: String,
+    profile: String
 ): RouteWithLineString {
     val totalDistance = calculateTotalDistance(path)
     val totalDuration = calculateTotalDuration(context,path,profile)
@@ -80,7 +79,6 @@ fun createRouteWithLineString(
     // Return RouteWithLineString, including colorCode and profile
     return RouteWithLineString(
         route = route,
-        colorCode = colorCode,
         lineString = geoJsonLineString,
         profile = profile
     )
@@ -102,7 +100,6 @@ fun createLeg(
             geometry = nodesToGeoJsonLineString(listOf(startNode, endNode)), // Create a GeoJSON LineString for this step
             distance = haversine(startNode.latitude, startNode.longitude, endNode.latitude, endNode.longitude) * 1000, // Convert to meters
             duration = calculateTotalDuration(context,listOf(startNode, endNode),profile), // Estimate duration based on distance
-            name = "Move from Node ${startNode.id} to Node ${endNode.id}" // Placeholder for instructions
         )
         steps.add(step)
     }

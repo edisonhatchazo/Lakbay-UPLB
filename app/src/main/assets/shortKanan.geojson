@@ -1,0 +1,324 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/594380025",
+        "highway": "bus_stop",
+        "name": "Main Library/Faculty Village",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2385293,
+          14.1654993
+        ]
+      },
+      "id": "node/594380025"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/606307043",
+        "highway": "bus_stop",
+        "name": "CSI/BioSci/Humanities",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2401897,
+          14.1671303
+        ]
+      },
+      "id": "node/606307043"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/606307044",
+        "highway": "bus_stop",
+        "name": "Sacay/UPCO",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2387514,
+          14.1665156
+        ]
+      },
+      "id": "node/606307044"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3463468476",
+        "bench": "yes",
+        "bin": "yes",
+        "check_date:bin": "2022-10-27",
+        "check_date:shelter": "2022-10-24",
+        "highway": "bus_stop",
+        "name": "UP Gate",
+        "public_transport": "platform",
+        "shelter": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2430325,
+          14.1676036
+        ]
+      },
+      "id": "node/3463468476"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/5509654200",
+        "highway": "bus_stop",
+        "name": "Raymundo Gate",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.241397,
+          14.1676533
+        ]
+      },
+      "id": "node/5509654200"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route": "Kanan Route 1"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            121.24263306213714,
+            14.176659288945416
+          ],
+          [
+            121.2429720376553,
+            14.1753081955234
+          ],
+          [
+            121.24310982003584,
+            14.174778454721363
+          ],
+          [
+            121.24317843647015,
+            14.173981594794412
+          ],
+          [
+            121.2431917110851,
+            14.173129768646447
+          ],
+          [
+            121.24319646261716,
+            14.172487848467782
+          ],
+          [
+            121.24344827098668,
+            14.170962296486536
+          ],
+          [
+            121.24373137915359,
+            14.170410645840107
+          ],
+          [
+            121.24417205579101,
+            14.169539986647138
+          ],
+          [
+            121.24424569868728,
+            14.168987199986987
+          ],
+          [
+            121.24398913931992,
+            14.168568002516238
+          ],
+          [
+            121.2430325,
+            14.1676036
+          ],
+          [
+            121.241397,
+            14.1676533
+          ],
+          [
+            121.2401897,
+            14.1671303
+          ],
+          [
+            121.2387514,
+            14.1665156
+          ],
+          [
+            121.2385293,
+            14.1654993
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "naem": "Grove"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24398913931992,
+          14.168568002516238
+        ],
+        "type": "Point"
+      },
+      "id": 23
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Demarses/LB Square"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24424569868728,
+          14.168987199986987
+        ],
+        "type": "Point"
+      },
+      "id": 24
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Star Commercial Lane"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24417205579101,
+          14.169539986647138
+        ],
+        "type": "Point"
+      },
+      "id": 25
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "LB Centtro"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24373137915359,
+          14.170410645840107
+        ],
+        "type": "Point"
+      },
+      "id": 26
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "LBDH"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24344827098668,
+          14.170962296486536
+        ],
+        "type": "Point"
+      },
+      "id": 27
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Agapita"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24319646261716,
+          14.172487848467782
+        ],
+        "type": "Point"
+      },
+      "id": 28
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "CDLB"
+      },
+      "geometry": {
+        "coordinates": [
+          121.2431917110851,
+          14.173129768646447
+        ],
+        "type": "Point"
+      },
+      "id": 29
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PlanBank"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24310982003584,
+          14.174778454721363
+        ],
+        "type": "Point"
+      },
+      "id": 30
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "BPI"
+      },
+      "geometry": {
+        "coordinates": [
+          121.2429720376553,
+          14.1753081955234
+        ],
+        "type": "Point"
+      },
+      "id": 31
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "El Danda"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24263306213714,
+          14.176659288945416
+        ],
+        "type": "Point"
+      },
+      "id": 32
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Lopez Elementary School"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24317843647015,
+          14.173981594794412
+        ],
+        "type": "Point"
+      },
+      "id": 38
+    }
+  ]
+}

@@ -9,8 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.edison.lakbayuplb.ui.settings.SettingsDestination
 import com.edison.lakbayuplb.ui.settings.SettingsScreen
-import com.edison.lakbayuplb.ui.settings.TextToSpeechDestination
-import com.edison.lakbayuplb.ui.settings.TextToSpeechMainScreen
+import com.edison.lakbayuplb.ui.settings.UIScreen
+import com.edison.lakbayuplb.ui.settings.UserInterfaceDestination
 import com.edison.lakbayuplb.ui.settings.colors.ColorHomeDestination
 import com.edison.lakbayuplb.ui.settings.colors.ColorSchemeDetails
 import com.edison.lakbayuplb.ui.settings.colors.ColorSchemeDetailsDestination
@@ -43,15 +43,22 @@ fun SettingsNavHost(
     ) {
         composable(route = SettingsDestination.route){
             SettingsScreen(
-                navigateToColorEntry = {navController.navigate(ColorHomeDestination.route)},
                 openDrawer = openDrawer,
-                navigateToCollegeColors = {navController.navigate(DirectoryHomeDestination.route)},
-                navigateToRoutingSettings = {navController.navigate(RoutingDestination.route)},
-                navigateToRoutesColors = {navController.navigate(TextToSpeechDestination.route)},
-                navigateToTopAppBarColors = {navController.navigate(TopAppBarColorsDestination.route)},
-                onThemeChange = onThemeChange
+                navigateToUserInterface = {navController.navigate(UserInterfaceDestination.route)},
+                navigateToRoutingSettings = {navController.navigate(RoutingDestination.route)}
             )
         }
+
+
+        composable(route = UserInterfaceDestination.route){
+            UIScreen(
+                onNavigateUp = {navController.navigateUp()},
+                navigateToColorEntry = {navController.navigate(ColorHomeDestination.route)},
+                onThemeChange = onThemeChange,
+                navigateToCollegeColors = {navController.navigate(DirectoryHomeDestination.route)},
+                navigateToTopAppBarColors = {navController.navigate(TopAppBarColorsDestination.route)})
+        }
+
         composable(route = ColorHomeDestination.route){
             ColorSchemeHome(
                 onNavigateUp = { navController.navigateUp() },
@@ -106,12 +113,6 @@ fun SettingsNavHost(
             )
         }
 
-        composable(route = TextToSpeechDestination.route){
-            TextToSpeechMainScreen(
-                onNavigateUp = { navController.navigateUp() }
-            )
-        }
-
         composable(
             route = DirectoryColorsDestination.routeWithArgs,
             arguments = listOf(
@@ -123,6 +124,7 @@ fun SettingsNavHost(
                 onNavigateUp = { navController.navigateUp() }
             )
         }
+
 
     }
 }

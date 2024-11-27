@@ -1,92 +1,46 @@
 package com.edison.lakbayuplb.algorithm.routing_algorithm
 
+import android.util.Log
 import com.edison.lakbayuplb.R
 import org.json.JSONObject
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
-
-fun generateRouteInstructions(routeWithLineString: RouteWithLineString): List<String> {
-    val instructions = mutableListOf<String>()
-    var totalStraightDistance = 0.0 // To accumulate straight distances
-
-    for (leg in routeWithLineString.route.legs) {
-        var previousBearing: Double? = null
-
-        for (step in leg.steps) {
-            val distance = step.distance // Distance in meters
-            val coordinates = parseGeoJSONGeometry(step.geometry)
-            if (coordinates.size < 2) continue // Skip if there aren't enough coordinates
-
-            val (startLat, startLng) = coordinates[0]
-            val (endLat, endLng) = coordinates[coordinates.size - 1]
-            val currentBearing = calculateBearing(startLat, startLng, endLat, endLng)
-
-            // Determine the instruction based on the change in bearings
-            val instruction: String = if (previousBearing != null) {
-                val turnInstruction = getTurnInstruction(previousBearing, currentBearing)
-
-                if (turnInstruction == "Continue straight") {
-                    // Accumulate straight distances
-                    totalStraightDistance += distance
-                    continue // Skip adding this instruction for now
-                } else {
-                    // Add accumulated "Continue straight" distance to the next turn
-                    val turnWithDistance = if (totalStraightDistance > 0) {
-                        "$turnInstruction in ${(distance + totalStraightDistance).toInt()} meters."
-                    } else {
-                        "$turnInstruction in ${distance.toInt()} meters."
-                    }
-                    totalStraightDistance = 0.0 // Reset the accumulated straight distance
-
-                    // Check for crossing and append crossing instruction
-                    if (step.isCrossing()) {
-                        "$turnWithDistance Carefully cross the street."
-                    } else {
-                        turnWithDistance
-                    }
-                }
-            } else {
-                if (distance > 50) {
-                    totalStraightDistance += distance
-                    continue // Skip adding this instruction for now
-                } else {
-                    "Move ${distance.toInt()} meters to the next point."
-                }
-            }
-
-            // Add the generated instruction to the list
-            instructions.add(instruction)
-            previousBearing = currentBearing // Update the previous bearing for the next iteration
+fun createGeoJSONLineString(coordinates: List<String>): String {
+    return """
+        {
+            "type": "LineString",
+            "coordinates": [${coordinates.joinToString(",")}]
         }
-    }
-
-    // If there's any remaining "Continue straight" distance at the end, add it as the last instruction
-    if (totalStraightDistance > 0) {
-        instructions.add("Continue straight for ${totalStraightDistance.toInt()} meters.")
-    }
-
-    return instructions
+    """.trimIndent()
 }
 
-// Simulated method to check if a step is a crossing
-fun Step.isCrossing(): Boolean {
-    // This can be a property in the step data, e.g., a flag or a street name that indicates a crossing
-    return this.name.contains("Crossing") || this.name.contains("Street")
-}
 
 fun parseGeoJSONGeometry(geoJSONString: String): List<Pair<Double, Double>> {
-    val geoJSON = JSONObject(geoJSONString)
-    val coordinates = geoJSON.getJSONArray("coordinates")
-    val decodedCoordinates = mutableListOf<Pair<Double, Double>>()
 
-    for (i in 0 until coordinates.length()) {
-        val lng = coordinates.getJSONArray(i).getDouble(0)
-        val lat = coordinates.getJSONArray(i).getDouble(1)
-        decodedCoordinates.add(Pair(lat, lng))
+    if (geoJSONString.isBlank()) {
+        return emptyList()
     }
 
-    return decodedCoordinates
+    return try {
+        val geoJSON = JSONObject(geoJSONString)
+        val coordinates = geoJSON.getJSONArray("coordinates")
+        val decodedCoordinates = mutableListOf<Pair<Double, Double>>()
+
+        for (i in 0 until coordinates.length()) {
+            val point = coordinates.getJSONArray(i)
+            val lng = point.getDouble(0)
+            val lat = point.getDouble(1)
+            decodedCoordinates.add(Pair(lat, lng))
+        }
+
+        decodedCoordinates
+    } catch (e: Exception) {
+        // Log the error for debugging
+        Log.e("parseGeoJSONGeometry", "Error parsing GeoJSON: ${e.message}")
+        emptyList() // Return an empty list if parsing fails
+    }
+
 }
 
 // Function to determine the turn based on the change in bearings
@@ -131,11 +85,22 @@ fun extractDirectionAndDistance(instruction: String): Pair<String, Int> {
 
 fun getImage(direction: String): Int{
     return when (direction) {
-        "left" -> R.drawable.left
-        "right" -> R.drawable.right
-        "straight" -> R.drawable.straight
+        "Turn left" -> R.drawable.left
+        "Turn right" -> R.drawable.right
+        "Continue straight" -> R.drawable.straight
         "Move" -> R.drawable.straight
         else -> R.drawable.u_turn_left
     }
 }
 
+fun parseGeoJSONCoordinates(lineString: String): List<String> {
+    val geoJSON = JSONObject(lineString)
+    val coordinatesArray = geoJSON.getJSONArray("coordinates")
+    val coordinates = mutableListOf<String>()
+
+    for (i in 0 until coordinatesArray.length()) {
+        val coordinatePair = coordinatesArray.getJSONArray(i)
+        coordinates.add("[${coordinatePair.getDouble(0)}, ${coordinatePair.getDouble(1)}]")
+    }
+    return coordinates
+}

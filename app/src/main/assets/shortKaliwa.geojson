@@ -1,0 +1,303 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/12037301377",
+        "bench": "no",
+        "bin": "no",
+        "highway": "bus_stop",
+        "lit": "no",
+        "name": "UP Gate",
+        "public_transport": "platform",
+        "shelter": "no"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2436556,
+          14.167002
+        ]
+      },
+      "id": 21
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/584698198",
+        "highway": "bus_stop",
+        "name": "Maquiling School",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2441851,
+          14.1658894
+        ]
+      },
+      "id": 2
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/572991546",
+        "highway": "bus_stop",
+        "name": "Math Building/St. Therese",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.244529,
+          14.1650748
+        ]
+      },
+      "id": "node/572991546"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "@id": "node/3733105013",
+        "highway": "bus_stop",
+        "name": "PhySci/Post Office",
+        "public_transport": "platform"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.2435869,
+          14.1634401
+        ]
+      },
+      "id": "node/3733105013"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Grove"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24399647530402,
+          14.168573301946822
+        ],
+        "type": "Point"
+      },
+      "id": 24
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Demarses"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24423753468977,
+          14.168993580042766
+        ],
+        "type": "Point"
+      },
+      "id": 25
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Star Commercial"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24417560966651,
+          14.169544759326953
+        ],
+        "type": "Point"
+      },
+      "id": 26
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "LB Centtro"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24374017033807,
+          14.17040788525145
+        ],
+        "type": "Point"
+      },
+      "id": 27
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "LBDH"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24346440157814,
+          14.170950018888064
+        ],
+        "type": "Point"
+      },
+      "id": 28
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Agapita"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24319326856488,
+          14.172460935138517
+        ],
+        "type": "Point"
+      },
+      "id": 29
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "CDLB"
+      },
+      "geometry": {
+        "coordinates": [
+          121.2431888447419,
+          14.17312350512438
+        ],
+        "type": "Point"
+      },
+      "id": 30
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "PlanBank"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24310726254299,
+          14.174778049822038
+        ],
+        "type": "Point"
+      },
+      "id": 31
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "BPI"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24298557923231,
+          14.175269459359214
+        ],
+        "type": "Point"
+      },
+      "id": 32
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "El Danda"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24264496517435,
+          14.176659548443567
+        ],
+        "type": "Point"
+      },
+      "id": 33
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "route": "Kaliwa Route 1"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            121.24264496517435,
+            14.176659548443567
+          ],
+          [
+            121.24298557923231,
+            14.175269459359214
+          ],
+          [
+            121.24310726254299,
+            14.174778049822038
+          ],
+          [
+            121.24318565557462,
+            14.173984531539247
+          ],
+          [
+            121.2431888447419,
+            14.17312350512438
+          ],
+          [
+            121.24319326856488,
+            14.172460935138517
+          ],
+          [
+            121.24346440157814,
+            14.170950018888064
+          ],
+          [
+            121.24374017033807,
+            14.17040788525145
+          ],
+          [
+            121.24417560966651,
+            14.169544759326953
+          ],
+          [
+            121.24423753468977,
+            14.168993580042766
+          ],
+          [
+            121.24399647530402,
+            14.168573301946822
+          ],
+          [
+            121.2436556,
+            14.167002
+          ],
+          [
+            121.2441851,
+            14.1658894
+          ],
+          [
+            121.244529,
+            14.1650748
+          ],
+          [
+            121.2435869,
+            14.1634401
+          ]
+        ]
+      },
+      "id": 21
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Lopez Elementary School"
+      },
+      "geometry": {
+        "coordinates": [
+          121.24318565557462,
+          14.173984531539247
+        ],
+        "type": "Point"
+      },
+      "id": 45
+    }
+  ]
+}

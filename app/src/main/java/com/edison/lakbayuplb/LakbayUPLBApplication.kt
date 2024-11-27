@@ -16,11 +16,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import com.edison.lakbayuplb.algorithm.notifications.startAlarmService
 import com.edison.lakbayuplb.data.AppContainer
 import com.edison.lakbayuplb.data.AppDataContainer
 import com.edison.lakbayuplb.ui.navigation.Navigation
 import com.edison.lakbayuplb.ui.navigation.NavigationDrawerContent
-import com.edison.lakbayuplb.algorithm.notifications.startAlarmService
 import com.edison.lakbayuplb.ui.theme.ThemeMode
 import kotlinx.coroutines.launch
 
@@ -40,6 +40,17 @@ class LakbayUPLBApplication : Application() {
         val classesChannelId = getString(R.string.class_channel_id)
         val classesChannelName = getString(R.string.class_channel_name)
         val classesChannelDescription = getString(R.string.class_channel_description)
+
+        val navigationChannelId = getString(R.string.navigation_channel_id)
+        val navigationChannelName = "Navigation Updates"
+        val navigationChannelDescription = "Notifications for real-time navigation instructions"
+
+        val navigationChannel = NotificationChannel(
+            navigationChannelId,
+            navigationChannelName,
+            NotificationManager.IMPORTANCE_HIGH).apply {
+            description = navigationChannelDescription
+        }
 
         val classesChannel = NotificationChannel(
             classesChannelId,
@@ -62,6 +73,7 @@ class LakbayUPLBApplication : Application() {
         }
 
         val notificationManager = getSystemService(NotificationManager::class.java)
+        notificationManager.createNotificationChannel(navigationChannel)
         notificationManager.createNotificationChannel(classesChannel)
         notificationManager.createNotificationChannel(examsChannel)
     }

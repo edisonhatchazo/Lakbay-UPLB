@@ -632,7 +632,6 @@ fun GuideScreenTopAppBar(
     canNavigateBack: Boolean,
     navigateUp: () -> Unit = {},
     onRouteTypeSelected: (String) -> Unit,
-    onChooseLocation: () -> Unit,
     topAppBarBackgroundColor: Color, // Dynamic background color
     topAppBarForegroundColor: Color  // Dynamic foreground color
 ){
@@ -662,13 +661,6 @@ fun GuideScreenTopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = onChooseLocation) {
-                Icon(
-                    imageVector = Icons.Filled.Place,
-                    contentDescription = stringResource(R.string.about),
-                    tint = topAppBarForegroundColor
-                )
-            }
             //Route Type Dropdown Menu
             Box {
                 IconButton(onClick = { expanded = true }) {

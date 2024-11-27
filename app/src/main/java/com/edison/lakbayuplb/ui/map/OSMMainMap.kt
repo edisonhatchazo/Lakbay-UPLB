@@ -19,7 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.graphics.toColor
 import com.edison.lakbayuplb.R
-import com.edison.lakbayuplb.algorithm.routing_algorithm.RouteWithLineString
+import kotlinx.coroutines.delay
 import org.json.JSONObject
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.MapTileProviderArray
@@ -42,23 +42,15 @@ fun OSMMapView(
     snippet: String,
     initialLocation: GeoPoint?,
     routeType: String,
-    routeResponse: MutableList<Pair<String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>>?,  // Route response
+    lineString: MutableList<Pair<String, MutableList<MutableList<Pair<Double, Double>>>>>,
     destinationLocation: GeoPoint?
 ) {
     val context = LocalContext.current
-
     val osmMainMap = remember { OSMainMap(context, title, snippet) }
 
     // Use mutable state to track the initial and destination locations
     var currentInitialLocation by remember { mutableStateOf(initialLocation) }
     var currentDestinationLocation by remember { mutableStateOf(destinationLocation) }
-
-    // Update the state when locations change
-    LaunchedEffect(initialLocation, destinationLocation,routeResponse,routeType) {
-        currentInitialLocation = initialLocation
-        currentDestinationLocation = destinationLocation
-        osmMainMap.updateMarkers(currentInitialLocation, currentDestinationLocation)
-    }
 
     // Initialize the map view
     val mapView = remember { osmMainMap.initializeMap(currentInitialLocation, currentDestinationLocation) }
@@ -68,16 +60,40 @@ fun OSMMapView(
         factory = { mapView },
         modifier = modifier.fillMaxSize()
     )
-    // Add route overlays if there is a route response
-    LaunchedEffect(routeResponse, routeType) {
-        routeResponse?.forEachIndexed { _, routePair ->
-            routePair.second.firstOrNull()?.second?.forEach { routeWithLineString ->
-                osmMainMap.addRouteOverlay(routeWithLineString)
+
+    // Add route overlays with the user's location as the starting point
+    LaunchedEffect(lineString, routeType, initialLocation) {
+        if(lineString.isNotEmpty()) {
+
+
+            osmMainMap.clearOverlays()
+            currentInitialLocation = initialLocation
+            currentDestinationLocation = destinationLocation
+            osmMainMap.updateMarkers(currentInitialLocation, currentDestinationLocation)
+
+            for (i in 0 until lineString.size) {
+
+                val profile = lineString[i].first
+                val coordinates = lineString[i].second[0].toMutableList()
+                // Add the user's location at the start for the 0th profile
+                if (i == 0 && initialLocation != null) {
+                    val userLocation = Pair(initialLocation.latitude, initialLocation.longitude)
+                    coordinates.add(0, userLocation) // Add user's location at the start
+                }
+
+                // Convert coordinates to GeoJSON LineString format
+                val path = createGeoJsonLineString(coordinates)
+
+                // Add the route overlay to the map
+                osmMainMap.addRouteOverlay(path, profile)
+
             }
+            delay(5000L)
+
         }
     }
-
 }
+
 class OSMainMap(
     private val context: Context,
     private val title: String,
@@ -155,6 +171,11 @@ class OSMainMap(
         return mapView
     }
 
+    fun clearOverlays() {
+        mapView.overlays.clear()
+        mapView.invalidate() // Refresh the map view to reflect changes
+    }
+
     fun updateMarkers(initialLocation: GeoPoint?, destinationLocation: GeoPoint?) {
         // Clear existing markers
         mapView.overlays.clear()
@@ -164,13 +185,14 @@ class OSMainMap(
                 initialLocation,
                 title = "",
                 snippet = "",
-                iconResId = R.drawable.icons8_circle_18___,
+                iconResId = R.drawable.icons8_circle_24___, // Pass the Drawable object
                 backgroundColor = Color.TRANSPARENT.toColor(),
-                foreGroundColor = Color.TRANSPARENT.toColor()
+                foreGroundColor = Color.TRANSPARENT.toColor(),
+                anchorX = 0.5f, // Center horizontally
+                anchorY = 0.5f  // Center vertically
             )
             mapView.controller.setCenter(initialLocation)
         }
-
         if (destinationLocation != null) {
             addTextMarkerOverlay(
                 destinationLocation,
@@ -178,8 +200,9 @@ class OSMainMap(
                 snippet = snippet,
                 iconResId = R.drawable.marker_48,
                 backgroundColor = Color.WHITE.toColor(),
-                foreGroundColor = Color.BLACK.toColor()
-
+                foreGroundColor = Color.BLACK.toColor(),
+                anchorX = 0.5f, // Center horizontally
+                anchorY = 1.0f  // Bottom-center vertically
             )
         }
 
@@ -193,10 +216,10 @@ class OSMainMap(
         mapView.overlays.add(rotationGestureOverlay)
     }
 
-    // New function to add polyline for route
-    fun addRouteOverlay(route: RouteWithLineString) {
-        // Parse the coordinates from the LineString in the RouteWithLineString
-        val jsonObject = JSONObject(route.lineString)
+    fun addRouteOverlay(lineString: String, profile: String) {
+        mapView.invalidate()
+        // Parse the coordinates from the LineString
+        val jsonObject = JSONObject(lineString)
         val coordinatesArray = jsonObject.getJSONArray("coordinates")
 
         val geoPoints = mutableListOf<GeoPoint>()
@@ -206,11 +229,21 @@ class OSMainMap(
             val lat = coordinate.getDouble(1)
             geoPoints.add(GeoPoint(lat, lon))
         }
+
+        // Determine the color based on the profile
+        val colorCode = when (profile) {
+            "foot" -> "#00FF00" // Green
+            "bicycle" -> "#0000FF" // Blue
+            "driving" -> "#FF0000" // Red
+            "transit" -> "#00FFFF" // Cyan
+            else -> "#000000" // Default black
+        }
+
         // Create a polyline for the route
         val polyline = Polyline().apply {
             setPoints(geoPoints)
             outlinePaint.apply {
-                color = Color.parseColor(route.colorCode)  // Set the color
+                color = Color.parseColor(colorCode)  // Set the color
                 strokeWidth = 15f  // Set the stroke width
             }
         }
@@ -229,7 +262,9 @@ class OSMainMap(
         snippet: String,
         iconResId: Int,
         backgroundColor: Color,
-        foreGroundColor: Color
+        foreGroundColor: Color,
+        anchorX: Float = 0.5f,
+        anchorY: Float = 1.0f
     ) {
         if (position == null) {
             return
@@ -237,7 +272,17 @@ class OSMainMap(
 
         val iconDrawable = context.getDrawable(iconResId) ?: return
 
-        val textMarkerOverlay = TextMarkerOverlay(position, title, snippet, iconDrawable, backgroundColor = backgroundColor,foreGroundColor = foreGroundColor)
+        val textMarkerOverlay = TextMarkerOverlay(
+            position,
+            title,
+            snippet,
+            iconDrawable,
+            backgroundColor = backgroundColor,
+            foreGroundColor = foreGroundColor,
+            anchorX = anchorX,
+            anchorY = anchorY
+        )
+
         mapView.overlays.add(textMarkerOverlay)
     }
 }
@@ -249,7 +294,9 @@ class TextMarkerOverlay(
     private val icon: Drawable,
     private val textSize: Float = 40f,
     private val backgroundColor: Color,
-    private val foreGroundColor: Color
+    private val foreGroundColor: Color,
+    private val anchorX: Float = 0.5f, // Default: Center horizontally
+    private val anchorY: Float = 1.0f  // Default: Bottom-center vertically
 ) : Overlay() {
 
     override fun draw(canvas: Canvas?, mapView: MapView?, shadow: Boolean) {
@@ -309,17 +356,18 @@ class TextMarkerOverlay(
         // Draw the marker icon below the text
         val iconWidth = icon.intrinsicWidth
         val iconHeight = icon.intrinsicHeight
+        val adjustedX = (screenPoint.x - (iconWidth * anchorX)).toInt()
+        val adjustedY = (screenPoint.y - (iconHeight * anchorY)).toInt()
+
         icon.setBounds(
-            screenPoint.x - iconWidth / 2,
-            screenPoint.y - iconHeight,
-            screenPoint.x + iconWidth / 2,
-            screenPoint.y
+            adjustedX,
+            adjustedY,
+            adjustedX + iconWidth,
+            adjustedY + iconHeight
         )
-        if (canvas != null) {
-            icon.draw(canvas)
-        }
+        icon.draw(canvas!!)
 
         // Restore the canvas state (important to undo the rotation)
-        canvas?.restore()
+        canvas.restore()
     }
 }

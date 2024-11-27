@@ -51,7 +51,7 @@ class ClassesNotificationReceiver : BroadcastReceiver() {
             ).addOnSuccessListener { location ->
                 location?.let {
                     val userCoordinates = "${location.longitude},${location.latitude}"
-                    val route = routingRepository.getRoute(context, "foot", userCoordinates, destination, "#FF0000")
+                    val route = routingRepository.getRoute(context, "foot", userCoordinates, destination)
 
                     if (route.isNotEmpty()) {
                         val totalDistance = route.first().route.distance
@@ -183,7 +183,7 @@ class ExamsNotificationReceiver : BroadcastReceiver() {
             ).addOnSuccessListener { location ->
                 location?.let {
                     val userCoordinates = "${location.longitude},${location.latitude}"
-                    val route = routingRepository.getRoute(context, "foot", userCoordinates, destination, "#FF0000")
+                    val route = routingRepository.getRoute(context, "foot", userCoordinates, destination)
 
                     if (route.isNotEmpty()) {
                         val totalDistance = route.first().route.distance
