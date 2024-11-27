@@ -19,14 +19,6 @@ fun createGeoJsonLineString(coordinates: MutableList<Pair<Double, Double>>): Str
     }"""
 }
 
-fun getDestination(lineString: MutableList<Pair<Double, Double>>, destination: GeoPoint?): GeoPoint? {
-    if (lineString.isNotEmpty()) {
-        val lastCoordinate = lineString.lastOrNull()
-        return lastCoordinate?.let { GeoPoint(it.first, it.second) }
-    }
-    return destination
-}
-
 fun getDestinations(
     lineString: MutableList<Pair<String, MutableList<MutableList<Pair<Double, Double>>>>>
 ): MutableList<MutableList<GeoPoint>> {
@@ -173,4 +165,31 @@ fun getNewRoute(
     val sortedRoutes = routesWithDistances.sortedBy { it.second }
 
     return sortedRoutes.first().first
+}
+
+fun isGeoPointInBounds(point: GeoPoint, polygon: List<GeoPoint>): Boolean {
+    var inside = false
+    val n = polygon.size
+
+    if (n < 3) {
+        return false // A polygon must have at least 3 points
+    }
+
+    var j = n - 1 // The last vertex is connected to the first
+    for (i in 0 until n) {
+        val lat1 = polygon[i].latitude
+        val lon1 = polygon[i].longitude
+        val lat2 = polygon[j].latitude
+        val lon2 = polygon[j].longitude
+
+        // Check if point is within the vertical bounds of the edge
+        if ((lat1 > point.latitude) != (lat2 > point.latitude)) {
+            val intersect = (point.latitude - lat1) * (lon2 - lon1) / (lat2 - lat1) + lon1
+            if (point.longitude < intersect) {
+                inside = !inside
+            }
+        }
+        j = i
+    }
+    return inside
 }

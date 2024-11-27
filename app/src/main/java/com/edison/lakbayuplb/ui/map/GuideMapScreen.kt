@@ -198,7 +198,6 @@ fun GuideMapScreen(
 
         val counter = mutableListOf(0)
         GuideMapDetails(
-            navigateUp = navigateBack,
             initialLocation = initialLocation,
             destinationLocation = destinationLocation,
             title = maps.title,
@@ -219,7 +218,6 @@ fun GuideMapScreen(
 fun GuideMapDetails(
     title: String,
     snippet: String,
-    navigateUp: () -> Unit,
     initialLocation: GeoPoint?,
     destinationLocation: GeoPoint?,
     counter: MutableList<Int>,
@@ -262,9 +260,8 @@ fun GuideMapDetails(
         }?.toMutableList() ?: mutableListOf()
         currentDestinations = getDestinations(lineString)
     }
-
     // Instructions and related UI variables
-    var currentProfile by remember { mutableStateOf("") }
+    var currentProfile by remember { mutableStateOf("foot") }
     var remainingDistance by remember { mutableIntStateOf(0) }
     var turningDistance by remember { mutableIntStateOf(0) }
     var currentInstruction by remember { mutableStateOf("No instructions available.") }
@@ -418,26 +415,29 @@ fun GuideMapDetails(
                 }
             }
 
-            // Check if user reached the destination
-            val finalDestination = currentDestinations.firstOrNull()
-            if (finalDestination != null) {
-                val distanceToDestination = haversineInMeters(
-                    userLocation!!.latitude,
-                    userLocation!!.longitude,
-                    finalDestination.first().latitude,
-                    finalDestination.first().longitude
-                )
-                if (distanceToDestination <= 10.0) {
+            val finalDestinations = currentDestinations.firstOrNull()
+            if (finalDestinations != null) {
+                val isNearAnyDestination = finalDestinations.any { destination ->
+                    val distanceToDestination = haversineInMeters(
+                        userLocation!!.latitude,
+                        userLocation!!.longitude,
+                        destination.latitude,
+                        destination.longitude
+                    )
+                    distanceToDestination <= 10.0
+                }
+
+                if (isNearAnyDestination) {
                     if (lineString.size > 1) {
-                        // Remove current segment and proceed to next
+                        // Remove current segment and proceed to the next
                         lineString.removeAt(0)
+                        currentDestinations.removeAt(0)
                     } else {
                         // Final destination reached
                         hasReachedFinalDestination = true
                         currentInstruction = "You have reached your destination."
                         instructionList = listOf(currentInstruction)
-                        }
-
+                    }
                 }
             }
         }

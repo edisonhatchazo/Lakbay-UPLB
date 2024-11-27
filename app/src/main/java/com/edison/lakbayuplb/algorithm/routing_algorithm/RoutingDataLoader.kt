@@ -1,46 +1,9 @@
 package com.edison.lakbayuplb.algorithm.routing_algorithm
 
 import android.content.Context
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import org.json.JSONObject
-import org.osmdroid.util.GeoPoint
 import java.io.InputStream
-
-suspend fun parseBounds(context: Context): Map<String, List<GeoPoint>> = withContext(Dispatchers.IO) {
-    val boundsMap = mutableMapOf<String, List<GeoPoint>>()
-    val assetManager = context.assets
-    val inputStream = assetManager.open("UPLB_Bounds.geojson")
-    val geoJsonString = inputStream.bufferedReader().use { it.readText() }
-
-    val jsonObject = JSONObject(geoJsonString)
-    val features = jsonObject.getJSONArray("features")
-
-    for (i in 0 until features.length()) {
-        val feature = features.getJSONObject(i)
-        val properties = feature.getJSONObject("properties")
-        val geometry = feature.getJSONObject("geometry")
-
-        if (geometry.getString("type") == "Polygon") {
-            val coordinatesArray = geometry.getJSONArray("coordinates").getJSONArray(0)
-            val coordinates = (0 until coordinatesArray.length()).map { index ->
-                val point = coordinatesArray.getJSONArray(index)
-                GeoPoint(point.getDouble(1), point.getDouble(0))
-            }
-
-            val name = properties.optString("name", "")
-            if (name == "UPLB" || name == "CAS") {
-                boundsMap[name] = coordinates
-            }
-        }
-    }
-    return@withContext boundsMap
-}
-
-
-
-
 
 fun parseGeoJSON(context: Context, profile: String): Graph = runBlocking {
     val graph = Graph()

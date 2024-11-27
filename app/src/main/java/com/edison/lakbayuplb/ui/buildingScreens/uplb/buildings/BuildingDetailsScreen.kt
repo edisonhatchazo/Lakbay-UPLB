@@ -32,6 +32,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
+import com.edison.lakbayuplb.algorithm.routing_algorithm.checkCurrentLocation
 import com.edison.lakbayuplb.data.building.Building
 import com.edison.lakbayuplb.data.building.Classroom
 import com.edison.lakbayuplb.ui.buildingScreens.uplb.toBuilding
@@ -143,6 +145,11 @@ private fun BuildingDetailsBody(
     val colorEntry = rememberUpdatedState(CollegeColorPalette.getColorEntry(building.college))
     val fontColor = colorEntry.value.fontColor
     val backgroundColor = colorEntry.value.backgroundColor
+
+    val context = LocalContext.current
+    var showOutOfBoundsDialog by rememberSaveable { mutableStateOf(false) }
+    val isInsideBounds = checkCurrentLocation(context)
+
     Column(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
@@ -168,9 +175,13 @@ private fun BuildingDetailsBody(
             )
             Button(
                 onClick = {
-                    coroutineScope.launch{ viewModel.addOrUpdateMapData(building.toBuildingDetails())}
-                    navigateToMap(0)
-                    },
+                    if(isInsideBounds) {
+                        coroutineScope.launch { viewModel.addOrUpdateMapData(building.toBuildingDetails()) }
+                        navigateToMap(0)
+                    }else{
+                        showOutOfBoundsDialog = true
+                    }
+                },
                 shape = MaterialTheme.shapes.small,
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -215,6 +226,18 @@ private fun BuildingDetailsBody(
             }
         }
     }
+    if (showOutOfBoundsDialog) {
+        AlertDialog(
+            onDismissRequest = { showOutOfBoundsDialog = false },
+            title = { Text("Location Out of Bounds") },
+            text = { Text("Your current location is outside the University of the Philippines Los Baños campus.") },
+            confirmButton = {
+                TextButton(onClick = { showOutOfBoundsDialog = false }) {
+                    Text("OK")
+                }
+            }
+        )
+    }
 }
 
 
@@ -230,6 +253,10 @@ fun LocationDetail(
 ){
     val coroutineScope = rememberCoroutineScope()
     var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
+    var showOutOfBoundsDialog by rememberSaveable { mutableStateOf(false) }
+    val isInsideBounds = checkCurrentLocation(context)
+
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = backgroundColor)
@@ -264,8 +291,13 @@ fun LocationDetail(
 
     Button(
         onClick = {
-            coroutineScope.launch{ viewModel.addOrUpdateMapData(building.toBuildingDetails())}
-            navigateToMap(0)},//Navigate to GuideMap Screen
+            if(isInsideBounds) {
+                coroutineScope.launch { viewModel.addOrUpdateMapData(building.toBuildingDetails()) }
+                navigateToMap(0)
+            }else{
+                showOutOfBoundsDialog = true
+            }
+        },
         shape = MaterialTheme.shapes.small,
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -287,6 +319,18 @@ fun LocationDetail(
             },
             onDeleteCancel = { deleteConfirmationRequired = false },
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+        )
+    }
+    if (showOutOfBoundsDialog) {
+        AlertDialog(
+            onDismissRequest = { showOutOfBoundsDialog = false },
+            title = { Text("Location Out of Bounds") },
+            text = { Text("Your current location is outside the University of the Philippines Los Baños campus.") },
+            confirmButton = {
+                TextButton(onClick = { showOutOfBoundsDialog = false }) {
+                    Text("OK")
+                }
+            }
         )
     }
 }
