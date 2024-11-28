@@ -128,43 +128,66 @@ fun getNewRoute(
         repository.initializeGraphs(context)
     }
 
-    // List to store the routes with their respective distances
-    val routesWithDistances = mutableListOf<Pair<MutableList<Pair<Double, Double>>, Double>>()
+    // Safeguard for empty destinations
+    if (destinations.isEmpty()) {
+        return mutableListOf() // Return an empty list if no destinations are provided
+    }
 
-    // Iterate over each destination
-    destinations.forEach { destination ->
-        val path = repository.getRoute(
-            context = context,
-            start = "${userLocation.longitude},${userLocation.latitude}",
-            end = "${destination.longitude},${destination.latitude}",
-            profile = currentProfile
-        )
+    // Process only the first destination
+    val destination = destinations.first()
+    val path = repository.getRoute(
+        context = context,
+        start = "${userLocation.longitude},${userLocation.latitude}",
+        end = "${destination.longitude},${destination.latitude}",
+        profile = currentProfile
+    )
 
-        // Safeguard for empty or invalid route
-        if (path.isNotEmpty()) {
-            try {
-                // Parse route
-                val routePoints = parseGeoJSONGeometry(path.first().lineString).toMutableList()
+    // Safeguard for empty or invalid route
+    if (path.isNotEmpty()) {
+        try {
+            // Parse route
+            val routePoints = parseGeoJSONGeometry(path.first().lineString).toMutableList()
 
-                // Calculate total route distance
-                val totalDuration = path.sumOf { it.route.duration }
-
-                // Add route and its distance to the list
-                routesWithDistances.add(routePoints to totalDuration)
-            } catch (e: Exception) {
-                Log.e("Route", "Error parsing GeoJSON for destination: ${e.message}")
-            }
+            // Return the route points
+            return routePoints
+        } catch (e: Exception) {
+            Log.e("Route", "Error parsing GeoJSON for destination: ${e.message}")
         }
     }
 
-    // Safeguard for no valid routes
-    if (routesWithDistances.isEmpty()) {
-        return mutableListOf() // Return an empty list if no valid routes are found
+    // Return an empty list if no valid route is found
+    return mutableListOf()
+}
+
+fun getDeviations(
+    context: Context,
+    userLocation: GeoPoint,
+    destinationLocation: GeoPoint,
+    deviation: Double,
+    currentDistance: Double,
+): Pair<Double,Double>{
+    val repository = AppDataContainer(context).localRoutingRepository
+
+    // Ensure graphs are initialized only once
+    if (!repository.isInitialized) {
+        repository.initializeGraphs(context)
+    }
+    val route = repository.getRoute(
+        context = context,
+        profile = "transit",
+        start = "${userLocation.longitude},${userLocation.latitude}",
+        end = "${destinationLocation.longitude},${destinationLocation.latitude}"
+    )
+    if(route.isEmpty()){
+        return Pair(currentDistance,deviation)
     }
 
-    val sortedRoutes = routesWithDistances.sortedBy { it.second }
+    val totalDistance = route.sumOf { it.route.distance }
+    val difference = totalDistance - currentDistance
 
-    return sortedRoutes.first().first
+    val newDeviation = if((deviation + difference) <=-20) 0.0 else deviation + difference
+
+    return Pair(totalDistance,newDeviation)
 }
 
 fun isGeoPointInBounds(point: GeoPoint, polygon: List<GeoPoint>): Boolean {
@@ -192,4 +215,29 @@ fun isGeoPointInBounds(point: GeoPoint, polygon: List<GeoPoint>): Boolean {
         j = i
     }
     return inside
+}
+
+fun getDistance(
+    context: Context,
+    userLocation: GeoPoint,
+    destinationLocation: GeoPoint,
+    profile:String
+):Double{
+    val repository = AppDataContainer(context).localRoutingRepository
+
+    // Ensure graphs are initialized only once
+    if (!repository.isInitialized) {
+        repository.initializeGraphs(context)
+    }
+    val route = repository.getRoute(
+        context = context,
+        profile = profile,
+        start = "${userLocation.longitude},${userLocation.latitude}",
+        end = "${destinationLocation.longitude},${destinationLocation.latitude}"
+    )
+    if(route.isEmpty()){
+        return 0.0
+    }
+
+    return route.sumOf { it.route.distance }
 }

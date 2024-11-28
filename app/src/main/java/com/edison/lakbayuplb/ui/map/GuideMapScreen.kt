@@ -33,6 +33,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -270,6 +271,8 @@ fun GuideMapDetails(
     var destinationString by remember { mutableStateOf("Destination")}
     var currentImage by remember { mutableIntStateOf(R.drawable.straight) }
     var mode by remember { mutableIntStateOf(R.drawable.walking_icon) }
+    var currentDistance by remember {mutableDoubleStateOf(0.0)}
+    var deviation by remember { mutableDoubleStateOf(0.0)}
     val tts = remember {
         TextToSpeech(context) { status ->
             if (status != TextToSpeech.SUCCESS) {
@@ -366,6 +369,35 @@ fun GuideMapDetails(
             turningDistance = newTurningDistance
             currentImage = getImage(direction)
             // Check for deviations and update route if needed
+
+
+            withContext(Dispatchers.IO) {
+                if (currentProfile == "transit") {
+                    val (newDistance, newDeviation) = getDeviations(
+                        context = context,
+                        userLocation = userLocation!!,
+                        destinationLocation = currentDestinations[0].first(),
+                        deviation = deviation,
+                        currentDistance = currentDistance,
+                    )
+                    currentDistance = newDistance
+                    deviation = newDeviation
+                    if (newDeviation >= 30) {
+                        currentDestinations[0].removeAt(0)
+                    }
+                }
+                if(currentInstruction == "No instructions available."){
+                    val instructionDistance = getDistance(
+                        context = context,
+                        userLocation = userLocation!!,
+                        destinationLocation = currentDestinations[0].first(),
+                        profile = currentProfile
+                    )
+                    if(instructionDistance > 10) {
+                        currentInstruction = "Continue Straight in $instructionDistance meters."
+                    }
+                }
+            }
             val nextPoint = route.firstOrNull()
             if (nextPoint != null) {
                 val distanceToNextPoint = haversineInMeters(
@@ -388,11 +420,8 @@ fun GuideMapDetails(
                 }
 
                 val deviationThreshold = when (currentProfile) {
-                    "foot" -> 2.0
-                    "bicycle" -> 3.0
-                    "driving" -> 5.0
-                    "transit" -> 4.0
-                    else -> 2.0
+                    "transit" -> 10.0
+                    else -> 7.0
                 }
 
                 // Remove point if user is close enough
@@ -401,7 +430,7 @@ fun GuideMapDetails(
                 }
 
                 // Handle user deviation
-                if (distanceToNextPoint > deviationThreshold * 3) {
+                if (distanceToNextPoint > deviationThreshold * 2) {
                     // Trigger coroutine for recalculating route
                     withContext(Dispatchers.IO) {
                         val newRoute = getNewRoute(
@@ -414,20 +443,18 @@ fun GuideMapDetails(
                     }
                 }
             }
-
             val finalDestinations = currentDestinations.firstOrNull()
-            if (finalDestinations != null) {
-                val isNearAnyDestination = finalDestinations.any { destination ->
-                    val distanceToDestination = haversineInMeters(
-                        userLocation!!.latitude,
-                        userLocation!!.longitude,
-                        destination.latitude,
-                        destination.longitude
-                    )
-                    distanceToDestination <= 10.0
-                }
+            if (!finalDestinations.isNullOrEmpty()) {
+                // Access only the first element of currentDestinations[0]
+                val firstDestination = finalDestinations.first()
+                val distanceToFirstDestination = haversineInMeters(
+                    userLocation!!.latitude,
+                    userLocation!!.longitude,
+                    firstDestination.latitude,
+                    firstDestination.longitude
+                )
 
-                if (isNearAnyDestination) {
+                if (distanceToFirstDestination <= 10.0) {
                     if (lineString.size > 1) {
                         // Remove current segment and proceed to the next
                         lineString.removeAt(0)
@@ -440,6 +467,7 @@ fun GuideMapDetails(
                     }
                 }
             }
+
         }
 
         // Update frequency based on profile
