@@ -59,7 +59,6 @@ import com.edison.lakbayuplb.R
 import com.edison.lakbayuplb.algorithm.notifications.NavigationNotificationService
 import com.edison.lakbayuplb.algorithm.routing_algorithm.LocationHelper
 import com.edison.lakbayuplb.algorithm.routing_algorithm.RouteWithLineString
-import com.edison.lakbayuplb.algorithm.routing_algorithm.extractDirectionAndDistance
 import com.edison.lakbayuplb.algorithm.routing_algorithm.getImage
 import com.edison.lakbayuplb.algorithm.routing_algorithm.haversineInMeters
 import com.edison.lakbayuplb.algorithm.routing_algorithm.isLocationEnabled
@@ -69,6 +68,7 @@ import com.edison.lakbayuplb.ui.navigation.NavigationDestination
 import com.edison.lakbayuplb.ui.screen.GuideScreenTopAppBar
 import com.edison.lakbayuplb.ui.settings.global.AppPreferences
 import com.edison.lakbayuplb.ui.settings.global.RouteSettingsViewModel
+import com.edison.lakbayuplb.ui.settings.global.SpeedPreferences
 import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -88,6 +88,7 @@ object GuideMapDestination: NavigationDestination {
 fun GuideMapScreen(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
+    navigateToAboutMap: () -> Unit,
     viewModel: MapViewModel = viewModel(factory = AppViewModelProvider.Factory),
     locationViewModel: LocationViewModel = viewModel(factory = AppViewModelProvider.Factory),
     routeViewModel: RouteSettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
@@ -105,7 +106,7 @@ fun GuideMapScreen(
     val currentLocation by locationViewModel.currentLocation.observeAsState(null)
     val routeResponse by viewModel.routeResponse.observeAsState()
     var selectedRouteType by rememberSaveable  { mutableStateOf("foot") }
-    var isCalculatingRoute = viewModel.isCalculatingRoute
+    var isCalculatingRoute by remember {mutableStateOf(true)}
     val isDoubleTransit = routeViewModel.forestryRouteDoubleRideEnabled.collectAsState().value
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -150,17 +151,21 @@ fun GuideMapScreen(
 
 
     LaunchedEffect(selectedRouteType, initialLocation, destinationLocation) {
-        initialLocation.let {
+        isCalculatingRoute = true
+
+        val calculationResult = initialLocation.let {
             viewModel.calculateRouteFromUserInput(
-                profile = selectedRouteType, // This can be dynamic
+                profile = selectedRouteType,
                 startLat = initialLocation.latitude,
                 startLng = initialLocation.longitude,
-                endLat =destinationLocation.latitude,
+                endLat = destinationLocation.latitude,
                 endLng = destinationLocation.longitude,
                 doubleTransit = isDoubleTransit
             )
         }
+        isCalculatingRoute = !calculationResult // Set to false if calculation is complete
     }
+
 
     Scaffold(
         modifier = modifier,
@@ -169,8 +174,10 @@ fun GuideMapScreen(
                 title = stringResource(R.string.guide),
                 canNavigateBack = true,
                 navigateUp = navigateBack,
+                navigateToAboutMap = navigateToAboutMap,
                 onRouteTypeSelected = { routeType ->
                     selectedRouteType = routeType
+                    isCalculatingRoute = true
                 },
                 topAppBarBackgroundColor = topAppBarBackgroundColor,
                 topAppBarForegroundColor = topAppBarForegroundColor
@@ -183,22 +190,21 @@ fun GuideMapScreen(
                 title = { Text("Calculating Route") },
                 text = {
                     Text(
-                        if (isDoubleTransit) "Calculating Double Transit Route..."
-                        else "Calculating the Transit Route..."
+                        if(selectedRouteType == "transit") {
+                            if (isDoubleTransit) "Calculating the double transit route..."
+                            else "Calculating the transit route..."
+                        }else{
+                            "Calculating the $selectedRouteType route..."
+                        }
                     )
                 },
                 confirmButton = {}
             )
         }
 
-        LaunchedEffect(key1 = routeResponse, key2 = selectedRouteType) {
-            if (routeResponse != null) {
-                isCalculatingRoute = false
-            }
-        }
-
         val counter = mutableListOf(0)
         GuideMapDetails(
+            navigateBack = navigateBack,
             initialLocation = initialLocation,
             destinationLocation = destinationLocation,
             title = maps.title,
@@ -217,6 +223,7 @@ fun GuideMapScreen(
 @SuppressLint("DefaultLocale", "MutableCollectionMutableState")
 @Composable
 fun GuideMapDetails(
+    navigateBack: () -> Unit,
     title: String,
     snippet: String,
     initialLocation: GeoPoint?,
@@ -225,54 +232,208 @@ fun GuideMapDetails(
     routeType: String,
     routeResponse: MutableList<Pair<String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>>?,
     modifier: Modifier = Modifier,
+    mapViewModel: MapViewModel = viewModel(factory = AppViewModelProvider.Factory),
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val walkingSpeed = SpeedPreferences(context).walkingSpeed
+    val cyclingSpeed = SpeedPreferences(context).cyclingSpeed/3.6
+    val drivingSpeed = 5.56
+    val transitSpeed = 2.77
     var userLocation by remember { mutableStateOf(initialLocation) }
-    var hasReachedFinalDestination by remember { mutableStateOf(false) }
     val appPreferences = AppPreferences(context)
     val isNavigationEnabled = appPreferences.isNavigationNotificationEnabled()
     val isSpeechEnabled = appPreferences.isNavigationSpeechEnabled()
+    var currentProfilePoints by remember{mutableStateOf<MutableList<MutableList<GeoPoint>>>(mutableListOf())}
+    var currentPoints by remember{mutableStateOf<MutableList<GeoPoint>>(mutableListOf())}
+    var currentRoute by remember{mutableStateOf<MutableList<GeoPoint>>(mutableListOf())}
+    var currentPointDistance by remember{ mutableIntStateOf(0)}
+    var currentRouteString by remember{ mutableStateOf("")}
+    var otherRoute by remember{mutableStateOf<MutableList<GeoPoint>>(mutableListOf())}
+    var otherRouteString by remember{ mutableStateOf("")}
     var lineString by remember {
         mutableStateOf<MutableList<Pair<String, MutableList<MutableList<Pair<Double, Double>>>>>>(
-            mutableListOf() // Initialize with an empty MutableList
+            mutableListOf()
         )
+    }
+    var currentDistances by remember{mutableStateOf<MutableList<Int>>(mutableListOf())}
+    var totalDistances by remember{ mutableIntStateOf(0)}
+    var turningPoints by remember {
+        mutableStateOf<MutableList<Pair<String, MutableList<Pair<String, GeoPoint>>>>>(mutableListOf())
     }
     var currentDestinations by remember {
         mutableStateOf<MutableList<MutableList<GeoPoint>>>(mutableListOf())
     }
-
-    if (counter[0] == 0) {
-        counter[0]++
-        lineString = routeResponse?.mapNotNull { profilePair ->
-            val profile = profilePair.first // Profile type, e.g., "foot", "bicycle", etc.
-
-            val routes = profilePair.second.flatMap { segmentPair ->
-                // Extract and parse each RouteWithLineString
-                segmentPair.second.mapNotNull { route ->
-
-                    route.lineString.let { geoJson ->
-                        parseGeoJSONGeometry(geoJson).toMutableList()
-                    }
-                }
-            }.toMutableList() // Combine all routes into a MutableList
-            if (routes.isNotEmpty()) profile to routes else null
-        }?.toMutableList() ?: mutableListOf()
-        currentDestinations = getDestinations(lineString)
-    }
-    // Instructions and related UI variables
     var currentProfile by remember { mutableStateOf("foot") }
     var remainingDistance by remember { mutableIntStateOf(0) }
     var turningDistance by remember { mutableIntStateOf(0) }
     var currentInstruction by remember { mutableStateOf("No instructions available.") }
-    var instructionList by remember { mutableStateOf(listOf<String>()) }
     var direction by remember { mutableStateOf("Continue straight") }
+    val directions by remember{mutableStateOf<MutableList<String>>(mutableListOf())}
     var destinationString by remember { mutableStateOf("Destination")}
     var currentImage by remember { mutableIntStateOf(R.drawable.straight) }
     var mode by remember { mutableIntStateOf(R.drawable.walking_icon) }
     var currentDistance by remember {mutableDoubleStateOf(0.0)}
-    var deviation by remember { mutableDoubleStateOf(0.0)}
+    var duration by remember{mutableIntStateOf(0)}
+    var previousPointDistance by remember { mutableIntStateOf(0) }
+    var deviation by remember { mutableIntStateOf(0)}
+
+
+    fun processTransitRoutes(routeResponse: MutableList<Pair<String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>>?) {
+        var forestryRoute: MutableList<Pair<Double, Double>>? = null
+        var kananRoute: MutableList<Pair<Double, Double>>? = null
+        var kaliwaRoute: MutableList<Pair<Double, Double>>? = null
+
+        routeResponse?.forEach { profilePair ->
+            val routeTypes = profilePair.first // e.g., "Transit" or "Foot"
+            if (routeTypes == "transit") {
+                profilePair.second.forEach { routePair ->
+                    val routeName = routePair.first // e.g., "Forestry Route Up", "Kaliwa Route 1"
+                    val routeSegments = routePair.second // List of RouteWithLineString
+
+                    // Extract the first route segment (most optimal)
+                    val lineStrings = routeSegments.firstOrNull()?.lineString?.let { geoJson ->
+                        parseGeoJSONGeometry(geoJson).toMutableList()
+                    }
+
+                    when {
+                        routeName.contains("Forestry", ignoreCase = true) -> forestryRoute = lineStrings
+                        routeName.contains("Kaliwa", ignoreCase = true) -> kaliwaRoute = lineStrings
+                        routeName.contains("Kanan", ignoreCase = true) -> kananRoute = lineStrings
+                    }
+                }
+            }
+        }
+
+        // Determine current and other routes
+        when {
+            forestryRoute != null -> {
+                currentRoute = forestryRoute!!.map { GeoPoint(it.first, it.second) }.toMutableList()
+                currentRouteString = "Forestry"
+
+                if (kaliwaRoute != null) {
+                    otherRoute = kaliwaRoute!!.map { GeoPoint(it.first, it.second) }.toMutableList()
+                    otherRouteString = "Kaliwa"
+                } else if (kananRoute != null) {
+                    otherRoute = kananRoute!!.map { GeoPoint(it.first, it.second) }.toMutableList()
+                    otherRouteString = "Kanan"
+                }
+            }
+            kaliwaRoute != null -> {
+                currentRoute = kaliwaRoute!!.map { GeoPoint(it.first, it.second) }.toMutableList()
+                currentRouteString = "Kaliwa"
+
+                if (kananRoute != null) {
+                    otherRoute = kananRoute!!.map { GeoPoint(it.first, it.second) }.toMutableList()
+                    otherRouteString = "Kanan"
+                }
+            }
+            kananRoute != null -> {
+                currentRoute = kananRoute!!.map { GeoPoint(it.first, it.second) }.toMutableList()
+                currentRouteString = "Kanan"
+
+                if (kaliwaRoute != null) {
+                    otherRoute = kaliwaRoute!!.map { GeoPoint(it.first, it.second) }.toMutableList()
+                    otherRouteString = "Kaliwa"
+                }
+            }
+        }
+    }
+    
+    fun extractTurningDirections() {
+        if (turningPoints.isNotEmpty()) {
+            val turningPointDirections = turningPoints[0].second.map { it.first }
+            directions.clear()
+            directions.addAll(turningPointDirections)
+        }
+    }
+
+
+    if (counter[0] == 0) {
+        counter[0]++
+        processTransitRoutes(routeResponse)
+        lineString = routeResponse?.mapNotNull { profilePair ->
+            val profile = profilePair.first // Profile type, e.g., "foot", "bicycle", etc.
+
+            val segments = profilePair.second.flatMap { routePair ->
+                routePair.second.map { routeWithLineString ->
+                    routeWithLineString.lineString.let { geoJson ->
+                        parseGeoJSONGeometry(geoJson).toMutableList()
+                    }
+                }
+            }
+
+            if (segments.isNotEmpty()) profile to segments.toMutableList() else null
+        }?.toMutableList() ?: mutableListOf()
+
+        for (i in 0 until lineString.size - 1) {
+            val currentProfileRoutes = lineString[i].second
+            val nextProfileRoutes = lineString[i + 1].second
+
+            // Get the last point of the current profile's first route
+            val lastPoint = currentProfileRoutes.firstOrNull()?.lastOrNull()
+            if (lastPoint != null) {
+                // Add the last point to the start of the next profile's first route
+                nextProfileRoutes.firstOrNull()?.add(0, lastPoint)
+            }
+        }
+
+        // Add the final destination location to the last profile's last route
+        destinationLocation?.let { destination ->
+            val lastProfileRoutes = lineString.lastOrNull()?.second
+            lastProfileRoutes?.lastOrNull()?.add(Pair(destination.latitude, destination.longitude))
+        }
+        if(lineString.isNotEmpty()) {
+            currentProfile = lineString.first().first
+            currentDestinations = getDestinations(lineString)
+
+            turningPoints = reduceToDirections(lineString)
+            currentProfilePoints = getCurrentPoints(lineString, turningPoints)
+            if (currentProfilePoints.isNotEmpty()) {
+                currentPoints = currentProfilePoints[0]
+                currentPoints.add(
+                    0,
+                    userLocation ?: GeoPoint(14.166995706659199, 121.24302756140631)
+                )
+                currentPointDistance = calculateCurrentDistance(currentPoints)
+                currentProfilePoints.removeAt(0)
+            }
+            currentDistances = calculateDistances(currentProfilePoints)
+            totalDistances = currentDistances.sum()
+            totalDistances += currentPointDistance
+
+            destinationString = when {
+                (currentProfile == "driving" || currentProfile == "bicycle") && !routeResponse.isNullOrEmpty() && routeResponse.size > 1 -> "Parking"
+                currentProfile == "foot" && lineString.isNotEmpty() && lineString.size > 1 -> "Jeepney Stop"
+                currentProfile == "transit" -> "Drop Off"
+                else -> "Destination"
+            }
+            mode = when (currentProfile) {
+                "foot" -> R.drawable.walking_icon  //Walking
+                "bicycle" -> R.drawable.cycling_icon  // Blue for cycling
+                "driving" -> R.drawable.car_icon  // Red for driving
+                else -> R.mipmap.transit  // Black for any other type
+            }
+            turningDistance = currentPointDistance
+            remainingDistance = totalDistances
+            // Function to extract turning point directions and add them to the directions list
+            extractTurningDirections()
+            direction = directions[0]
+            currentInstruction = if (direction == "Continue straight")
+                "$direction for $turningDistance meters."
+            else
+                "$direction in $turningDistance meters."
+            duration = when (currentProfile) {
+                "foot" -> ((remainingDistance / walkingSpeed) / 60).toInt()
+                "bicycle" -> ((remainingDistance / cyclingSpeed) / 60).toInt()
+                "driving" -> ((remainingDistance / drivingSpeed) / 60).toInt()
+                "transit" -> ((remainingDistance / transitSpeed) / 60).toInt()
+                else -> 0
+            }
+            currentImage = getImage(direction)
+        }
+    }
     val tts = remember {
         TextToSpeech(context) { status ->
             if (status != TextToSpeech.SUCCESS) {
@@ -280,8 +441,6 @@ fun GuideMapDetails(
             }
         }
     }
-
-
 
     DisposableEffect(Unit) {
         val locationHelper = LocationHelper(context)
@@ -339,135 +498,221 @@ fun GuideMapDetails(
         }
     }
 
-
-
     LaunchedEffect(userLocation) {
         // Continuously update based on user location changes
         if (lineString.isNotEmpty() && userLocation != null) {
-            currentProfile = lineString.first().first
-            val route = lineString[0].second.first()
-            destinationString = when {
-                (currentProfile == "driving" || currentProfile == "bicycle") && !routeResponse.isNullOrEmpty() && routeResponse.size > 1 -> "Parking"
-                currentProfile == "foot" && !routeResponse.isNullOrEmpty() && routeResponse.size > 1 -> "Jeepney Stop"
-                currentProfile == "transit" -> "Drop Off"
-                else -> "Destination"
-            }
-            mode = when (currentProfile) {
-                "foot" -> R.drawable.walking_icon  //Walking
-                "bicycle" -> R.drawable.cycling_icon  // Blue for cycling
-                "driving" -> R.drawable.car_icon  // Red for driving
-                else -> R.mipmap.transit  // Black for any other type
-            }
-            // Calculate remaining distance and update instructions
-            remainingDistance = calculateTotalDistance(route, userLocation?: GeoPoint(14.167064701338353, 121.24304070096179)).toInt()
-            instructionList = generateInstructionsFromLineString(route)
-            if (instructionList.isNotEmpty()) instructionList = instructionList.drop(1).toMutableList()
-            currentInstruction = instructionList.firstOrNull() ?: "No instructions available."
-
-            val (newDirection, newTurningDistance) = extractDirectionAndDistance(currentInstruction)
-            direction = newDirection
-            turningDistance = newTurningDistance
-            currentImage = getImage(direction)
-            // Check for deviations and update route if needed
-
-
             withContext(Dispatchers.IO) {
-                if (currentProfile == "transit") {
-                    val (newDistance, newDeviation) = getDeviations(
-                        context = context,
-                        userLocation = userLocation!!,
-                        destinationLocation = currentDestinations[0].first(),
-                        deviation = deviation,
-                        currentDistance = currentDistance,
-                    )
-                    currentDistance = newDistance
-                    deviation = newDeviation
-                    if (newDeviation >= 30) {
-                        currentDestinations[0].removeAt(0)
-                    }
-                }
-                if(currentInstruction == "No instructions available."){
-                    val instructionDistance = getDistance(
-                        context = context,
-                        userLocation = userLocation!!,
-                        destinationLocation = currentDestinations[0].first(),
-                        profile = currentProfile
-                    )
-                    if(instructionDistance > 10) {
-                        currentInstruction = "Continue Straight in $instructionDistance meters."
-                    }
-                }
-            }
-            val nextPoint = route.firstOrNull()
-            if (nextPoint != null) {
-                val distanceToNextPoint = haversineInMeters(
-                    userLocation!!.latitude,
-                    userLocation!!.longitude,
-                    nextPoint.first,
-                    nextPoint.second
-                )
+                if(currentPoints.isNotEmpty()) {
+                    previousPointDistance = currentPointDistance
+                    currentPoints.removeAt(0)
 
-                turningDistance += distanceToNextPoint.toInt()
-                remainingDistance += distanceToNextPoint.toInt()
-                currentInstruction = "$direction in $turningDistance meters."
-                if(isNavigationEnabled) {
-                    val updateServiceIntent =
-                        Intent(context, NavigationNotificationService::class.java).apply {
-                            putExtra("title", title)
-                            putExtra("currentInstruction", currentInstruction)
+                    currentPoints.add(0, userLocation ?: GeoPoint(14.166995706659199, 121.24302756140631)) // add the userLocation
+                    currentPointDistance = calculateCurrentDistance(currentPoints)
+
+                    deviation += currentPointDistance - previousPointDistance
+                    if (deviation >= 5) {
+                        if(currentProfile != "transit") {
+                            // Trigger recalculation if deviation exceeds +35 meters
+                            getNewRoute(
+                                context = context,
+                                currentProfile = currentProfile,
+                                userLocation = userLocation!!,
+                                destinations = currentDestinations.firstOrNull() ?: mutableListOf()
+                            ).let { newRoute ->
+                                if (newRoute.isNotEmpty()) {
+                                    lineString[0].second[0] = newRoute
+                                    turningPoints = reduceToDirections(lineString)
+                                    currentProfilePoints = getCurrentPoints(lineString, turningPoints)
+
+                                    if (currentProfilePoints.isNotEmpty()) {
+                                        currentPoints = currentProfilePoints[0]
+                                        currentPoints.add(
+                                            0,
+                                            userLocation ?: GeoPoint(
+                                                14.166995706659199,
+                                                121.24302756140631
+                                            )
+                                        )
+                                        currentPointDistance = calculateCurrentDistance(currentPoints)
+                                        if(currentProfilePoints.isNotEmpty()) {
+                                            currentProfilePoints.removeAt(0)
+                                        }
+                                        currentDistances = calculateDistances(currentProfilePoints)
+                                        totalDistances = currentDistances.sum()
+                                        totalDistances += currentPointDistance
+                                    }
+                                }
+                            }
+                        }else{
+                            getNewTransitRoute(
+                                context = context,
+                                currentProfile = currentProfile,
+                                userLocation = userLocation!!,
+                                route = if(otherRouteString == "") "Forestry" else otherRouteString,
+                                viewModel = mapViewModel,
+                                destinations = currentDestinations.firstOrNull() ?: mutableListOf()
+                            ).let { newRoute ->
+                                if (newRoute.isNotEmpty()) {
+                                    lineString[0].second[0] = newRoute
+                                    turningPoints = reduceToDirections(lineString)
+                                    currentProfilePoints = getCurrentPoints(lineString, turningPoints)
+                                    if (currentProfilePoints.isNotEmpty()) {
+                                        currentPoints = currentProfilePoints[0]
+                                        currentPoints.add(
+                                            0,
+                                            userLocation ?: GeoPoint(
+                                                14.166995706659199,
+                                                121.24302756140631
+                                            )
+                                        )
+                                        currentPointDistance = calculateCurrentDistance(currentPoints)
+                                        if(currentProfilePoints.isNotEmpty()) {
+                                            currentProfilePoints.removeAt(0)
+                                        }
+                                        currentDistances = calculateDistances(currentProfilePoints)
+                                        totalDistances = currentDistances.sum()
+                                        totalDistances += currentPointDistance
+                                    }
+                                }
+                            }
                         }
-                    context.startForegroundService(updateServiceIntent)
-                }
-
-                val deviationThreshold = when (currentProfile) {
-                    "transit" -> 10.0
-                    else -> 7.0
-                }
-
-                // Remove point if user is close enough
-                if (distanceToNextPoint < deviationThreshold) {
-                    route.removeAt(0)
-                }
-
-                // Handle user deviation
-                if (distanceToNextPoint > deviationThreshold * 2) {
-                    // Trigger coroutine for recalculating route
-                    withContext(Dispatchers.IO) {
-                        val newRoute = getNewRoute(
-                            context = context,
-                            currentProfile = currentProfile,
-                            userLocation = userLocation!!,
-                            destinations = currentDestinations.first(),
-                        )
-                        lineString[0].second[0] = newRoute
+                        extractTurningDirections()
+                        direction = directions[0]
+                        deviation = 0 // Reset deviation after recalculation
+                    } else if (deviation <= -10) {
+                        // Reset deviation if it's too negative
+                        deviation = 0
                     }
                 }
+                turningDistance = currentPointDistance
+                remainingDistance = currentDistances.sum() +currentPointDistance
+                if(directions.isNotEmpty())
+                    direction = directions[0]
+
+                currentInstruction = if(direction == "Continue straight")
+                    "$direction for \n$turningDistance meters."
+                else
+                    "$direction in \n$turningDistance meters."
+                duration = when(currentProfile){
+                    "foot" -> ((remainingDistance/walkingSpeed)/60).toInt()
+                    "bicycle" -> ((remainingDistance/cyclingSpeed)/60).toInt()
+                    "driving" -> ((remainingDistance/drivingSpeed)/60).toInt()
+                    "transit" -> ((remainingDistance/transitSpeed)/60).toInt()
+                    else -> 0
+                }
+                currentImage = getImage(direction)
             }
-            val finalDestinations = currentDestinations.firstOrNull()
-            if (!finalDestinations.isNullOrEmpty()) {
-                // Access only the first element of currentDestinations[0]
-                val firstDestination = finalDestinations.first()
-                val distanceToFirstDestination = haversineInMeters(
-                    userLocation!!.latitude,
-                    userLocation!!.longitude,
-                    firstDestination.latitude,
-                    firstDestination.longitude
+
+
+            if (turningPoints.isNotEmpty()) {
+                val distanceToTurningPoint = haversineInMeters(
+                    currentPoints[0].latitude,
+                    currentPoints[0].longitude,
+                    turningPoints[0].second.first().second.latitude,
+                    turningPoints[0].second.first().second.longitude
                 )
 
-                if (distanceToFirstDestination <= 10.0) {
-                    if (lineString.size > 1) {
-                        // Remove current segment and proceed to the next
-                        lineString.removeAt(0)
-                        currentDestinations.removeAt(0)
-                    } else {
-                        // Final destination reached
-                        hasReachedFinalDestination = true
-                        currentInstruction = "You have reached your destination."
-                        instructionList = listOf(currentInstruction)
+                if (distanceToTurningPoint <= 10) {
+                    if(turningPoints.isNotEmpty()) {
+                        turningPoints.removeAt(0)
+                    }
+                    if(directions.isNotEmpty()) {
+                        directions.removeAt(0)
+                    }
+                    currentPoints = currentProfilePoints[0]
+                    currentPoints.add(0, userLocation ?: GeoPoint(14.166995706659199, 121.24302756140631))
+                    if(currentProfilePoints.isNotEmpty()) {
+                        currentProfilePoints.removeAt(0)
+                    }
+                    currentDistances = calculateDistances(currentProfilePoints)
+
+                    if (lineString.isNotEmpty() && lineString[0].second.isNotEmpty()) {
+                        lineString[0].second[0].removeAt(0)
+                    }
+
+                    if (currentDistances.isNotEmpty()) {
+                        currentDistances.removeAt(0)
                     }
                 }
             }
 
+            if (currentPoints.size > 1) {
+                val distanceToNextPoint = haversineInMeters(
+                    currentPoints[0].latitude,
+                    currentPoints[0].longitude,
+                    currentPoints[1].latitude,
+                    currentPoints[1].longitude
+                )
+                if(lineString.isNotEmpty() && lineString[0].second.isNotEmpty() &&
+                    turningPoints.isNotEmpty() && turningPoints[0].second.isNotEmpty()) {
+                    if (distanceToNextPoint <= 20 && currentPoints[1] != turningPoints[0].second.first().second) {
+                        currentPoints.removeAt(1)
+                        lineString[0].second[0].removeAt(0)
+                    }
+                }
+            }
+
+            currentDistance = haversineInMeters(
+                userLocation?.latitude ?: 14.166995706659199,
+                userLocation?.longitude ?: 121.24302756140631,
+                destinationLocation?.latitude ?: 14.162476817742977,
+                destinationLocation?.longitude ?: 121.24091066262298
+            )
+
+            if(currentDistance < 5){
+                currentInstruction = "You have arrived at your Destination: $title at $snippet"
+                navigateBack()
+            }
+
+            if(currentDestinations.isNotEmpty()) {
+                val distance = haversineInMeters(
+                    userLocation?.latitude ?: 14.166995706659199,
+                    userLocation?.longitude ?: 121.24302756140631,
+                    currentDestinations[0].first().latitude,
+                    currentDestinations[0].first().longitude
+                )
+                if(distance < 5){
+                    if(lineString.isNotEmpty()) {
+                        lineString.removeAt(0)
+                    }
+                    if(currentDistances.isNotEmpty()) {
+                        currentDistances.removeAt(0)
+                    }
+                    if(turningPoints.isNotEmpty()) {
+                        turningPoints.removeAt(0)
+                    }
+                    if(directions.isNotEmpty()) {
+                        directions.removeAt(0)
+                    }
+                    currentProfilePoints = getCurrentPoints(lineString, turningPoints)
+                    if (currentProfilePoints.isNotEmpty()) {
+                        currentPoints = currentProfilePoints[0]
+                        currentPoints.add(
+                            0,
+                            userLocation ?: GeoPoint(
+                                14.166995706659199,
+                                121.24302756140631
+                            )
+                        )
+                        currentPointDistance = calculateCurrentDistance(currentPoints)
+                        if(currentProfilePoints.isNotEmpty()) {
+                            currentProfilePoints.removeAt(0)
+                        }
+                        currentDistances = calculateDistances(currentProfilePoints)
+                        totalDistances = currentDistances.sum()
+                        totalDistances += currentPointDistance
+                    }
+                }
+            }
+
+            if(isNavigationEnabled) {
+                val updateServiceIntent =
+                    Intent(context, NavigationNotificationService::class.java).apply {
+                        putExtra("title", title)
+                        putExtra("currentInstruction", currentInstruction)
+                    }
+                context.startForegroundService(updateServiceIntent)
+            }
         }
 
         // Update frequency based on profile
@@ -478,10 +723,7 @@ fun GuideMapDetails(
             else -> 2000L
         }
         delay(updateFrequency)
-    }
 
-    LaunchedEffect(currentInstruction) {
-        // Periodically perform TTS
         if(isSpeechEnabled) {
             while (true) {
                 delay(10000L) // 10 seconds
@@ -492,12 +734,9 @@ fun GuideMapDetails(
         }
     }
 
-
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT
-
-
-    val weight = .15f
+    val portraitWeight = .2f
 
     Box(modifier = Modifier.fillMaxWidth()){
         OSMMapView(modifier,title,snippet,userLocation,routeType,lineString,destinationLocation)
@@ -521,7 +760,7 @@ fun GuideMapDetails(
                     modifier = Modifier
                         .background(Color.Blue)
                         .padding(start = 8.dp, end = 8.dp, top = 0.dp, bottom = 0.dp)
-                        .fillMaxHeight(weight),
+                        .fillMaxHeight(portraitWeight),
 
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
@@ -531,14 +770,14 @@ fun GuideMapDetails(
                         contentDescription = "Directions",
                         modifier = Modifier.size(48.dp)
                     )
-                    Text(text = "${turningDistance}m", color = Color.White, fontSize = 16.sp)
+                    Text(text = "$turningDistance meters", color = Color.White, fontSize = 16.sp)
                 }
                 // Instructions
                 Column(
                     modifier = Modifier
                         .padding(start = 0.dp, end = 0.dp, top = 0.dp, bottom = 0.dp)
                         .background(Color.Green)
-                        .fillMaxHeight(weight)
+                        .fillMaxHeight(portraitWeight)
                         .fillMaxWidth(.5f),
 
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -556,7 +795,7 @@ fun GuideMapDetails(
                     modifier = Modifier
                         .background(Color.Blue)
                         .padding(start = 8.dp, end = 8.dp, top = 0.dp, bottom = 0.dp)
-                        .fillMaxHeight(weight),
+                        .fillMaxHeight(portraitWeight),
 
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
@@ -564,10 +803,10 @@ fun GuideMapDetails(
                     Image(
                         painter = painterResource(id = mode), // Mode of Transport
                         contentDescription = "Mode of Transport",
-                        modifier = Modifier.size(48.dp),
+                        modifier = Modifier.size(24.dp),
                         colorFilter = ColorFilter.tint(Color.White)
                     )
-                    Text(text = "${remainingDistance}m until \n$destinationString", color = Color.White, fontSize = 14.sp)
+                    Text(text = "$remainingDistance meters\nand $duration \nminutes to\n$destinationString", color = Color.White, fontSize = 14.sp)
 
                 }
             }
@@ -584,7 +823,7 @@ fun GuideMapDetails(
                     .background(Color.Blue)
                     .padding(start = 8.dp, end = 8.dp, top = 0.dp, bottom = 0.dp)
                     .fillMaxHeight(.75f)
-                    .fillMaxWidth(.25f),
+                    .fillMaxWidth(.2f),
 
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
@@ -617,7 +856,7 @@ fun GuideMapDetails(
                 modifier = Modifier
                     .background(Color.Blue)
                     .padding(start = 8.dp, end = 8.dp, top = 0.dp, bottom = 0.dp)
-                    .fillMaxHeight(.5f),
+                    .fillMaxHeight(.7f),
 
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
@@ -625,13 +864,18 @@ fun GuideMapDetails(
                 Image(
                     painter = painterResource(id = mode), // Mode of Transport
                     contentDescription = "Mode of Transport",
-                    modifier = Modifier.size(48.dp),
+                    modifier = Modifier.size(32.dp),
                     colorFilter = ColorFilter.tint(Color.White)
                 )
-                Text(text = "${remainingDistance}m until \n$destinationString", color = Color.White, fontSize = 14.sp)
+                Text(text = "$remainingDistance meters\n" +
+                        "and $duration \n" +
+                        "minutes to\n" +
+                        destinationString, color = Color.White, fontSize = 14.sp)
             }
         }
     }
+
+
 
 
 }

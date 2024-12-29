@@ -58,6 +58,7 @@ object ClassroomEntryDestination : NavigationDestination {
 fun RoomEntryScreen(
     navigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
+    navigateToAboutPage: () -> Unit,
     canNavigateBack: Boolean = true,
     viewModel: RoomEntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
     colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
@@ -74,6 +75,7 @@ fun RoomEntryScreen(
                 title = stringResource(ClassroomEntryDestination.titleRes),
                 canNavigateBack = canNavigateBack,
                 navigateUp = onNavigateUp,
+                navigateToAboutPage = navigateToAboutPage,
                 topAppBarBackgroundColor = topAppBarBackgroundColor,
                 topAppBarForegroundColor = topAppBarForegroundColor
             )

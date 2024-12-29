@@ -44,6 +44,7 @@ object PinsHomeDestination: NavigationDestination {
 fun PinsScreen(
     navigateToPinsEntry: () -> Unit,
     navigateToPinsUpdate: (Int) -> Unit,
+    navigateToAboutPins: () -> Unit,
     openDrawer: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PinsViewModel = viewModel(factory = AppViewModelProvider.Factory),
@@ -60,6 +61,7 @@ fun PinsScreen(
                 title = stringResource(R.string.my_pins),
                 canNavigateBack = false,
                 navigateToPinEntry = navigateToPinsEntry,
+                navigateToAboutPins = navigateToAboutPins,
                 openDrawer = openDrawer,
                 topAppBarBackgroundColor = topAppBarBackgroundColor,
                 topAppBarForegroundColor = topAppBarForegroundColor

@@ -7,7 +7,13 @@ import com.google.gson.JsonObject
 import java.io.InputStreamReader
 
 data class BusStop(val name: String, val lat: Double, val lon: Double)
-
+data class BusStops(
+    val kaliwaStops: List<BusStop>,
+    val kananStops: List<BusStop>,
+    val forestryStops: List<BusStop>,
+    val shortKaliwaStops: List<BusStop>,
+    val shortKananStops: List<BusStop>
+)
 fun loadBusStops(context: Context, fileName: String): List<BusStop> {
     val assetManager = context.assets
     val inputStream = assetManager.open(fileName)
@@ -34,11 +40,13 @@ fun loadBusStops(context: Context, fileName: String): List<BusStop> {
     }
 }
 
-fun loadAllBusStops(context: Context): Triple<List<BusStop>, List<BusStop>, List<BusStop>> {
+fun loadAllBusStops(context: Context): BusStops {
     val kaliwaStops = loadBusStops(context, "Kaliwa.geojson")
     val kananStops = loadBusStops(context, "Kanan.geojson")
     val forestryStops = loadBusStops(context, "Forestry_Stops.geojson")
-    return Triple(kaliwaStops, kananStops, forestryStops)
+    val shortKaliwaStops = loadBusStops(context, "Short_Kaliwa.geojson")
+    val shortKananStops = loadBusStops(context, "Short_Kanan.geojson")
+    return BusStops(kaliwaStops, kananStops, forestryStops, shortKaliwaStops, shortKananStops)
 }
 
 

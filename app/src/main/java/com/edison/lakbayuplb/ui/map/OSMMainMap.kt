@@ -34,7 +34,6 @@ import org.osmdroid.views.overlay.Overlay
 import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
 import java.io.File
-
 @Composable
 fun OSMMapView(
     modifier: Modifier,
@@ -64,12 +63,10 @@ fun OSMMapView(
     // Add route overlays with the user's location as the starting point
     LaunchedEffect(lineString, routeType, initialLocation) {
         if(lineString.isNotEmpty()) {
-
-
             osmMainMap.clearOverlays()
             currentInitialLocation = initialLocation
             currentDestinationLocation = destinationLocation
-            osmMainMap.updateMarkers(currentInitialLocation, currentDestinationLocation)
+            osmMainMap.updateMarkers(currentInitialLocation, currentDestinationLocation,title,snippet)
 
             for (i in 0 until lineString.size) {
 
@@ -94,6 +91,7 @@ fun OSMMapView(
     }
 }
 
+
 class OSMainMap(
     private val context: Context,
     private val title: String,
@@ -104,7 +102,7 @@ class OSMainMap(
 
     fun initializeMap(
         initialLocation: GeoPoint?,
-        destinationLocation: GeoPoint?
+        destinationLocation: GeoPoint?,
     ): MapView {
         // Initialize OSMDroid configuration
         Configuration.getInstance().load(context, context.getSharedPreferences("osmdroid_preferences", Context.MODE_PRIVATE))
@@ -163,7 +161,7 @@ class OSMainMap(
         mapView.overlays.add(rotationGestureOverlay)
 
         // Add markers if locations are not null
-        updateMarkers(initialLocation, destinationLocation)
+        updateMarkers(initialLocation, destinationLocation,title,snippet)
 
         // Force the map to refresh and apply changes
         mapView.invalidate()
@@ -176,15 +174,15 @@ class OSMainMap(
         mapView.invalidate() // Refresh the map view to reflect changes
     }
 
-    fun updateMarkers(initialLocation: GeoPoint?, destinationLocation: GeoPoint?) {
+    fun updateMarkers(initialLocation: GeoPoint?, destinationLocation: GeoPoint?, title:String, snippet:String) {
         // Clear existing markers
         mapView.overlays.clear()
 
         if (initialLocation != null) {
             addTextMarkerOverlay(
                 initialLocation,
-                title = "",
-                snippet = "",
+                title = title,
+                snippet = snippet,
                 iconResId = R.drawable.icons8_circle_24___, // Pass the Drawable object
                 backgroundColor = Color.TRANSPARENT.toColor(),
                 foreGroundColor = Color.TRANSPARENT.toColor(),

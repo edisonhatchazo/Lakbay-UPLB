@@ -10,6 +10,11 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.edison.lakbayuplb.ui.about.AboutClasses
+import com.edison.lakbayuplb.ui.about.AboutClassesDestination
+import com.edison.lakbayuplb.ui.about.AboutExamsDestination
+import com.edison.lakbayuplb.ui.about.AboutGuideMapDestination
+import com.edison.lakbayuplb.ui.about.GuideMapAbout
 import com.edison.lakbayuplb.ui.classes.ClassHomeDestination
 import com.edison.lakbayuplb.ui.classes.ClassHomeScheduleDestination
 import com.edison.lakbayuplb.ui.classes.ClassHomeScreen
@@ -44,14 +49,22 @@ fun ClassScheduleNavHost(
                 navigateToClassScheduleUpdate = {
                     navController.navigate("${ClassScheduleDetailsDestination.route}/${it}")
                 },
+                navigateToAboutPage = {navController.navigate(AboutClassesDestination.route)},
                 openDrawer = openDrawer
+            )
+        }
+
+        composable(route = AboutClassesDestination.route){
+            AboutClasses(
+                navigateBack = { navController.navigateUp() },
             )
         }
 
         composable(route = ClassScheduleEntryDestination.route){
             ClassScheduleEntryScreen(
                 navigateBack = { navController.popBackStack()},
-                onNavigateUp = { navController.navigateUp()})
+                onNavigateUp = { navController.navigateUp()},
+            navigateToAboutPage = {navController.navigate(AboutClassesDestination.route)},)
         }
 
         composable(
@@ -64,6 +77,7 @@ fun ClassScheduleNavHost(
                 navigateToEditClassSchedule = {navController.navigate("${ClassScheduleEditDestination.route}/$it")},
                 navigateBack = {navController.navigateUp()},
                 navigateToMap = {navController.navigate("${GuideMapDestination.route}/${it}")},
+                navigateToAboutPage = {navController.navigate(AboutClassesDestination.route)},
             )
         }
 
@@ -75,7 +89,11 @@ fun ClassScheduleNavHost(
         ){
             ClassScheduleEditScreen(
                 navigateBack = { navController.popBackStack() },
-                onNavigateUp = { navController.navigateUp() })
+                onNavigateUp = { navController.navigateUp() },
+                navigateToAboutPage = {navController.navigate(AboutClassesDestination.route)},
+
+            )
+
         }
 
         composable(
@@ -85,7 +103,13 @@ fun ClassScheduleNavHost(
             })
         ) {
             GuideMapScreen(
-                navigateBack = { navController.navigateUp() }
+                navigateBack = { navController.navigateUp() },
+                navigateToAboutMap = {navController.navigate(AboutGuideMapDestination.route)}
+            )
+        }
+        composable(route = AboutGuideMapDestination.route){
+            GuideMapAbout(
+                navigateBack = { navController.navigateUp() },
             )
         }
     }
@@ -128,14 +152,23 @@ fun ScheduleNavHost(
                 navigateToScheduleUpdate = {
                     navController.navigate("${ClassScheduleDetailsDestination.route}/$it")
                 },
+                navigateToAboutPage = {navController.navigate(AboutClassesDestination.route)},
                 openDrawer = openDrawer
+            )
+        }
+
+        composable(route = AboutClassesDestination.route){
+            AboutClasses(
+                navigateBack = { navController.navigateUp() },
             )
         }
 
         composable(route = ClassScheduleEntryDestination.route){
             ClassScheduleEntryScreen(
                 navigateBack = { navController.popBackStack()},
-                onNavigateUp = { navController.navigateUp()})
+                onNavigateUp = { navController.navigateUp()},
+                navigateToAboutPage = {navController.navigate(AboutClassesDestination.route)},
+            )
         }
 
         composable(
@@ -148,6 +181,7 @@ fun ScheduleNavHost(
                 navigateToEditClassSchedule = {navController.navigate("${ClassScheduleEditDestination.route}/$it")},
                 navigateBack = {navController.navigateUp()},
                 navigateToMap = {navController.navigate("${GuideMapDestination.route}/${it}")},
+                navigateToAboutPage = {navController.navigate(AboutClassesDestination.route)},
             )
         }
 
@@ -159,7 +193,9 @@ fun ScheduleNavHost(
         ){
             ClassScheduleEditScreen(
                 navigateBack = { navController.popBackStack() },
-                onNavigateUp = { navController.navigateUp() })
+                onNavigateUp = { navController.navigateUp() },
+                navigateToAboutPage = {navController.navigate(AboutClassesDestination.route)},
+            )
         }
 
         composable(
@@ -169,7 +205,8 @@ fun ScheduleNavHost(
             })
         ) {
             GuideMapScreen(
-                navigateBack = { navController.navigateUp() }
+                navigateBack = { navController.navigateUp() },
+                navigateToAboutMap = {navController.navigate(AboutGuideMapDestination.route)}
             )
         }
         //Composable for Notifications
@@ -183,8 +220,13 @@ fun ScheduleNavHost(
                 navigateToEditExam = {navController.navigate("${ExamEditDestination.route}/$it")},
                 navigateBack = {navController.navigateUp()},
                 navigateToMap = {navController.navigate("${GuideMapDestination.route}/${it}")},
+                navigateToAboutPage = {navController.navigate(AboutExamsDestination.route)}
             )
         }
-
+        composable(route = AboutGuideMapDestination.route){
+            GuideMapAbout(
+                navigateBack = { navController.navigateUp() },
+            )
+        }
     }
 }

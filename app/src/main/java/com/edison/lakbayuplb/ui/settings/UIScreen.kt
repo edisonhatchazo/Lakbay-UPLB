@@ -44,7 +44,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
-import com.edison.lakbayuplb.ui.screen.DirectoryTopAppBar
+import com.edison.lakbayuplb.ui.screen.AboutNavigationTopAppBar
 import com.edison.lakbayuplb.ui.settings.global.AppPreferences
 import com.edison.lakbayuplb.ui.settings.global.TopAppBarColorSchemesViewModel
 import com.edison.lakbayuplb.ui.theme.ThemeMode
@@ -61,6 +61,7 @@ fun UIScreen(
     modifier: Modifier = Modifier,
     onThemeChange: (ThemeMode) -> Unit,
     navigateToColorEntry: () -> Unit,
+    navigateToAboutSettings: () -> Unit,
     navigateToCollegeColors: () -> Unit,
     navigateToTopAppBarColors: () -> Unit,
     colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
@@ -70,10 +71,11 @@ fun UIScreen(
 
     Scaffold(
         topBar = {
-            DirectoryTopAppBar(
+            AboutNavigationTopAppBar(
                 title = stringResource(UserInterfaceDestination.titleRes),
                 canNavigateBack = canNavigateBack,
                 onNavigateUp = onNavigateUp,
+                navigateToAboutSettings = navigateToAboutSettings,
                 topAppBarBackgroundColor = topAppBarBackgroundColor,
                 topAppBarForegroundColor = topAppBarForegroundColor
             )
@@ -101,7 +103,6 @@ fun UIScreen(
 
 @Composable
 fun MainUIScreen(
-
     onThemeChange: (ThemeMode) -> Unit,
     navigateToColorEntry: () -> Unit,
     navigateToCollegeColors: () -> Unit,

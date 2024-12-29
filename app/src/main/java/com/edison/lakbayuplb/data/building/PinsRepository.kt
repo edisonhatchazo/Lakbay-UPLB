@@ -1,6 +1,5 @@
 package com.edison.lakbayuplb.data.building
 
-import com.edison.lakbayuplb.data.building.Pins
 import kotlinx.coroutines.flow.Flow
 
 interface PinsRepository {

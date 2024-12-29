@@ -7,6 +7,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.edison.lakbayuplb.ui.about.AboutExams
+import com.edison.lakbayuplb.ui.about.AboutExamsDestination
+import com.edison.lakbayuplb.ui.about.AboutGuideMapDestination
+import com.edison.lakbayuplb.ui.about.GuideMapAbout
 import com.edison.lakbayuplb.ui.exam.ExamDetailsDestination
 import com.edison.lakbayuplb.ui.exam.ExamDetailsScreen
 import com.edison.lakbayuplb.ui.exam.ExamEditDestination
@@ -40,10 +44,19 @@ fun ExamScheduleNavHost(
                 openDrawer = openDrawer
             )
         }
+
+        composable(route = AboutExamsDestination.route){
+            AboutExams(
+                navigateBack = { navController.navigateUp() },
+            )
+        }
+
         composable(route = ExamEntryDestination.route){
             ExamEntryScreen(
                 navigateBack = { navController.popBackStack()},
-                onNavigateUp = { navController.navigateUp()})
+                onNavigateUp = { navController.navigateUp()},
+                navigateToAboutPage = {navController.navigate(AboutExamsDestination.route)}
+                )
         }
 
         composable(
@@ -56,6 +69,7 @@ fun ExamScheduleNavHost(
                 navigateToEditExam = {navController.navigate("${ExamEditDestination.route}/$it")},
                 navigateBack = {navController.navigateUp()},
                 navigateToMap = {navController.navigate("${GuideMapDestination.route}/${it}")},
+                navigateToAboutPage = {navController.navigate(AboutExamsDestination.route)}
             )
         }
         composable(
@@ -66,7 +80,9 @@ fun ExamScheduleNavHost(
         ){
             ExamEditScreen(
                 navigateBack = { navController.popBackStack() },
-                onNavigateUp = { navController.navigateUp() })
+                onNavigateUp = { navController.navigateUp() },
+                navigateToAboutPage = {navController.navigate(AboutExamsDestination.route)}
+            )
         }
         composable(
             route = GuideMapDestination.routeWithArgs,
@@ -75,7 +91,13 @@ fun ExamScheduleNavHost(
             })
         ) {
             GuideMapScreen(
-                navigateBack = { navController.navigateUp() }
+                navigateBack = { navController.navigateUp() },
+                navigateToAboutMap = {navController.navigate(AboutGuideMapDestination.route)}
+            )
+        }
+        composable(route = AboutGuideMapDestination.route){
+            GuideMapAbout(
+                navigateBack = { navController.navigateUp() },
             )
         }
     }
@@ -98,13 +120,23 @@ fun ExamHomeNavHost(
                 navigateToExamScheduleUpdate = {
                     navController.navigate("${ExamDetailsDestination.route}/${it}")
                 },
-                openDrawer = openDrawer
+                openDrawer = openDrawer,
+                navigateToAboutPage = {navController.navigate(AboutExamsDestination.route)},
             )
         }
+
+        composable(route = AboutExamsDestination.route){
+            AboutExams(
+                navigateBack = { navController.navigateUp() },
+            )
+        }
+
         composable(route = ExamEntryDestination.route){
             ExamEntryScreen(
                 navigateBack = { navController.popBackStack()},
-                onNavigateUp = { navController.navigateUp()})
+                onNavigateUp = { navController.navigateUp()},
+                navigateToAboutPage = {navController.navigate(AboutExamsDestination.route)}
+            )
         }
 
         composable(
@@ -117,6 +149,7 @@ fun ExamHomeNavHost(
                 navigateToEditExam = {navController.navigate("${ExamEditDestination.route}/$it")},
                 navigateBack = {navController.navigateUp()},
                 navigateToMap = {navController.navigate("${GuideMapDestination.route}/${it}")},
+                navigateToAboutPage = {navController.navigate(AboutExamsDestination.route)}
             )
 
         }
@@ -128,7 +161,9 @@ fun ExamHomeNavHost(
         ){
             ExamEditScreen(
                 navigateBack = { navController.popBackStack() },
-                onNavigateUp = { navController.navigateUp() })
+                onNavigateUp = { navController.navigateUp() },
+                navigateToAboutPage = {navController.navigate(AboutExamsDestination.route)}
+            )
         }
         composable(
             route = GuideMapDestination.routeWithArgs,
@@ -137,7 +172,13 @@ fun ExamHomeNavHost(
             })
         ) {
             GuideMapScreen(
-                navigateBack = { navController.navigateUp() }
+                navigateBack = { navController.navigateUp() },
+                navigateToAboutMap = {navController.navigate(AboutGuideMapDestination.route)}
+            )
+        }
+        composable(route = AboutGuideMapDestination.route){
+            GuideMapAbout(
+                navigateBack = { navController.navigateUp() },
             )
         }
     }

@@ -51,6 +51,7 @@ fun ClassScheduleHomeScreen(
     scheduleViewModel: ClassHomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navigateToScheduleEntry: () -> Unit,
     navigateToScheduleUpdate: (Int) -> Unit,
+    navigateToAboutPage: () -> Unit,
     openDrawer: () -> Unit,
     colorPaletteViewModel: ColorPaletteViewModel = viewModel(factory = AppViewModelProvider.Factory),
     colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
@@ -71,10 +72,10 @@ fun ClassScheduleHomeScreen(
                 title = stringResource(R.string.class_schedule),
                 canNavigateBack = false,
                 navigateToScheduleEntry = navigateToScheduleEntry,
+                navigateToAboutPage = navigateToAboutPage,
                 openDrawer = openDrawer,
                 topAppBarBackgroundColor = topAppBarBackgroundColor,
                 topAppBarForegroundColor = topAppBarForegroundColor
-
             )
         }
     ){ innerPadding ->

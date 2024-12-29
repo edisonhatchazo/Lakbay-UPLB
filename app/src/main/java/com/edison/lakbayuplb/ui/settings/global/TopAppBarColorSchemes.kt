@@ -45,7 +45,7 @@ fun TopAppBarColorSchemes(
     Scaffold(
         topBar = {
             DirectoryTopAppBar(
-                title =  "Select Color for the Top App Bar",
+                title =  "Select Color for this Top App Bar",
                 canNavigateBack = canNavigateBack,
                 onNavigateUp = onNavigateUp,
                 topAppBarBackgroundColor = topAppBarBackgroundColor,

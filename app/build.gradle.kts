@@ -21,10 +21,6 @@ android {
 
     }
 
-
-
-
-
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -60,6 +56,7 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.coil.compose)
 
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -97,7 +94,7 @@ dependencies {
     //Retrofit
     implementation(libs.retrofit2.retrofit)
     implementation(libs.converter.gson)
-    implementation ("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2")
+    implementation (libs.retrofit2.kotlin.coroutines.adapter)
     implementation (libs.kotlinx.coroutines.core)
     implementation (libs.kotlinx.coroutines.android)
 

@@ -7,6 +7,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.edison.lakbayuplb.ui.about.AboutGuideMapDestination
+import com.edison.lakbayuplb.ui.about.BuildingsAndRooms
+import com.edison.lakbayuplb.ui.about.BuildingsAndRoomsDestination
+import com.edison.lakbayuplb.ui.about.GuideMapAbout
 import com.edison.lakbayuplb.ui.buildingScreens.uplb.buildings.BuildingDetailsDestination
 import com.edison.lakbayuplb.ui.buildingScreens.uplb.buildings.BuildingDetailsScreen
 import com.edison.lakbayuplb.ui.buildingScreens.uplb.buildings.BuildingEditDestination
@@ -40,7 +44,8 @@ fun BuildingNavHost(
                 navigateToBuildingDetails = { navController.navigate("${BuildingDetailsDestination.route}/${it}") },
                 navigateToRoomDetails = {navController.navigate("${RoomDetailsDestination.route}/${it}") },
                 openDrawer = openDrawer,
-                navigateToBuildingEntry = { navController.navigate(BuildingEntryDestination.route)}
+                navigateToBuildingEntry = { navController.navigate(BuildingEntryDestination.route)},
+                navigateToAboutPage = {navController.navigate(BuildingsAndRoomsDestination.route)}
             )
         }
         composable(
@@ -54,7 +59,8 @@ fun BuildingNavHost(
                 navigateBack = { navController.navigateUp() },
                 navigateToMap = {navController.navigate("${GuideMapDestination.route}/${it}")},
                 navigateToBuildingEdit = {navController.navigate("${BuildingEditDestination.route}/${it}") },
-                navigateToClassroomEntry = {navController.navigate("${ClassroomEntryDestination.route}/${it}") }
+                navigateToClassroomEntry = {navController.navigate("${ClassroomEntryDestination.route}/${it}") },
+                navigateToAboutPage = {navController.navigate(BuildingsAndRoomsDestination.route)}
             )
         }
 
@@ -66,13 +72,16 @@ fun BuildingNavHost(
         ){
             BuildingEditScreen(
                 navigateBack = { navController.popBackStack() },
-                onNavigateUp = { navController.navigateUp() })
+                onNavigateUp = { navController.navigateUp() },
+                navigateToAboutPage = {navController.navigate(BuildingsAndRoomsDestination.route)}
+            )
         }
 
         composable(route = BuildingEntryDestination.route){
             BuildingEntryScreen(
                 navigateBack = { navController.popBackStack()},
-                onNavigateUp = { navController.navigateUp()}
+                onNavigateUp = { navController.navigateUp()},
+                navigateToAboutPage = {navController.navigate(BuildingsAndRoomsDestination.route)}
             )
         }
 
@@ -86,6 +95,7 @@ fun BuildingNavHost(
             RoomDetailsScreen(navigateBack = {navController.navigateUp()},
                 navigateToMap = {navController.navigate("${GuideMapDestination.route}/${it}")},
                 navigateToClassroomEdit = {navController.navigate("${ClassroomEditDestination.route}/${it}") },
+                navigateToAboutPage = {navController.navigate(BuildingsAndRoomsDestination.route)}
             )
 
         }
@@ -98,7 +108,8 @@ fun BuildingNavHost(
         ){
             RoomEntryScreen(
                 navigateBack = { navController.popBackStack()},
-                onNavigateUp = { navController.navigateUp()}
+                onNavigateUp = { navController.navigateUp()},
+                navigateToAboutPage = {navController.navigate(BuildingsAndRoomsDestination.route)}
             )
 
         }
@@ -111,11 +122,10 @@ fun BuildingNavHost(
         ){
             RoomEditScreen(
                 navigateBack = { navController.popBackStack() },
-                onNavigateUp = { navController.navigateUp() })
+                onNavigateUp = { navController.navigateUp() },
+                navigateToAboutPage = {navController.navigate(BuildingsAndRoomsDestination.route)}
+            )
         }
-
-
-
 
         composable(
             route = GuideMapDestination.routeWithArgs,
@@ -124,7 +134,21 @@ fun BuildingNavHost(
             })
         ) {
             GuideMapScreen(
-                navigateBack = { navController.navigateUp() }
+                navigateBack = { navController.navigateUp() },
+                navigateToAboutMap = {navController.navigate(AboutGuideMapDestination.route)}
+            )
+        }
+
+
+        composable(route = BuildingsAndRoomsDestination.route){
+            BuildingsAndRooms(
+                navigateBack = { navController.navigateUp() },
+            )
+        }
+
+        composable(route = AboutGuideMapDestination.route){
+            GuideMapAbout(
+                navigateBack = { navController.navigateUp() },
             )
         }
     }

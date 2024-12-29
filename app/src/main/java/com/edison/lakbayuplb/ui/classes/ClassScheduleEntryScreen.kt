@@ -64,6 +64,7 @@ object ClassScheduleEntryDestination: NavigationDestination {
 fun ClassScheduleEntryScreen(
     navigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
+    navigateToAboutPage: () -> Unit,
     canNavigateBack: Boolean = true,
     viewModel: ClassScheduleEntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
     colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
@@ -85,6 +86,7 @@ fun ClassScheduleEntryScreen(
                 title = stringResource(ClassScheduleEntryDestination.titleRes),
                 canNavigateBack = canNavigateBack,
                 navigateUp = onNavigateUp,
+                navigateToAboutPage = navigateToAboutPage,
                 topAppBarBackgroundColor = topAppBarBackgroundColor,
                 topAppBarForegroundColor = topAppBarForegroundColor
             )
@@ -142,7 +144,7 @@ fun ClassScheduleEntryBody(
             onDaysChange = onDaysChange,
             onValueChange = {
                 onClassScheduleValueChange(it)
-                isLocationValid.value = it.roomId != 0    },
+                isLocationValid.value = it.roomId != 0},
             availableStartTimes = availableStartTimes,
             availableEndTimes = availableEndTimes,
             modifier = Modifier.fillMaxWidth()

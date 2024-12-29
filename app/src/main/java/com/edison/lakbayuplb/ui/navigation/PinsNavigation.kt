@@ -7,6 +7,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.edison.lakbayuplb.ui.about.AboutGuideMapDestination
+import com.edison.lakbayuplb.ui.about.GuideMapAbout
+import com.edison.lakbayuplb.ui.about.MyOwnPins
+import com.edison.lakbayuplb.ui.about.MyOwnPinsDestination
 import com.edison.lakbayuplb.ui.buildingScreens.pins.PinsDetailsDestination
 import com.edison.lakbayuplb.ui.buildingScreens.pins.PinsDetailsScreen
 import com.edison.lakbayuplb.ui.buildingScreens.pins.PinsEditDestination
@@ -35,9 +39,17 @@ fun PinsNavHost(
                 navigateToPinsUpdate = {
                     navController.navigate("${PinsDetailsDestination.route}/${it}")
                 },
+                navigateToAboutPins = {navController.navigate(MyOwnPinsDestination.route)},
                 openDrawer = openDrawer
             )
         }
+
+        composable(route = MyOwnPinsDestination.route){
+            MyOwnPins(
+                navigateBack = { navController.navigateUp() },
+            )
+        }
+
         composable(route = PinsEntryDestination.route){
             PinsEntryScreen(
                 navigateBack = { navController.popBackStack() },
@@ -74,7 +86,13 @@ fun PinsNavHost(
             })
         ) {
             GuideMapScreen(
-                navigateBack = { navController.navigateUp() }
+                navigateBack = { navController.navigateUp() },
+                navigateToAboutMap = {navController.navigate(AboutGuideMapDestination.route)}
+            )
+        }
+        composable(route = AboutGuideMapDestination.route){
+            GuideMapAbout(
+                navigateBack = { navController.navigateUp() },
             )
         }
     }

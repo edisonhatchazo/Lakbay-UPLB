@@ -4,7 +4,6 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -59,6 +58,7 @@ object RoomDetailsDestination : NavigationDestination {
 fun RoomDetailsScreen(
     navigateBack: () -> Unit,
     navigateToMap: (Int) -> Unit,
+    navigateToAboutPage: () -> Unit,
     modifier: Modifier = Modifier,
     navigateToClassroomEdit: (Int) -> Unit,
     viewModel: RoomDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
@@ -78,6 +78,7 @@ fun RoomDetailsScreen(
                 canNavigateBack = true,
                 navigateUp = navigateBack,
                 id = room.roomId,
+                navigateToAboutPage = navigateToAboutPage,
                 navigateToEdit = navigateToClassroomEdit,
                 topAppBarBackgroundColor = topAppBarBackgroundColor,
                 topAppBarForegroundColor = topAppBarForegroundColor
@@ -239,9 +240,20 @@ private fun ClassroomDetailsRow(
     modifier: Modifier = Modifier,
 ){
     Row(modifier = modifier) {
-        Text(text = stringResource(labelResID), color = fontColor)
-        Spacer(modifier = Modifier.weight(1f))
-        Text(text = classroomDetail, fontWeight = FontWeight.Bold, color = fontColor)
+        Text(
+            text = stringResource(labelResID),
+            color = fontColor,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.weight(0.3f),
+            maxLines = 4
+        )
+
+        Text(
+            text = classroomDetail,
+            modifier = Modifier.weight(0.8f),
+            color = fontColor,
+            maxLines = 4
+        )
     }
 }
 

@@ -50,6 +50,7 @@ fun BuildingHomeScreen(
     openDrawer: () -> Unit,
     navigateToRoomDetails: (Int) -> Unit,
     navigateToBuildingEntry: () -> Unit,
+    navigateToAboutPage: () -> Unit,
     navigateToBuildingDetails: (Int) -> Unit,
     viewModel: BuildingHomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
     colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
@@ -84,6 +85,7 @@ fun BuildingHomeScreen(
                 title = stringResource(BuildingHomeDestination.titleRes),
                 canNavigateBack = false,
                 openDrawer = openDrawer,
+                navigateToAboutPage = navigateToAboutPage,
                 navigateToBuildingEntry = navigateToBuildingEntry,
                 navigateToRoomDetails = navigateToRoomDetails,
                 navigateToBuildingDetails = navigateToBuildingDetails,

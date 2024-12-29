@@ -54,6 +54,7 @@ fun EntryScreenTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit = {},
+    navigateToAboutPage: () -> Unit,
     topAppBarBackgroundColor: Color, // Dynamic background color
     topAppBarForegroundColor: Color  // Dynamic foreground color
 ){
@@ -74,7 +75,7 @@ fun EntryScreenTopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = navigateToAboutPage) {
                 Icon(
                     imageVector = Icons.Filled.Info,
                     contentDescription = stringResource(R.string.about),
@@ -116,10 +117,50 @@ fun DirectoryTopAppBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+fun AboutNavigationTopAppBar(
+    title: String,
+    canNavigateBack: Boolean,
+    navigateToAboutSettings: () -> Unit,
+    onNavigateUp: () -> Unit = {},
+    topAppBarBackgroundColor: Color, // Dynamic background color
+    topAppBarForegroundColor: Color  // Dynamic foreground color
+){
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = topAppBarBackgroundColor),
+        title = { Text( title,color = topAppBarForegroundColor) },
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            if (canNavigateBack) {
+                IconButton(onClick = onNavigateUp) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.back_button),
+                        tint = topAppBarForegroundColor
+                    )
+                }
+            }
+        },
+        actions = {
+
+            IconButton(onClick = navigateToAboutSettings) {
+                Icon(
+                    imageVector = Icons.Filled.Info,
+                    contentDescription = stringResource(R.string.about),
+                    tint = topAppBarForegroundColor
+                )
+            }
+        },
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun ScheduleScreenTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit = {},
+    navigateToAboutPage: () -> Unit,
     navigateToScheduleEntry: () -> Unit,
     openDrawer: () -> Unit,
     topAppBarBackgroundColor: Color, // Dynamic background color
@@ -159,7 +200,7 @@ fun ScheduleScreenTopAppBar(
                 )
             }
 
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = navigateToAboutPage) {
                 Icon(
                     imageVector = Icons.Filled.Info,
                     contentDescription = stringResource(R.string.about),
@@ -252,6 +293,7 @@ fun DetailsScreenTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit = {},
+    navigateToAboutPage: () -> Unit,
     topAppBarBackgroundColor: Color, // Dynamic background color
     topAppBarForegroundColor: Color  // Dynamic foreground color
 ){
@@ -274,7 +316,7 @@ fun DetailsScreenTopAppBar(
         actions = {
 
             IconButton(
-                onClick = {/* To Do Later*/}
+                onClick = navigateToAboutPage
             ) {
                 Icon(
                     imageVector = Icons.Filled.Info,
@@ -294,6 +336,7 @@ fun BuildingsScreenTopAppBar(
     modifier: Modifier = Modifier,
     navigateToRoomDetails: (Int) -> Unit,
     navigateToBuildingEntry: () -> Unit,
+    navigateToAboutPage: () -> Unit,
     openDrawer: () -> Unit,
     navigateToBuildingDetails: (Int) -> Unit,
     navigateUp: () -> Unit = {},
@@ -368,9 +411,7 @@ fun BuildingsScreenTopAppBar(
                     )
                 }
 
-                IconButton(
-                    onClick = { /*TODO*/ }
-                ) {
+                IconButton(onClick = navigateToAboutPage) {
                     Icon(
                         imageVector = Icons.Filled.Info,
                         contentDescription = stringResource(R.string.about),
@@ -434,6 +475,7 @@ fun PinsScreenTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     navigateToPinEntry: () -> Unit,
+    navigateToAboutPins: () -> Unit,
     openDrawer: () -> Unit,
     navigateUp: () -> Unit = {},
     topAppBarBackgroundColor: Color, // Dynamic background color
@@ -474,7 +516,7 @@ fun PinsScreenTopAppBar(
             }
 
             IconButton(
-                onClick = { /*TODO*/ }
+                onClick = navigateToAboutPins
             ) {
                 Icon(
                     imageVector = Icons.Filled.Info,
@@ -511,19 +553,7 @@ fun CoordinateEntryScreenTopAppBar(
                     )
                 }
             }
-        },
-        actions = {
-            IconButton(
-                onClick = { /*TODO*/ }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Info,
-                    contentDescription = stringResource(R.string.about),
-                    tint = topAppBarForegroundColor
-                )
-            }
-
-        },
+        }
     )
 }
 
@@ -534,6 +564,7 @@ fun MapScreenTopAppBar(
     onGetDirectionsClick: () -> Unit,
     openDrawer: () -> Unit,
     onRouteTypeSelected: (String) -> Unit,
+    navigateToAboutPage: () -> Unit,
     topAppBarBackgroundColor: Color, // Dynamic background color
     topAppBarForegroundColor: Color  // Dynamic foreground color
 ){
@@ -560,6 +591,15 @@ fun MapScreenTopAppBar(
             }
         },
         actions = {
+            IconButton(
+                onClick = navigateToAboutPage
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Info,
+                    contentDescription = stringResource(R.string.about),
+                    tint = topAppBarForegroundColor
+                )
+            }
             IconButton(onClick = onGetDirectionsClick) {
                 Icon(
                     imageVector = Icons.Filled.Place,
@@ -625,12 +665,14 @@ fun MapScreenTopAppBar(
         }
     )
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GuideScreenTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit = {},
+    navigateToAboutMap: () -> Unit,
     onRouteTypeSelected: (String) -> Unit,
     topAppBarBackgroundColor: Color, // Dynamic background color
     topAppBarForegroundColor: Color  // Dynamic foreground color
@@ -661,7 +703,13 @@ fun GuideScreenTopAppBar(
             }
         },
         actions = {
-            //Route Type Dropdown Menu
+            IconButton(onClick = navigateToAboutMap) {
+                Icon(
+                    imageVector = Icons.Filled.Info,
+                    contentDescription = stringResource(R.string.about),
+                    tint = topAppBarForegroundColor
+                )
+            }
             Box {
                 IconButton(onClick = { expanded = true }) {
                     Image(
@@ -755,6 +803,7 @@ fun LocationScreenTopAppBar(
     title: String,
     id: Int,
     canNavigateBack: Boolean,
+    navigateToAboutPage: () -> Unit,
     navigateToEdit: (Int) -> Unit,
     navigateToRoomEntry: (Int) -> Unit,
     navigateUp: () -> Unit = {},
@@ -797,7 +846,7 @@ fun LocationScreenTopAppBar(
                 )
             }
             IconButton(
-                onClick = {/* To Do Later*/}
+                onClick = navigateToAboutPage
             ) {
                 Icon(
                     imageVector = Icons.Filled.Info,
@@ -815,6 +864,7 @@ fun EditScreenTopAppBar(
     title: String,
     id: Int,
     canNavigateBack: Boolean,
+    navigateToAboutPage: () -> Unit,
     navigateToEdit: (Int) -> Unit,
     navigateUp: () -> Unit = {},
     topAppBarBackgroundColor: Color, // Dynamic background color
@@ -847,7 +897,7 @@ fun EditScreenTopAppBar(
                 )
             }
             IconButton(
-                onClick = {/* To Do Later*/}
+                onClick = navigateToAboutPage
             ) {
                 Icon(
                     imageVector = Icons.Filled.Info,
@@ -864,8 +914,9 @@ fun EditScreenTopAppBar(
 fun SettingsScreenTopAppBar(
     title: String,
     openDrawer: () -> Unit,
-    topAppBarBackgroundColor: Color, // Dynamic background color
-    topAppBarForegroundColor: Color  // Dynamic foreground color
+    navigateToAboutSettings: () -> Unit,
+    topAppBarBackgroundColor: Color,
+    topAppBarForegroundColor: Color
 ){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     TopAppBar(
@@ -880,7 +931,18 @@ fun SettingsScreenTopAppBar(
                     tint = topAppBarForegroundColor
                 )
             }
-        }
+        },
+        actions = {
+            IconButton(
+                onClick = navigateToAboutSettings
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Info,
+                    contentDescription = stringResource(R.string.about),
+                    tint = topAppBarForegroundColor
+                )
+            }
+        },
     )
 }
 
@@ -920,6 +982,35 @@ fun ColorScreenTopAppBar(
                     contentDescription = stringResource(R.string.color_entry),
                     tint = if(topAppBarBackgroundColor == Color.Yellow) Color.Blue else Color.Yellow
                 )
+            }
+        }
+    )
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AboutPageTopAppBar(
+    title: String,
+    canNavigateBack: Boolean,
+    navigateUp: () -> Unit = {},
+    topAppBarBackgroundColor: Color, // Dynamic background color
+    topAppBarForegroundColor: Color  // Dynamic foreground color
+){
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    TopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = topAppBarBackgroundColor),
+        title = { Text( title,color = topAppBarForegroundColor)},
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            if(canNavigateBack){
+                IconButton(onClick = navigateUp) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription  = stringResource(R.string.back_button),
+                        tint = topAppBarForegroundColor
+                    )
+                }
             }
         }
     )

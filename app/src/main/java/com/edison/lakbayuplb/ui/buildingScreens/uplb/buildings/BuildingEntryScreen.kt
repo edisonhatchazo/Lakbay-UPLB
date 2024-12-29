@@ -55,6 +55,7 @@ object BuildingEntryDestination: NavigationDestination {
 fun BuildingEntryScreen(
     navigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
+    navigateToAboutPage: () -> Unit,
     canNavigateBack: Boolean = true,
     viewModel: BuildingEntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
     colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
@@ -70,6 +71,7 @@ fun BuildingEntryScreen(
                 title = stringResource(BuildingEntryDestination.titleRes),
                 canNavigateBack = canNavigateBack,
                 navigateUp = onNavigateUp,
+                navigateToAboutPage = navigateToAboutPage,
                 topAppBarBackgroundColor = topAppBarBackgroundColor,
                 topAppBarForegroundColor = topAppBarForegroundColor
             )

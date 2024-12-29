@@ -48,6 +48,7 @@ fun SettingsScreen(
     navigateToUserInterface: () -> Unit,
     navigateToRoutingSettings: () -> Unit,
     openDrawer: () -> Unit,
+    navigateToAboutSettings: () -> Unit,
     colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val topAppBarColors = colorViewModel.topAppBarColors.collectAsState()
@@ -58,6 +59,7 @@ fun SettingsScreen(
             SettingsScreenTopAppBar(
                 title = stringResource(SettingsDestination.titleRes),
                 openDrawer = openDrawer,
+                navigateToAboutSettings = navigateToAboutSettings,
                 topAppBarBackgroundColor = topAppBarBackgroundColor,
                 topAppBarForegroundColor = topAppBarForegroundColor
             )

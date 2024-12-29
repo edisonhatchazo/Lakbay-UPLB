@@ -44,6 +44,7 @@ object ExamHomeDestination: NavigationDestination {
 fun ExamHomeScreen(
     navigateToExamScheduleEntry: () -> Unit,
     navigateToExamScheduleUpdate: (Int) -> Unit,
+    navigateToAboutPage: () -> Unit,
     modifier: Modifier = Modifier,
     openDrawer: () -> Unit,
     viewModel: ExamHomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
@@ -61,6 +62,7 @@ fun ExamHomeScreen(
                 title = stringResource(R.string.exams),
                 canNavigateBack = false,
                 navigateToScheduleEntry = navigateToExamScheduleEntry,
+                navigateToAboutPage = navigateToAboutPage,
                 openDrawer = openDrawer,
                 topAppBarBackgroundColor = topAppBarBackgroundColor,
                 topAppBarForegroundColor = topAppBarForegroundColor

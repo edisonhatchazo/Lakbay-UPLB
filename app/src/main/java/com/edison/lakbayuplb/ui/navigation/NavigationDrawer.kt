@@ -187,6 +187,7 @@ fun NavigationDrawerContent(navController: NavHostController, closeDrawer: () ->
             item {
                 TextButton(
                     onClick = {
+                        navController.navigate(Screen.About.route)
                         closeDrawer()
                     },
                     modifier = Modifier.fillMaxWidth(),

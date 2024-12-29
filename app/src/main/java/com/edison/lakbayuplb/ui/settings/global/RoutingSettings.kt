@@ -39,7 +39,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.edison.lakbayuplb.R
 import com.edison.lakbayuplb.ui.navigation.AppViewModelProvider
 import com.edison.lakbayuplb.ui.navigation.NavigationDestination
-import com.edison.lakbayuplb.ui.screen.DirectoryTopAppBar
+import com.edison.lakbayuplb.ui.screen.AboutNavigationTopAppBar
 
 object RoutingDestination: NavigationDestination {
     override val route = "routing_home"
@@ -58,6 +58,7 @@ fun Double.roundToHundredths(): Double {
 fun RoutingSettings(
     onNavigateUp: () -> Unit,
     canNavigateBack: Boolean = true,
+    navigateToAboutSettings: () -> Unit,
     viewModel: RouteSettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
     colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -66,10 +67,11 @@ fun RoutingSettings(
 
     Scaffold(
         topBar = {
-            DirectoryTopAppBar(
+            AboutNavigationTopAppBar(
                 title = stringResource(RoutingDestination.titleRes),
                 canNavigateBack = canNavigateBack,
                 onNavigateUp = onNavigateUp,
+                navigateToAboutSettings = navigateToAboutSettings,
                 topAppBarBackgroundColor = topAppBarBackgroundColor,
                 topAppBarForegroundColor = topAppBarForegroundColor
             )

@@ -3,11 +3,17 @@ package com.edison.lakbayuplb.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.edison.lakbayuplb.ui.about.AboutNavHost
 import com.edison.lakbayuplb.ui.theme.ThemeMode
 
 @Composable
 fun ScheduleApp( openDrawer: () -> Unit, navController: NavHostController = rememberNavController()) {
     ScheduleNavHost(navController = navController,openDrawer = openDrawer)
+}
+
+@Composable
+fun AboutApp(openDrawer: () -> Unit,navController: NavHostController = rememberNavController()){
+    AboutNavHost(navController = navController, openDrawer = openDrawer)
 }
 
 @Composable

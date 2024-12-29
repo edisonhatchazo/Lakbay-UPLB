@@ -32,6 +32,7 @@ object BuildingEditDestination: NavigationDestination {
 fun BuildingEditScreen(
     navigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
+    navigateToAboutPage: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: BuildingEditViewModel = viewModel(factory = AppViewModelProvider.Factory),
     colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
@@ -47,8 +48,9 @@ fun BuildingEditScreen(
                 title = stringResource(BuildingEditDestination.titleRes),
                 canNavigateBack = true,
                 navigateUp = onNavigateUp,
-                topAppBarBackgroundColor = topAppBarBackgroundColor, // Pass the observed background color
-                topAppBarForegroundColor = topAppBarForegroundColor  // Pass the observed foreground color
+                topAppBarBackgroundColor = topAppBarBackgroundColor,
+                topAppBarForegroundColor = topAppBarForegroundColor,
+                navigateToAboutPage = navigateToAboutPage
 
             )
         }

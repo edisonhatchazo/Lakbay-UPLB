@@ -16,7 +16,7 @@ class AppPreferences(context: Context) {
         private const val CLASSES_NOTIFICATION_KEY = "classes_notification"
         private const val EXAMS_NOTIFICATION_KEY = "exams_notification"
         private const val NAVIGATIONS_NOTIFICATION_KEY = "navigation_notification"
-        private const val NAVIGATIONS_SPEECH_KEY = "navigation_speecb_notification"
+        private const val NAVIGATIONS_SPEECH_KEY = "navigation_speech_notification"
         private const val FONT_SIZE_KEY = "font_size"
         private const val DEFAULT_FONT_SIZE = 9f
     }

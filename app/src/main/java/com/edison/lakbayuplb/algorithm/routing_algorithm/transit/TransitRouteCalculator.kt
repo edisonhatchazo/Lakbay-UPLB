@@ -18,6 +18,8 @@ suspend fun calculateDoubleTransitRoute(
     upGatePoint: GeoPoint,
     busStopsKaliwa: List<BusStop>,
     busStopsKanan: List<BusStop>,
+    shortBusStopsKaliwa: List<BusStop>,
+    shortBusStopsKanan: List<BusStop>,
     busStopsForestry: List<BusStop>,
     busRoutes: List<BusRoute>,
     minimumWalkingDistance: Int,
@@ -29,11 +31,11 @@ suspend fun calculateDoubleTransitRoute(
     val upGateWaitingTime = 60.0
 
     // Sequentially calculate the paths
-    val pathA = calculateSingleTransitRoute(context, startLat, startLon, libraryPoint.latitude, libraryPoint.longitude, busStopsKaliwa, busStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository)
-    val pathB = calculateSingleTransitRoute(context, startLat, startLon, upGatePoint.latitude, upGatePoint.longitude, busStopsKaliwa, busStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository)
-    val pathC = calculateSingleTransitRoute(context, libraryPoint.latitude, libraryPoint.longitude, endLat, endLon, busStopsKaliwa, busStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository)
-    val pathD = calculateSingleTransitRoute(context, upGatePoint.latitude, upGatePoint.longitude, endLat, endLon, busStopsKaliwa, busStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository)
-    val pathE = calculateSingleTransitRoute(context, startLat, startLon, endLat, endLon, busStopsKaliwa, busStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository)
+    val pathA = calculateSingleTransitRoute(context, startLat, startLon, libraryPoint.latitude, libraryPoint.longitude, busStopsKaliwa, busStopsKanan,shortBusStopsKaliwa,shortBusStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository)
+    val pathB = calculateSingleTransitRoute(context, startLat, startLon, upGatePoint.latitude, upGatePoint.longitude, busStopsKaliwa, busStopsKanan, shortBusStopsKaliwa,shortBusStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository)
+    val pathC = calculateSingleTransitRoute(context, libraryPoint.latitude, libraryPoint.longitude, endLat, endLon, busStopsKaliwa, busStopsKanan, shortBusStopsKaliwa,shortBusStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository)
+    val pathD = calculateSingleTransitRoute(context, upGatePoint.latitude, upGatePoint.longitude, endLat, endLon, busStopsKaliwa, busStopsKanan, shortBusStopsKaliwa,shortBusStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository)
+    val pathE = calculateSingleTransitRoute(context, startLat, startLon, endLat, endLon, busStopsKaliwa, busStopsKanan,shortBusStopsKaliwa,shortBusStopsKanan, busStopsForestry, busRoutes, minimumWalkingDistance, repository)
 
     // Utility function to calculate total path duration
     fun calculateTotalDuration(
@@ -88,14 +90,14 @@ suspend fun calculateSingleTransitRoute(
     endLon: Double,
     busStopsKaliwa: List<BusStop>,
     busStopsKanan: List<BusStop>,
+    shortBusStopsKaliwa: List<BusStop>,
+    shortBusStopsKanan: List<BusStop>,
     busStopsForestry: List<BusStop>,
     busRoutes: List<BusRoute>,
     minimumWalkingDistance: Int,
     repository: LocalRoutingRepository,
 ): MutableList<Pair<String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>> = coroutineScope{
 
-    val kaliwaBusStops = loadBusStops(context,"shortKaliwa.geojson")
-    val kananBusStops = loadBusStops(context,"shortKanan.geojson")
     val start = "$startLon,$startLat"
     val end = "$endLon,$endLat"
 
@@ -107,40 +109,24 @@ suspend fun calculateSingleTransitRoute(
     }
 
     // Concurrently find nearest bus stops
-    val (nearestKaliwaStartBusStops, nearestKananStartBusStops, nearestForestryStartBusStops) = awaitAll(
+    val (nearestKaliwaStartBusStops, nearestKananStartBusStops, nearestShortKaliwaStartBusStops, nearestShortKananStartBusStops, nearestForestryStartBusStops) = awaitAll(
         async { findNearestBusStops(busStopsKaliwa, startLat, startLon, 3) },
         async { findNearestBusStops(busStopsKanan, startLat, startLon, 3) },
+        async { findNearestBusStops(shortBusStopsKaliwa, startLat, startLon, 3) },
+        async { findNearestBusStops(shortBusStopsKanan, startLat, startLon, 3) },
         async { findNearestBusStops(busStopsForestry, startLat, startLon, 3) }
     )
 
-    val (nearestKaliwaEndBusStops, nearestKananEndBusStops, nearestForestryEndBusStops) = awaitAll(
+    val (nearestKaliwaEndBusStops, nearestKananEndBusStops, nearestShortKaliwaEndBusStops, nearestShortKananEndBusStops, nearestForestryEndBusStops) = awaitAll(
         async { findNearestBusStops(busStopsKaliwa, endLat, endLon, 3) },
         async { findNearestBusStops(busStopsKanan, endLat, endLon, 3) },
+        async { findNearestBusStops(shortBusStopsKaliwa, endLat, endLon, 3) },
+        async { findNearestBusStops(shortBusStopsKanan, endLat, endLon, 3) },
         async { findNearestBusStops(busStopsForestry, endLat, endLon, 3) }
     )
 
-    val shortKaliwaStartBusStops = findNearestBusStops(kaliwaBusStops, startLat, startLon, 3)
-    val shortKananStartBusStops = findNearestBusStops(kananBusStops, startLat, startLon, 3)
-
-    val shortKaliwaEndBusStops = findNearestBusStops(kaliwaBusStops, endLat, endLon, 3)
-    val shortKananEndBusStops = findNearestBusStops(kananBusStops, endLat, endLon, 3)
-
-    val insideRoute = calculateOutsideRoute(
-        context = context,
-        startLat = startLat,
-        startLon = startLon,
-        endLat = endLat,
-        endLon = endLon,
-        kaliwaStartBusStops = shortKaliwaStartBusStops,
-        kaliwaEndBusStops = shortKaliwaEndBusStops,
-        kananStartBusStops = shortKananStartBusStops,
-        kananEndBusStops = shortKananEndBusStops,
-        repository = repository,
-        busRoutes = busRoutes
-    )
-
     // Concurrently calculate routes for each type
-    val (kaliwaRoutes, kananRoutes, forestryRoutes) = awaitAll(
+    val (kaliwaRoutes, kananRoutes, shortKaliwaRoutes, shortKananRoutes, forestryRoutes) = awaitAll(
         async {
             calculateRoutesForType(
                 startBusStops = nearestKaliwaStartBusStops,
@@ -171,6 +157,34 @@ suspend fun calculateSingleTransitRoute(
         },
         async {
             calculateRoutesForType(
+                startBusStops = nearestShortKaliwaStartBusStops,
+                endBusStops = nearestShortKaliwaEndBusStops,
+                busRoutes = busRoutes.filter { it.name.startsWith("Kaliwa") },
+                repository = repository,
+                context = context,
+                startLat = startLat,
+                startLon = startLon,
+                endLat = endLat,
+                endLon = endLon,
+                routeTypePrefix = "Kaliwa"
+            )
+        },
+        async {
+            calculateRoutesForType(
+                startBusStops = nearestShortKananStartBusStops,
+                endBusStops = nearestShortKananEndBusStops,
+                busRoutes = busRoutes.filter { it.name.startsWith("Kanan") },
+                repository = repository,
+                context = context,
+                startLat = startLat,
+                startLon = startLon,
+                endLat = endLat,
+                endLon = endLon,
+                routeTypePrefix = "Kanan"
+            )
+        },
+        async {
+            calculateRoutesForType(
                 startBusStops = nearestForestryStartBusStops,
                 endBusStops = nearestForestryEndBusStops,
                 busRoutes = busRoutes.filter { it.name.startsWith("Forestry") },
@@ -184,7 +198,7 @@ suspend fun calculateSingleTransitRoute(
             )
         }
     )
-    val combinedArray = kaliwaRoutes + kananRoutes + forestryRoutes + insideRoute
+    val combinedArray = kaliwaRoutes + kananRoutes + forestryRoutes + shortKaliwaRoutes + shortKananRoutes
 
     var sortedCombinedArray = combinedArray.sortedBy { route ->
         route.first // Sorting by the first value of the Triple (total duration)
@@ -204,7 +218,6 @@ suspend fun calculateSingleTransitRoute(
         }
     }
 
-
     val initialFoot = sortedCombinedArray.firstOrNull()?.third?.getOrNull(0)?.second?.let {
         mutableListOf("foot" to it)
     } ?: mutableListOf()
@@ -216,10 +229,12 @@ suspend fun calculateSingleTransitRoute(
     val combinedTransitSegments = mutableListOf<Pair<String, MutableList<RouteWithLineString>>>()
     sortedCombinedArray.forEach { route ->
         val transitSegment = route.third.getOrNull(1)?.second
+
         if (transitSegment != null) {
-            combinedTransitSegments.add("transit" to transitSegment)
+            combinedTransitSegments.add(route.second to transitSegment)
         }
     }
+
     return@coroutineScope mutableListOf(
         "foot" to initialFoot,
         "transit" to combinedTransitSegments,
@@ -251,6 +266,8 @@ suspend fun calculateRoutesForType(
     var optimalInitialFoot: MutableList<RouteWithLineString>? = null
     var optimalTransit: MutableList<RouteWithLineString>? = null
     var optimalEndFoot: MutableList<RouteWithLineString>? = null
+    val kaliwaPercentageIncrease = 0.1286 // 12.86%
+    val kananPercentageIncrease = 0.1354 // 13.54%
 
     for (busRoute in filteredRoutes) {
         for (startBusStop in startBusStops) {
@@ -280,10 +297,15 @@ suspend fun calculateRoutesForType(
                         end
                     )
 
-                    // Calculate total time for this route
+                    val percentageIncrease = when {
+                        busRoute.name.startsWith("Kaliwa", ignoreCase = true) -> kaliwaPercentageIncrease
+                        busRoute.name.startsWith("Kanan", ignoreCase = true) -> kananPercentageIncrease
+                        else -> 0.0
+                    }
+
                     val totalWalkingTime = walkingRouteToBusStop.sumOf { it.route.duration } + walkingRouteToEnd.sumOf { it.route.duration }
-                    val totalTransitTime = transitRoute.route.duration
-                    val totalTime = totalWalkingTime + totalTransitTime
+                    val adjustedTransitTime = transitRoute.route.duration * (1 + percentageIncrease)
+                    val totalTime = totalWalkingTime + adjustedTransitTime
 
                     // Update optimal route if this route is the shortest
                     if (totalTime < shortestTime) {
@@ -308,145 +330,4 @@ suspend fun calculateRoutesForType(
     }
 
     return@coroutineScope routeResults
-}
-
-suspend fun calculateOutsideRoute(
-    context: Context,
-    kaliwaStartBusStops: List<BusStop>,
-    kaliwaEndBusStops: List<BusStop>,
-    kananStartBusStops: List<BusStop>,
-    kananEndBusStops: List<BusStop>,
-    busRoutes: List<BusRoute>,
-    repository: LocalRoutingRepository,
-    startLat: Double,
-    startLon: Double,
-    endLat: Double,
-    endLon: Double
-): MutableList<Triple<Double, String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>> = coroutineScope {
-
-    val start = "$startLon,$startLat"
-    val end = "$endLon,$endLat"
-
-    val routeResults = mutableListOf<Triple<Double, String, MutableList<Pair<String, MutableList<RouteWithLineString>>>>>()
-    val optimalResult = mutableListOf<Pair<String,MutableList<RouteWithLineString>>>()
-
-    val filteredKaliwaRoutes = busRoutes.filter { it.name == "Kaliwa Route 1" }
-    val filteredKananRoutes = busRoutes.filter { it.name == "Kanan Route 1" }
-
-    var shortestTime = Double.MAX_VALUE
-    var optimalInitialFoot: MutableList<RouteWithLineString> ?= null
-    var optimalTransit: MutableList<RouteWithLineString> ?= null
-    var optimalEndFoot: MutableList<RouteWithLineString> ?= null
-
-    // Calculate routes for "Kaliwa Route 1"
-    for (busRoute in filteredKaliwaRoutes) {
-        for (startBusStop in kaliwaStartBusStops) {
-            for (endBusStop in kaliwaEndBusStops) {
-                val startIndex = busRoute.coordinates.indexOf(GeoPoint(startBusStop.lat, startBusStop.lon))
-                val endIndex = busRoute.coordinates.indexOf(GeoPoint(endBusStop.lat, endBusStop.lon))
-
-                if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
-                    // Calculate walking route to start bus stop
-                    val walkingRouteToBusStop = repository.getRoute(
-                        context,
-                        "foot",
-                        start,
-                        "${startBusStop.lon},${startBusStop.lat}"
-                    )
-                    val routeCoordinates = findRouteCoordinates(startBusStop,endBusStop,busRoutes)
-                    val transitRoute = repository.getRouteWithPredefinedPath(
-                        context,
-                        "transit",
-                        routeCoordinates.coordinates
-                    )
-                    val walkingRouteToEnd = repository.getRoute(
-                        context,
-                        "foot",
-                        "${endBusStop.lon},${endBusStop.lat}",
-                        end
-                    )
-
-                    // Calculate total time
-                    val totalWalkingTime = walkingRouteToBusStop.sumOf { it.route.duration } +
-                            walkingRouteToEnd.sumOf { it.route.duration }
-                    val totalTransitTime = transitRoute.route.duration
-                    val totalTime = totalWalkingTime + totalTransitTime
-
-                    // Update if this route is more optimal
-                    if (totalTime < shortestTime) {
-                        val mutableList = mutableListOf<RouteWithLineString>()
-                        shortestTime = totalTime
-
-                        optimalInitialFoot = walkingRouteToBusStop.toMutableList()
-                        mutableList.add(transitRoute)
-                        optimalTransit = mutableList.toMutableList()
-                        optimalEndFoot = walkingRouteToEnd.toMutableList()
-
-                    }
-                }
-            }
-        }
-    }
-    if (optimalInitialFoot != null && optimalTransit != null && optimalEndFoot != null) {
-        optimalResult.add("foot" to optimalInitialFoot)
-        optimalResult.add("transit" to optimalTransit)
-        optimalResult.add("foot" to optimalEndFoot)
-        routeResults.add(Triple(shortestTime, "Kaliwa Route 1", optimalResult.toMutableList()))
-    }
-    optimalResult.clear()
-    shortestTime = Double.MAX_VALUE
-
-    for (busRoute in filteredKananRoutes) {
-        for (startBusStop in kananStartBusStops) {
-            for (endBusStop in kananEndBusStops) {
-                val startIndex = busRoute.coordinates.indexOf(GeoPoint(startBusStop.lat, startBusStop.lon))
-                val endIndex = busRoute.coordinates.indexOf(GeoPoint(endBusStop.lat, endBusStop.lon))
-                if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
-                    // Calculate walking route to start bus stop
-                    val walkingRouteToBusStop = repository.getRoute(
-                        context,
-                        "foot",
-                        start,
-                        "${startBusStop.lon},${startBusStop.lat}"
-                    )
-                    val routeCoordinates = findRouteCoordinates(startBusStop,endBusStop,busRoutes)
-                    val transitRoute = repository.getRouteWithPredefinedPath(
-                        context,
-                        "transit",
-                        routeCoordinates.coordinates
-                    )
-                    val walkingRouteToEnd = repository.getRoute(
-                        context,
-                        "foot",
-                        "${endBusStop.lon},${endBusStop.lat}",
-                        end
-                    )
-
-                    val totalWalkingTime = walkingRouteToBusStop.sumOf { it.route.duration } +
-                            walkingRouteToEnd.sumOf { it.route.duration }
-                    val totalTransitTime = transitRoute.route.duration
-                    val totalTime = totalWalkingTime + totalTransitTime
-
-                    if (totalTime < shortestTime) {
-                        val mutableList = mutableListOf<RouteWithLineString>()
-                        shortestTime = totalTime
-                        optimalInitialFoot = walkingRouteToBusStop.toMutableList()
-                        mutableList.add(transitRoute)
-                        optimalTransit = mutableList.toMutableList()
-                        optimalEndFoot = walkingRouteToEnd.toMutableList()
-
-                    }
-                }
-            }
-        }
-    }
-
-    if (optimalInitialFoot != null && optimalTransit != null && optimalEndFoot != null) {
-        optimalResult.add("foot" to optimalInitialFoot)
-        optimalResult.add("transit" to optimalTransit)
-        optimalResult.add("foot" to optimalEndFoot)
-        routeResults.add(Triple(shortestTime, "Kanan Route 1", optimalResult.toMutableList()))
-    }
-
-    return@coroutineScope routeResults.sortedBy { it.first }.toMutableList()
 }

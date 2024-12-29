@@ -35,6 +35,7 @@ object ClassScheduleEditDestination: NavigationDestination {
 fun ClassScheduleEditScreen(
     navigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
+    navigateToAboutPage: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ClassScheduleEditViewModel = viewModel(factory = AppViewModelProvider.Factory),
     colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
@@ -60,6 +61,7 @@ fun ClassScheduleEditScreen(
                 title = stringResource(ClassScheduleEditDestination.titleRes),
                 canNavigateBack = true,
                 navigateUp = onNavigateUp,
+                navigateToAboutPage = navigateToAboutPage,
                 topAppBarForegroundColor = topAppBarForegroundColor,
                 topAppBarBackgroundColor = topAppBarBackgroundColor
             )

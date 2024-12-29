@@ -7,6 +7,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.edison.lakbayuplb.ui.about.SettingsAndCustomization
+import com.edison.lakbayuplb.ui.about.SettingsAndCustomizationDestination
 import com.edison.lakbayuplb.ui.settings.SettingsDestination
 import com.edison.lakbayuplb.ui.settings.SettingsScreen
 import com.edison.lakbayuplb.ui.settings.UIScreen
@@ -45,7 +47,13 @@ fun SettingsNavHost(
             SettingsScreen(
                 openDrawer = openDrawer,
                 navigateToUserInterface = {navController.navigate(UserInterfaceDestination.route)},
-                navigateToRoutingSettings = {navController.navigate(RoutingDestination.route)}
+                navigateToRoutingSettings = {navController.navigate(RoutingDestination.route)},
+                navigateToAboutSettings = {navController.navigate(SettingsAndCustomizationDestination.route)}
+            )
+        }
+        composable(route = SettingsAndCustomizationDestination.route){
+            SettingsAndCustomization(
+                navigateBack = { navController.navigateUp() },
             )
         }
 
@@ -55,6 +63,7 @@ fun SettingsNavHost(
                 onNavigateUp = {navController.navigateUp()},
                 navigateToColorEntry = {navController.navigate(ColorHomeDestination.route)},
                 onThemeChange = onThemeChange,
+                navigateToAboutSettings = {navController.navigate(SettingsAndCustomizationDestination.route)},
                 navigateToCollegeColors = {navController.navigate(DirectoryHomeDestination.route)},
                 navigateToTopAppBarColors = {navController.navigate(TopAppBarColorsDestination.route)})
         }
@@ -110,6 +119,7 @@ fun SettingsNavHost(
         composable(route = RoutingDestination.route){
             RoutingSettings(
                 onNavigateUp = { navController.navigateUp() },
+                navigateToAboutSettings = {navController.navigate(SettingsAndCustomizationDestination.route)}
             )
         }
 

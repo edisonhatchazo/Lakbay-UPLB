@@ -33,6 +33,7 @@ object ClassroomEditDestination: NavigationDestination {
 fun RoomEditScreen(
     navigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
+    navigateToAboutPage: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RoomEditViewModel = viewModel(factory = AppViewModelProvider.Factory),
     colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
@@ -48,6 +49,7 @@ fun RoomEditScreen(
                 title = stringResource(ClassroomEntryDestination.titleRes),
                 canNavigateBack = true,
                 navigateUp = onNavigateUp,
+                navigateToAboutPage = navigateToAboutPage,
                 topAppBarForegroundColor = topAppBarForegroundColor,
                 topAppBarBackgroundColor = topAppBarBackgroundColor
             )

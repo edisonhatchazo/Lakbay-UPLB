@@ -46,6 +46,7 @@ fun ClassHomeScreen(
     navigateToClassScheduleUpdate: (Int) -> Unit,
     modifier: Modifier = Modifier,
     openDrawer: () -> Unit,
+    navigateToAboutPage: () -> Unit,
     viewModel: ClassHomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
     colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -61,6 +62,7 @@ fun ClassHomeScreen(
                 title = stringResource(R.string.classes),
                 canNavigateBack = false,
                 navigateToScheduleEntry = navigateToClassScheduleEntry,
+                navigateToAboutPage = navigateToAboutPage,
                 openDrawer = openDrawer,
                 topAppBarForegroundColor = topAppBarForegroundColor,
                 topAppBarBackgroundColor = topAppBarBackgroundColor

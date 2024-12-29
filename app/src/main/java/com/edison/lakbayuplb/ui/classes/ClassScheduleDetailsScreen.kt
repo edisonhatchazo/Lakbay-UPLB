@@ -4,7 +4,6 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -63,6 +62,7 @@ fun ClassScheduleDetailsScreen (
     navigateToEditClassSchedule: (Int) -> Unit,
     navigateBack: () -> Unit,
     navigateToMap: (Int) -> Unit,
+    navigateToAboutPage: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ClassScheduleDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
     colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
@@ -78,6 +78,7 @@ fun ClassScheduleDetailsScreen (
                 title = stringResource(ClassScheduleDetailsDestination.titleRes),
                 canNavigateBack = true,
                 navigateUp = navigateBack,
+                navigateToAboutPage = navigateToAboutPage,
                 topAppBarBackgroundColor = topAppBarBackgroundColor,
                 topAppBarForegroundColor = topAppBarForegroundColor
             )
@@ -272,9 +273,17 @@ private fun ClassDetailsRow(
     @StringRes labelResID: Int, classScheduleDetail: String, modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
-        Text(stringResource(labelResID))
-        Spacer(modifier = Modifier.weight(1f))
-        Text(text = classScheduleDetail, fontWeight = FontWeight.Bold)
+        Text(
+            text = stringResource(labelResID),
+            modifier = Modifier.weight(0.5f),
+            fontWeight = FontWeight.Bold,
+            maxLines = 4
+        )
+        Text(
+            text = classScheduleDetail,
+            modifier = Modifier.weight(0.8f),
+            maxLines = 4
+        )
     }
 }
 

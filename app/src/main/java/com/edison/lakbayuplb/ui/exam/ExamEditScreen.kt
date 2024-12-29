@@ -35,6 +35,7 @@ object ExamEditDestination: NavigationDestination {
 fun ExamEditScreen(
     navigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
+    navigateToAboutPage: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ExamEditViewModel = viewModel(factory = AppViewModelProvider.Factory),
     colorViewModel: TopAppBarColorSchemesViewModel = viewModel(factory = AppViewModelProvider.Factory)
@@ -62,6 +63,7 @@ fun ExamEditScreen(
                 title = stringResource(ExamEditDestination.titleRes),
                 canNavigateBack = true,
                 navigateUp = onNavigateUp,
+                navigateToAboutPage = navigateToAboutPage,
                 topAppBarBackgroundColor = topAppBarBackgroundColor,
                 topAppBarForegroundColor = topAppBarForegroundColor
             )
