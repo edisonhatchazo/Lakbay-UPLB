@@ -74,7 +74,7 @@ fun extractDirectionAndDistance(instruction: String): Pair<String, Int> {
 
     // Find the direction from the instruction
     val directionMatch = directionRegex.find(instruction)
-    val direction = directionMatch?.value ?: "Unknown direction"
+    val direction = directionMatch?.value ?: "`Continue straight"
 
     // Find the distance from the instruction
     val distanceMatch = distanceRegex.find(instruction)

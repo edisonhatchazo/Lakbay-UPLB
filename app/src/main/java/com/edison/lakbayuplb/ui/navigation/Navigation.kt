@@ -18,7 +18,8 @@ fun Navigation(navController: NavHostController, openDrawer: () -> Unit, modifie
         composable(Screen.ExamSchedule.route) { ExamScheduleApp(openDrawer = openDrawer) }
         composable(Screen.Exams.route){ ExamHomeApp(openDrawer = openDrawer) }
         composable(Screen.Pins.route){ PinsApp(openDrawer = openDrawer) }
-        composable(Screen.Map.route) { MainMapScreen(openDrawer = openDrawer) }
+        composable(Screen.Map.route) { MainMapScreen(openDrawer = openDrawer, navigateBack = openDrawer) }
         composable(Screen.Settings.route){ SettingsApp(openDrawer = openDrawer, onThemeChange = onThemeChange) }
+        composable(Screen.About.route){ AboutApp(openDrawer = openDrawer)}
     }
 }

@@ -2,8 +2,6 @@ package com.edison.lakbayuplb.data.building
 
 import androidx.room.Delete
 import androidx.room.Update
-import com.edison.lakbayuplb.data.building.Building
-import com.edison.lakbayuplb.data.building.Classroom
 import kotlinx.coroutines.flow.Flow
 
 interface BuildingRepository {

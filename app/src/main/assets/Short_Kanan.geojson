@@ -4,23 +4,6 @@
     {
       "type": "Feature",
       "properties": {
-        "@id": "node/594380025",
-        "highway": "bus_stop",
-        "name": "Main Library/Faculty Village",
-        "public_transport": "platform"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          121.2385293,
-          14.1654993
-        ]
-      },
-      "id": "node/594380025"
-    },
-    {
-      "type": "Feature",
-      "properties": {
         "@id": "node/606307043",
         "highway": "bus_stop",
         "name": "CSI/BioSci/Humanities",
@@ -158,10 +141,6 @@
           [
             121.2387514,
             14.1665156
-          ],
-          [
-            121.2385293,
-            14.1654993
           ]
         ]
       }

@@ -201,7 +201,7 @@ object AppViewModelProvider {
 
         initializer {
             SearchViewModel(
-                lakbayUPLBApplication().container.buildingRepository
+                lakbayUPLBApplication().container.buildingRepository,
             )
         }
 

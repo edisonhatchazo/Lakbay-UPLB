@@ -11,6 +11,11 @@ fun ScheduleApp( openDrawer: () -> Unit, navController: NavHostController = reme
 }
 
 @Composable
+fun AboutApp(openDrawer: () -> Unit,navController: NavHostController = rememberNavController()){
+    AboutNavHost(navController = navController, openDrawer = openDrawer)
+}
+
+@Composable
 fun ClassScheduleApp(openDrawer: () -> Unit, navController: NavHostController = rememberNavController()) {
     ClassScheduleNavHost(navController = navController, openDrawer = openDrawer)
 }

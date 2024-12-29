@@ -142,7 +142,7 @@ fun ClassScheduleEntryBody(
             onDaysChange = onDaysChange,
             onValueChange = {
                 onClassScheduleValueChange(it)
-                isLocationValid.value = it.roomId != 0    },
+                isLocationValid.value = it.roomId != 0},
             availableStartTimes = availableStartTimes,
             availableEndTimes = availableEndTimes,
             modifier = Modifier.fillMaxWidth()

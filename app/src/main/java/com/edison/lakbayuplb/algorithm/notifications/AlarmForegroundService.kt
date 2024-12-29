@@ -1,5 +1,6 @@
 package com.edison.lakbayuplb.algorithm.notifications
 import android.Manifest
+import android.app.Notification
 import android.app.Service
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -12,17 +13,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-
 class AlarmForegroundService : Service() {
     private val serviceScope = CoroutineScope(Dispatchers.Default + Job())
+    private val foregroundTimeoutMillis = 5000L // 5 seconds timeout
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Start the foreground service with a single notification
         val channelId = getString(R.string.class_channel_id)
         val channelName = getString(R.string.class_channel_name)
-        val channelDescription = getString(R.string.class_channel_description)
 
         val notification = NotificationCompat.Builder(this, channelId)
             .setContentTitle(channelName)
@@ -31,10 +31,11 @@ class AlarmForegroundService : Service() {
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
 
-        if (checkLocationPermissions()) {
-            startForeground(1, notification)
+        // Start foreground service immediately with a timeout
+        startForegroundSafely(notification)
 
-            // Logic to schedule or reschedule alarms
+        // Proceed with service logic
+        if (checkLocationPermissions()) {
             serviceScope.launch {
                 val appContainer = AppDataContainer(applicationContext)
                 val classScheduleRepository = appContainer.classScheduleRepository
@@ -52,14 +53,14 @@ class AlarmForegroundService : Service() {
             stopSelf() // Stop the service if permissions are not available
         }
 
-        return START_STICKY // Ensures service restarts if the system kills it
+        return START_STICKY
     }
 
-    override fun onBind(intent: Intent?): IBinder? = null // Not binding to any activity
+    override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onDestroy() {
         super.onDestroy()
-        serviceScope.cancel() // Cancel any ongoing coroutines
+        serviceScope.cancel()
     }
 
     private fun checkLocationPermissions(): Boolean {
@@ -67,5 +68,21 @@ class AlarmForegroundService : Service() {
             this,
             Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun startForegroundSafely(notification: Notification) {
+        var foregroundStarted = false
+
+        // Start foreground immediately
+        startForeground(1, notification)
+        foregroundStarted = true
+
+        // Check if it fails after a timeout
+        serviceScope.launch {
+            delay(foregroundTimeoutMillis)
+            if (!foregroundStarted) {
+                stopSelf()
+            }
+        }
     }
 }

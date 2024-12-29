@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -335,18 +334,18 @@ fun LocationDetail(
     }
 }
 
-
 @Composable
 fun BuildingDetail(
     building: Building,
     fontColor: Color,
     backgroundColor: Color,
     modifier: Modifier = Modifier,
-){
+) {
     Card(
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = backgroundColor)
-    ){
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -354,40 +353,49 @@ fun BuildingDetail(
             verticalArrangement = Arrangement.spacedBy(
                 dimensionResource(id = R.dimen.padding_medium)
             )
-        ){
+        ) {
             BuildingDetailsRow(
                 labelResID = R.string.name,
                 fontColor = fontColor,
                 buildingDetail = building.name,
-                modifier = Modifier.padding(
-                    horizontal = dimensionResource(id = R.dimen.padding_medium)
-                )
+                modifier = Modifier.fillMaxWidth()
             )
             BuildingDetailsRow(
                 labelResID = R.string.college,
                 fontColor = fontColor,
                 buildingDetail = building.college,
-                modifier = Modifier.padding(
-                    horizontal = dimensionResource(id = R.dimen.padding_medium)
-                )
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }
 }
-
 @Composable
 private fun BuildingDetailsRow(
     @StringRes labelResID: Int,
     fontColor: Color,
     buildingDetail: String,
     modifier: Modifier = Modifier,
-){
-    Row(modifier = modifier){
-        Text(text = stringResource(id = labelResID), color = fontColor)
-        Spacer(modifier = Modifier.weight(1f))
-        Text(text = buildingDetail, fontWeight = FontWeight.Bold, color = fontColor)
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = stringResource(id = labelResID),
+            color = fontColor,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.weight(0.3f), // Adjust weight for alignment
+            maxLines = 4
+        )
+        Text(
+            text = buildingDetail,
+            color = fontColor,
+            modifier = Modifier.weight(0.8f), // Adjust weight for alignment
+            maxLines = 4
+        )
     }
 }
+
 
 @Composable
 private fun RoomDetails(
@@ -408,7 +416,7 @@ private fun RoomDetails(
             Text(
                 text = classroom.abbreviation,
                 style = MaterialTheme.typography.bodyMedium,
-                color = fontColor
+                color = fontColor,
             )
         }
     }

@@ -85,8 +85,6 @@ fun LakbayApp(onThemeChange: (ThemeMode) -> Unit) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val coroutineScope = rememberCoroutineScope()
 
-
-
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = false,

@@ -63,7 +63,13 @@ class ClassScheduleEditViewModel(
     }
     private fun validateInput(uiState: ClassScheduleDetails = classScheduleUiState.classScheduleDetails): Boolean {
         return with(uiState) {
-            title.isNotBlank() && roomId != 0 && location.isNotBlank() && days.isNotEmpty() && time != LocalTime.MIDNIGHT && timeEnd != LocalTime.MIDNIGHT
+            title.isNotBlank() &&
+            roomId != 0 &&
+            location.isNotBlank() &&
+            days.isNotEmpty() &&
+            time != LocalTime.MIDNIGHT &&
+            timeEnd != LocalTime.MIDNIGHT &&
+            timeEnd.isAfter(time)
         }
     }
 

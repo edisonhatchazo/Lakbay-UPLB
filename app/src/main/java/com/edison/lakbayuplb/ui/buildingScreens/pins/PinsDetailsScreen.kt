@@ -4,7 +4,6 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -240,9 +239,17 @@ private fun PinDetailsRow(
     @StringRes labelResID: Int, pinDetail: String, modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
-        Text(stringResource(labelResID))
-        Spacer(modifier = Modifier.weight(1f))
-        Text(text = pinDetail, fontWeight = FontWeight.Bold)
+        Text(
+            text = stringResource(labelResID),
+            modifier = Modifier.weight(0.3f),
+            fontWeight = FontWeight.Bold,
+            maxLines = 4
+        )
+        Text(
+            text = pinDetail,
+            modifier = Modifier.weight(0.8f),
+            maxLines = 4
+        )
     }
 }
 
