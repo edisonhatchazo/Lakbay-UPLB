@@ -56,9 +56,9 @@ object UserInterfaceDestination: NavigationDestination {
 }
 @Composable
 fun UIScreen(
+    modifier: Modifier = Modifier,
     onNavigateUp: () -> Unit,
     canNavigateBack: Boolean = true,
-    modifier: Modifier = Modifier,
     onThemeChange: (ThemeMode) -> Unit,
     navigateToColorEntry: () -> Unit,
     navigateToAboutSettings: () -> Unit,
