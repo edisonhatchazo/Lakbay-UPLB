@@ -1,4 +1,5 @@
 📍 Lakbay UPLB
+
 A digital companion for navigating UPLB with ease!
 
 ![Lakbay UPLB Banner](optional image link here)
